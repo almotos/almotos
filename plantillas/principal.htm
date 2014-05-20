@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{%TITULO_PAGINA%}</title>
+        <meta name="keywords" content="{%PALABRAS_CLAVE%}" />
+        <meta name="description" content="{%DESCRIPCION%}" />
+        <meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+        <link rel="shortcut icon" href="{%ICONO%}" />
+        {%HOJAS_ESTILOS%}
+    </head>
+    <body >
+
+        <!-- Inicio bloque principal -->
+        <div id="full" class="ui-helper-hidden ui-helper-reset ui-corner-all">
+
+            <!-- Inicio indicador de espera -->
+            <div id="indicadorEspera" class="ui-widget-shadow ui-corner-all"><div class="ui-corner-all">{%TEXTO_ESPERA%}</div></div>
+            <!-- Fin indicador de espera -->
+
+
+
+            <!-- Inicio cabecera -->  
+
+            <div id="cabecera" class="ui-corner-top">
+
+
+                <!-- Bloque cabecera del sistema -->
+                <div id="listaCambiaEstilos">
+                
+                    {%BLOQUE_CAMBIO_ESTILOS%}
+                </div>
+                
+                 <div id="barraCorporativas" class="">   
+                    {%ENLACES_CORPORATIVOS%}
+                </div>
+                
+                <div id="logoEmpresa">
+
+                </div>  
+                
+                <div id="bloqueInfoSesion">
+                
+                    {%BLOQUE_SESION%}
+                </div>  
+
+
+
+            </div>
+            <!-- Fin cabecera -->
+
+            <div id="bloqueResumenNoticia" class="">
+                {%BLOQUE_NOTICIA%}
+
+            </div>
+
+            <!-- Inicio barra corporativa -->
+
+
+
+
+            <!-- Fin barra corporativa   <div class="sombra"></div>-->
+
+            <!-- Inicio bloque principal -->
+            <div id="bloquePrincipal" class="ui-helper-clearfix ui-helper-reset">
+
+                <!-- Inicio columna izquierda -->
+                <!-- Fin columna izquierda      <br>  {%MENU_ALTERNATIVO%}-->
+
+                <!-- Bloque de resumen de noticias-->
+                <div id="columnaCentral" class="ui-helper-clearfix ui-helper-reset">
+                    {%BLOQUE_CENTRAL%}
+                </div>
+                <!-- Fin resumen de noticias -->
+
+                <!-- Inicio columna derecha -->
+                <!-- Fin columna derecha -->
+
+
+            </div>
+            <!-- Fin bloque principal -->
+
+            <!-- Inicio pie de página -->
+            <div id="barraPieDePagina" class="ui-helper-clearfix  ui-helper-reset ui-state-default ui-corner-bottom">
+               
+
+                    {%PIE_PAGINA%}
+            </div>
+            <!-- Fin pie de página -->
+
+        </div>
+        <!-- Fin bloque principal -->
+
+        <!-- Inicio barra de chat -->
+        {%BARRA_CHAT%}
+        <!-- Fin barra de chat -->
+
+        <!-- Inicio cuadro de diálogo -->
+        <div id="BoxOverlayTransparente"></div>
+        <div id="cuadroDialogo"></div>
+        <div id="cuadroDialogo1"></div>
+        <div id="cuadroDialogo2"></div>
+        <div id="cuadroDialogo3"></div>
+        <div id="cuadroDialogo4"></div>
+        <div id="cuadroDialogo5"></div>
+        <div id="cuadroDialogo6"></div>
+        <div id="cuadroDialogo7"></div>
+        <div id="cuadroDialogo8"></div>
+        <div id="cuadroDialogo9"></div>
+        <div id="cuadroDialogo10"></div>   
+        <div id="cuadroDialogo11"></div>
+        <div id="cuadroDialogo12"></div>
+        <div id="cuadroDialogo13"></div>
+        <div id="cuadroDialogo14"></div>
+        <div id="cuadroDialogo15"></div>
+        <!-- Fin cuadro de diálogo -->
+
+        <!-- Inicio Scripts -->
+        {%JAVASCRIPT%}
+        <!-- Fin Scripts -->
+    </body>
+</html>
