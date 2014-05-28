@@ -2,10 +2,9 @@
 /**
  *
  * @package     FOLCS
- * @author      Francisco J. Lozano B. <fjlozano@felinux.com.co>
- * @author      Julian A. Mondragón <jmondragon@felinux.com.co>
+ * @author      Pablo Andrés Vélez Vidal
  * @license     http://www.gnu.org/licenses/gpl.txt
- * @copyright   Copyright (c) 2009 FELINUX LTDA
+ * @copyright   Copyright (c) 2014
  * @version     0.1
  *
  **/
@@ -18,39 +17,33 @@ require_once('configuracion/general.php');
 require_once('configuracion/contabilidad.php');
 
 /**
- * Efectuar la carga de los archivos de definición de clases básicas
+ * Funcion encargada de cargar las clases requeridas
+ * @param type $className
  */
-if ($directorio = opendir($configuracion["RUTAS"]["clases"])) {
+function myAutoloader($className) 
+{
+        try {
+                //carga las clases basicas del framework
+                if(is_readable("clases/".$className . '.php')) {
+                    require_once("clases/".$className . '.php');
 
-    while (false !== ($archivo = readdir($directorio))) {
+                }
 
-        if (($archivo != ".") && ($archivo != "..") && (substr($archivo, -4) == ".php")) {
-            $ruta = $configuracion["RUTAS"]["clases"]."/".$archivo;
-            require_once $ruta;
+                //carga las clases de los modulos
+                if(is_readable("clases/modulos/".$className . '.php')) {
+                    require_once("clases/modulos/".$className . '.php');
+
+                }                    
+
+        }catch (Exception $e) {
+                echo "Unable to load $className. \n";
+                echo $e->getMessage(), "\n";
+
         }
 
-    }
-
-    closedir($directorio);
-    unset($directorio, $archivo);
 }
 
-/**
- * Efectuar la carga de los archivos de definición de clases de los módulos
- */
-if ($directorio = opendir($configuracion["MODULOS"]["clases"])) {
-
-    while (false !== ($archivo = readdir($directorio))) {
-
-        if (($archivo != ".") && ($archivo != "..") && (substr($archivo, -4) == ".php")) {
-            $ruta = $configuracion["MODULOS"]["clases"]."/".$archivo;
-            require_once $ruta;
-        }
-    }
-
-    closedir($directorio);
-    unset($directorio, $archivo);
-}
+spl_autoload_register('myAutoloader');
 
 /**
  * Redefinir los nombres de las variables para hacerlas globales
