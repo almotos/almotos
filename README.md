@@ -5,7 +5,7 @@ base del aplicativo, contiene los archivos de configuracion, plantillas basicas 
 
 Prueba push a almotos-dev 2
 
-Prueba push a almotos-prod
+Prueba push a almotos-prod 2
 
 
 cambio a prod 3
