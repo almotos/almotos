@@ -1,0 +1,16 @@
+.columna1{
+    width: 150px;
+}
+
+.columna2{
+    width: auto !important;
+    text-align: left !important;
+}
+
+.columna3{
+    width: 150px;
+}
+
+.columna4{
+    width: 120px;
+}

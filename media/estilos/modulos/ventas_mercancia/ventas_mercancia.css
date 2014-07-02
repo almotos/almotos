@@ -1,0 +1,386 @@
+.contenedorAyudaVentaMercancia{
+    float: right;
+    margin-right: 20px;
+    margin-top: -30px !important;
+}
+
+.contenedorListadoArticulosFactura {
+    background: #9DD53E; /* Old browsers */
+    background: -moz-linear-gradient(top, #9DD53E 0%, #A0D44E 23%, #C6F083 76%, #F4F4F4 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#9DD53E), color-stop(23%,#A0D44E), color-stop(76%,#C6F083), color-stop(100%,#F4F4F4)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #9DD53E 0%,#A0D44E 23%,#C6F083 76%,#F4F4F4 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #9DD53E 0%,#A0D44E 23%,#C6F083 76%,#F4F4F4 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #9DD53E 0%,#A0D44E 23%,#C6F083 76%,#F4F4F4 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #9DD53E 0%,#A0D44E 23%,#C6F083 76%,#F4F4F4 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#9DD53E', endColorstr='#F4F4F4',GradientType=0 ); /* IE6-9 */
+    height: 230px;
+    overflow-y: auto;
+    width: 99%;
+    padding: 3px;
+}
+
+
+.filaArticuloVenta{
+    margin: 1px;
+}
+
+
+.contenedorInfoArticulo {
+  background-color: #2E64FE;
+  border: 3px dotted #0404B4;
+  bottom: 40%;
+  display: none;
+  height: 140px;
+  line-height: 40px;
+  padding: 5px;
+  position: absolute;
+  right: 5%;
+  width: 420px;
+}
+
+#campoPatronBusquedaArticulos{
+    text-transform: uppercase;
+}
+
+
+.filaTablaSeleccionarItem{
+    background-color: #298922 !important;
+    color: #fff !important;
+    border: 2px solid #277D20 !important;
+    font-weight: bolder;
+}
+
+
+.filaTablaItemSeleccionada{
+    background-color: #FC742B !important;
+    color: #0A2A0A;
+}
+
+
+.contenedorTablaRegistros{
+    z-index: 100;
+}
+
+.campoDescripcionArticulo{
+    color: #000 !important;
+    font-weight: bolder !important;
+    font-size: 0.9em;
+}
+
+.campoDisabledConColor{
+    color: #000 !important;
+    font-weight: bolder !important;
+}
+
+
+.contenedorDctoExtra {
+  background-color: #CEF6CE;
+  border: 2px solid #0404B4;
+  height: auto;
+  left: 35%;
+  margin: auto;
+  opacity: 0.95;
+  padding: 20px;
+  position: absolute;
+  top: 35%;
+  width: 400px;
+  z-index: 99;
+}
+
+.cerrarContenedorDctoExtra {
+  background-color: #FFFFFF;
+  border: 1px dotted #DDDDDD;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bolder;
+  padding: 3px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+
+#contenedorValidarDescuento {
+  background-color: #CEF6CE;
+  border: 2px solid #0404B4;
+  height: auto;
+  left: 35%;
+  margin: auto;
+  opacity: 0.95;
+  padding: 20px;
+  position: absolute;
+  top: 20%;
+  width: 400px;
+  z-index: 65559;
+}
+
+
+.cerrarContenedorValidarDcto {
+  background-color: #FFFFFF;
+  border: 1px dotted #DDDDDD;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bolder;
+  padding: 3px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+
+.cantidadArticuloVenta{margin-left: 18px;}
+
+.descuentoGeneralArticuloVenta{margin-left: 27px;}
+
+.precioUnitarioArticuloVenta{margin-left: 23px;}
+
+.subtotalArticuloVenta{margin-left: 25px;}
+
+
+.imagenEliminarItemFila{margin-left: 20px; cursor: pointer;}
+
+.imagenConsultarItemFila{margin-left: 45px; cursor: pointer;}
+
+
+
+
+.textoCampoArticulo{margin-left: 180px;}
+
+.textoCantidadArticulo{margin-left: 155px;}
+
+.textoDescuentoArticulo{margin-left: 30px;}
+
+.textoPrecioUnitario{margin-left: 43px;}
+
+.textoSubtotalArticulo{margin-left: 80px;}
+
+.textoEliminarItemFila{margin-left: 25px;}
+
+.textoConsultarItemFila{margin-left: 12px;}
+
+
+.linea1{
+    margin-top: 2px;
+}
+
+.linea2{
+    margin-top: 2px;
+}
+
+.linea3{
+    margin-top: 0px;
+}
+
+.linea4{
+    margin-top: -5px;
+}
+
+.linea5{
+    margin-top: 5px;
+}
+
+#campoTotal {
+  color: #000000;
+  font-size: 60px;
+  font-weight: bolder;
+  line-height: 40px;
+}
+
+.imagenEliminarTodosArticulos{
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.textoCampoArticulo {
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 13px;
+  text-align: center;
+}
+
+.textoCantidadArticulo{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  font-weight: bold;
+  color: #000;
+  margin-left: 1px;
+  text-align: center;
+}
+
+.textoDescuentoArticulo{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  font-weight: bold;
+  margin-left: 10px;
+  color: #000;
+  text-align: center;
+}
+
+.textoPrecioUnitario{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 10px;
+  text-align: center;
+}
+
+.textoSubtotalArticulo{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 45px;
+  text-align: center;
+}
+
+.textoPorcentajeGanancia{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 2px;
+  text-align: center;
+}
+
+.textoPrecioVentaArticulo{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 2px;
+  text-align: center;
+}
+
+.textoEliminarItemFila{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 2px;
+  text-align: center;
+}
+
+.textoConsultarItemFila{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 2px;
+  text-align: center;
+}
+
+.imagenAdicionarVariosArticulos {
+  cursor: pointer;
+  float: left;
+  margin-right: 20px;
+}
+
+.textoMoverMercancia{
+  background-color: #9DD53E !important;
+  border: 0px !important;
+  color: #000;
+  font-weight: bold;
+  margin-left: 2px;
+  text-align: center;
+}
+
+.contenedorCheckMarcarFilas{
+    width: 120px;
+}
+
+#selectorCaja_chzn{
+    margin-top: 10px;
+}
+
+#selectorBodegas_chzn{
+    margin-top: 10px;
+}
+
+#listaMedioPago_chzn{
+    margin-top: 10px;
+}
+
+.ayudaFormularioVenta{
+    float: right !important;
+    margin-right: 25px;
+    margin-top: -30px;
+}
+
+#imagenBuscarCatalogo{
+    width: 25px;
+}
+
+#imagenCargarCotizacion{
+    width: 25px;
+}
+
+.columna_1{
+    width: 350px;
+}
+
+.columna_2{
+    width: 70px;
+}
+
+.columna_3{
+    width: 70px;
+}
+
+.columna_4{
+    width: 70px;
+}
+
+.columna_5{
+    width: 70px;
+}
+
+.columna_6{
+    width: 70px;
+}
+
+.columna_7{
+    width: 70px;
+}
+
+.columna_8{
+    width: 70px;
+}
+
+.columna_9{
+    width: 70px;
+}
+
+.columna_10{
+    width: 70px;
+}
+
+/* esto hace que cuadre el formulario de finalizar la venta */
+.contenidoPestana{
+    min-height: 100px !important;
+}
+
+/* estilos para la tabla de agregar masivo, ver si esta completo no es para nada necesario :) */
+.ui-dialog .tablaRegistros td.completo, 
+.ui-dialog .tablaRegistros th.completo,
+.ui-dialog .tablaRegistros td.pais,
+.ui-dialog .tablaRegistros th.pais{
+    display: none;
+}
+
+.ui-dialog .tablaRegistros td.iva,
+.ui-dialog .tablaRegistros th.iva{
+    width: 40px;
+}
+
+.ui-dialog .tablaRegistros td.id,
+.ui-dialog .tablaRegistros th.id{
+    width: 60px;
+}
+
+.ui-dialog .tablaRegistros td.cantidad,
+.ui-dialog .tablaRegistros th.cantidad{
+    display: block !important;
+}

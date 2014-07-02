@@ -1,0 +1,44 @@
+﻿Modulo: Unidades de medida.
+
+Descripción: módulo encargado de gestionar la información de las unidades  registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las unidades que se utilizan en el negocio, ya sea para la medición de los empaques de la mercancia, o para cualquier otro fin.  En el formulario de “Adicionar una unidad”, a cada  unidad se le debe suministrar un códifo, ej: “cm”. , un tipo de unidad, ejemplo: “longitud”, un nombre, ejemplo “Centimetros” . Tambien deberá especificarse si la unidad a ingresar esta catalogada como una unidad principal o si depende de otra unidad, y en caso de depender, se debe especificar su factor de conversión, ejemplo: “unidad principal de “centimetros” es “metro”, factor de conversión=100. Este modulo será utilizado mayormente por los modulos  de articulos(Para mantener el orden de las presentaciones de productos)
+
+Clases: Unidad.
+
+Tablas: 
+fom_unidades: almacena la información de una unidad.
+fom_articulos: almacena en que tipo de unidad se presenta cada articulo y su cantidad.
+
+Estructura relacional:
+
+Un articulo tiene  1 unidad de presentación.
+
+
+Ayuda:
+
+Agregar una unidad: Haga click en el boton “Agregar unidad” o “Ctrl + A”, ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar una unidad. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la unidad sera almacenada en el sistema.
+
+Modificar una unidad: Haga click derecho sobre la fila de la tabla correspondiente a la unidad que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la unidad a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la unidad sera modificada y almacenada en el sistema.
+
+Eliminar una unidad:  Haga click derecho sobre la fila de la tabla correspondiente a la unidad que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmación de eliminación de la unidad. Si desea cancelar esta opción, simplemente cierre esta ventana de confirmación haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminación de la información de dicha unidad.
+
+Consultar una unidad: Haga click derecho sobre la fila de la tabla correspondiente a la unidad que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la unidad.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar unidad: click en el boton “agregar unidad”, se despliega la ventana modal. Se ingresan los datos de la unidad y se hace click en aceptar. (Funcionando perfecto, se ingresa una unidad al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya unidades registrados con un mismo nombre o un mismo código al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+
+2) Modificar unidad: click derecho sobre la fila de la unidad que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la unidad a ser modificada. Se modifican algunos datos del unidad  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya unidades registrados con un mismo  mismo nombre o un mismo código al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila de la unidad que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta unidad en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este unidad (existentes actualmente en el sistema) como por ejemplo: articulos. En caso de que existan relaciones de articulos con esta unidad, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

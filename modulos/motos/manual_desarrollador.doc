@@ -1,0 +1,57 @@
+﻿Modulo: Motos.
+
+Descripción:  Módulo  encargado de gestionar la información del listado de motos existentes en el sistema.
+ Modulo utilizado en los modulos de compra, de venta y de articulos. En los modulos de compra y de venta
+ su función es cargar el catalogo perteneciente a cada moto. En el modulo de articulos es almacenar la 
+ relación articulo-motos. Pues un articulo sirve principalmente a una moto, pero a su vez puede servir a varias motos.
+ Este modulo tambien se relaciona con el modulo de "Lineas" ya que una moto pertenece a una linea.
+
+Clases: Moto.
+
+Tablas: 
+fom_motos: almacena la información de una moto.
+
+
+Estructura relacional:
+
+Un articulo sirve a 1 .. * motos.(cada articulo esta relacionado mínimo a una moto)
+Una moto pertenece a 1 linea (1..1  motos - lineas)
+
+Relacion con modulos externos:
+
+articulos.id_moto
+articulo_moto.id_moto
+
+
+Ayuda:
+Agregar una moto: Haga click en el boton “Agregar moto” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar una moto. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la moto sera almacenada en el sistema.
+
+Modificar una moto: Haga click derecho sobre la fila de la tabla correspondiente a la moto que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la moto a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la moto sera modificada y almacenada en el sistema.
+
+Eliminar una moto:  Haga click derecho sobre la fila de la tabla correspondiente a la moto que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la moto. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de esta moto.
+
+Consultar una moto: Haga click derecho sobre la fila de la tabla correspondiente a la moto que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la moto.
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar moto: click en el boton “agregar moto”, se despliega la ventana modal. Se ingresan los datos de la moto y se hace click en aceptar. (Funcionando perfecto, se ingresa una moto al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya motos registradas con un mismo nombre en la misma linea donde se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Se carga una imagen y un catálogo en el formulario de ingreso de motos. Al consultar la moto ingresada, la imagen y el catalogo funcionan y coinciden con los que se cargaron previamente. (Funcionando perfectamente)
+
+
+2) Modificar moto: click derecho sobre la fila de la moto que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la moto a ser modificada. Se modifican algunos datos de la moto  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya motos registradas con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Se modifica la imagen y el catálogo en el formulario de modificación de motos. Al consultar la moto modificada, la imagen y el catalogo funcionan y coinciden con los que se modificaron previamente. (Funcionando perfectamente)
+
+
+3.0) Eliminar: click derecho sobre la fila del moto que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta moto en la BD, tambien se debe eliminar la imagen perteneciente a la moto y su catalogo. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a esta moto (existentes actualmente en el sistema) como por ejemplo: Articulos, (articulos_moto). En caso de que un articulo tenga registros relacionados a esta moto, el sistema debera notificar al usuario de dicha situacion.
+
+4.0)Consultar: click derecho sobre la fila de la moto que desea consultar, luego hacer click en “consultar”, se despliega la ventana modal con el formulario que contiene la información de la moto a consultar(Funciona perfectamente). 

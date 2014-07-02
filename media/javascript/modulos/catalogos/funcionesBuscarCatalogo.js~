@@ -1,0 +1,32 @@
+
+    $('#textoBuscarMoto').live('click', function(){
+        $("#contenedorBusquedaMoto").slideDown('fast');
+        $("#contenedorBusquedaLinea").slideUp('fast');
+    });
+    
+    $('#textoBuscarLinea').live('click', function(){
+        $("#contenedorBusquedaLinea").slideDown('fast');
+        $("#contenedorBusquedaMoto").slideUp('fast');        
+    });    
+
+
+
+    /*Funcion que es lanzada sobre el evento selected del plugin autocomplete sobre el
+     *campo de seleccionar articulos en una factura, esto para el precio de venta*/
+    $(".campoTextoBusquedaCatalogos").bind("autocompleteselect", function( event, ui) {      
+        var item = ui.item.value;
+        var patron = ui.item.patron;
+
+        $.ajax({
+            type:"POST",
+            url:"/ajax/catalogos/mostrarTablaCatalogos",
+            dataType:"json",
+            data: {
+                item: item,
+                patron: patron
+            },
+            success:procesaRespuesta
+        });
+        
+        
+    });  

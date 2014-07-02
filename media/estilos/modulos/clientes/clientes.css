@@ -1,0 +1,13 @@
+.descripcion-cliente{
+    padding-left: 15px !important;
+    text-align: left !important;
+    width: 35% !important;
+}
+
+.nombre-contacto{
+    width: 12% !important;
+}
+
+.apellido-contacto{
+    width: 12% !important;
+}

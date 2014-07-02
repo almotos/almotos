@@ -1,0 +1,42 @@
+.claseContenedorUltimos{
+    margin-top: 10px;
+    
+}
+
+.claseContenedorUltimos .claseTextoUltimos{
+    font-weight: bolder;
+    font-size: 1.2em;
+}
+
+.textoRangoPersonalizado{
+    margin-left: 150px;
+    line-height: 20px;
+}
+
+.wrapper{
+    width: 60%;
+    min-width: 600px;
+    margin-left: 5%;
+}
+
+.contenedorCuadreCaja{
+    margin-top: 20px;
+}
+
+.checkFiltroCaja{
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.checkFiltroCaja > span{
+    font-weight: bolder;
+}
+
+.contenedorSelectorCajas{
+    margin-top: 20px;
+}
+
+.wrapperBotonGenerar{
+    display: block;
+    margin-top: 20px;
+}

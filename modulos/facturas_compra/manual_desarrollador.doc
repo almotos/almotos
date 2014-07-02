@@ -1,0 +1,62 @@
+﻿Modulo: Facturas de compra.
+
+Descripción: modulo encargado de gestionar la información de las facturas de compra  registradas en el sistema. En este módulo se pueden  consultar o "modificar" la información de las facturas de compra que se utilizan en el negocio. Por factura de compra nos referimos a las facturas que genera un proveedor (para el proveedor es una factura de venta) en el momento en el que se le realiza una compra de mercancia. Este módulo básicamente muestra el listado de todas las facturas de compra registradas en el sistema, y permite el tratamiento de la información de las mismas, habilitando opciones como poder agregar notas debito o credito sobre una factura, poder anexar a una factura su soporte digital, es decir, poder anexar una copia digital de la factura original que fue generada por el proveedor, etc.
+
+Clases: Factura de compra, Notas Debito, Notas credito.
+
+Tablas: 
+fom_facturas de compra: almacena la información de las facturas de compra.
+fom_articulos_factura_compra: almacena la información de los articulos que aparecen en una factura de compra.
+
+nota: este modulo trabaja en relación directa con el módulo compra de mercancia, pues es en este donde se introduce la información que alimenta este módulo.
+
+Estructura relacional:
+
+Una factura tiene tiene 1..* articulos.
+
+Una factura de compra tiene 1..* notas debito
+Una factura de compra tiene 1..* notas crédito
+
+Una nota crédito tiene 0 ... * articulos modificados
+Una nota débito tiene 0 ... * articulos modificados
+
+
+Ayuda:
+Agregar una factura de compra: leer la documentación del módulo compras de mercancia.
+
+Modificar una factura de compra: Haga click derecho sobre la fila de la tabla correspondiente a la factura de compra que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal en la que aparecen tres pestañas, en la primera aparece un resumen básico de la información de la factura de compra, en la segunda pestaña aparece el formulario para cargar la copia de la factura digital, en el tercero aparece el formulario para poder cambiar la fecha de la factura en caso de que haya habido un error al introducirla. Queda por ser determinado el comportamiento del sistema cuando se introduce una factura con datos erroneos y esta se desea modificar, la mejor opcion seria una nota credito o debito y agregarle una nota especial que aclare que no fue producida por el proveedor, sino por un error de ingreso de datos.
+
+
+Eliminar una factura de compra:  Haga click derecho sobre la fila de la tabla correspondiente a la factura de compra que desea eliminar ("inactivar"), se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de inactivación de la factura de compra. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la inactivación de dicha factura de compra.
+
+Consultar una factura de compra: Haga click derecho sobre la fila de la tabla correspondiente a la factura de compra que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal en la cual aparecen tres pestañas. En la primera pestaña se muestra la información de la factura de compra incluyendo el listado de articulos comprados con esa factura de compra. En la segunda pestaña aparecen las notas credito asociadas a la factura que se esta consultando, y en la tercera pestaña aparecen las notas debito asociadas a la factura que esta siendo consultada.
+
+Agregar una nota credito: Haga click derecho sobre la fila de la tabla correspondiente a la factura de compra que desea agregarle la nota crédito, se mostrara un menu con diferentes opciones, haga click en "+ nota crédito", aparecerá una ventana modal con el formulario para introducir la nota crédito, dicho formulario permite ingresar las cantidades de dinero a modificar y así mismo permite modificar las cantidades de los articulos introducidos, de esta forma si la nota credito debe modificar cantidades de articulos, se modifica también el inventario.
+
+Agregar una nota débito: Haga click derecho sobre la fila de la tabla correspondiente a la factura de compra que desea agregarle la nota débito, se mostrara un menu con diferentes opciones, haga click en "+ nota débito", aparecerá una ventana modal con el formulario para introducir la nota débito, dicho formulario permite ingresar las cantidades de dinero a modificar y así mismo permite modificar las cantidades de los articulos introducidos, de esta forma si la nota débito debe modificar cantidades de articulos, se modifica también el inventario.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar factura de compra: leer la documentación del módulo compras de mercancia.
+
+2) Modificar factura de compra: click derecho sobre la fila de la factura de compra que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con las tres pestañas. (Funcionando perfecto)
+
+2.1) En la segunda pestaña se carga la copia de la factura digital emitida por el proveedor. (Funcionando perfectamente, se carga el archivo correctamente)
+
+2.2)Si el archivo no es de un formato permitido, el sistema no permite la carga del mismo (Funcionando perfectamente, el sistema valida que el archivo sea de un tipo valido ("doc", "docx", "pdf", "ppt", "png", "pps", "jpeg", "xls"), etc, si el archivo es invalido el sistema mostrará una advertencia ).
+
+2.3) En la tercera pestaña se muestra el formulario para cambiar la fecha de la factura. (Funcionando perfectamente, se cambia la fecha de la factura correctamente)
+
+2.4)Si se trata de ingresar una fecha vacia, el sistema lanza una advertencia.
+
+2.5)Si se trata de ingresar una formato de fecha invalido, el sistema lanza una advertencia.
+
+
+
+3.0) Eliminar (inactivar): click derecho sobre la fila de la factura de compra que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe marcar como inactivo el registro de esta factura.

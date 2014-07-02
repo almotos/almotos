@@ -1,0 +1,43 @@
+/* 
+    Document   : resoluciones
+    Created on : 9/02/2013, 02:48:27 PM
+    Author     : pablo
+    Description:
+        Asignar los estilos al modulo con su mismo nombre.
+*/
+
+.columna1{
+    width: 120px;
+}
+
+.columna2{
+    width: 35px;
+}
+
+.columna3{
+    width: 50px;
+}
+
+.columna4{
+    width: 40px;
+}
+
+.columna5{
+    width: 40px;
+}
+
+.columna6{
+    width: 50px;
+}
+
+.columna7{
+    width: 50px;
+}
+
+.columna8{
+    width: 50px;
+}
+
+.columna9{
+    width: 35px;
+}

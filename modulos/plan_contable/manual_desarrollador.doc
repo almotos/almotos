@@ -1,0 +1,50 @@
+﻿Modulo: Plan Contable.
+
+Descripción: modulo encargado de gestionar la información de las cuentas contables  registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las cuentas contables que se utilizan en el negocio, ya sea para el almacenamiento de mercancia, o para cualquier otro fin.  En el formulario de “Adicionar un cuenta contable”, a cada  cuenta contable se le debe suministrar la sede en la que esta ubicada, su nombre y una ubicación descriptiva (ejemplo: cuenta contable del segundo piso). Tambien deberá especificarse si la cuenta contable a ingresar esta catalogada como la cuenta contable principal de la sede, pues la idea es que cada sede tenga una y solo una cuenta contable principal. Este modulo será utilizado mayormente por los modulos de inventario de articulos(Para mantener el orden de los inventarios)
+
+Clases: Cuenta Contable.
+
+Tablas: 
+fom_cuentas contables: almacena la información de una cuenta contable.
+fom_inventarios: almacena en que cuenta contable se encuentra cada articulo y su cantidad.
+
+Estructura relacional:
+
+Una sede tiene tiene 0..* cuentas contables.(cada cuenta contable esta relacionada con una sede “cuenta contable.id_sede”)
+fom_movimientos_mercancia : almacena los registros historicos de los movimientos de mercancia entre cuentas contables, almacenando tanto la cuenta contable de origen como la cuenta contable de destino.
+fom_inventarios = Aquí se almacena el articulo, la cantidad y la cuenta contable donde se encuentra.
+
+
+
+Ayuda:
+Agregar un cuenta contable: Haga click en el boton “Agregar cuenta contable” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un cuenta contable. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la cuenta contable sera almacenada en el sistema.
+
+Modificar una cuenta contable: Haga click derecho sobre la fila de la tabla correspondiente a la cuenta contable que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la cuenta contable a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la cuenta contable sera modificada y almacenada en el sistema.
+
+
+Eliminar una cuenta contable:  Haga click derecho sobre la fila de la tabla correspondiente a la cuenta contable que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la cuenta contable. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha cuenta contable.
+
+Consultar una cuenta contable: Haga click derecho sobre la fila de la tabla correspondiente a la cuenta contable que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la cuenta contable.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar cuenta contable: click en el boton “agregar cuenta contable”, se despliega la ventana modal. Se ingresan los datos de la cuenta contable y se hace click en aceptar. (Funcionando perfecto, se ingresa una cuenta contable al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cuentas contables registrados con un mismo nombre al cual se desea ingresar en la misma sede. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Si la cuenta contable a ingresar fue marcada como principal y previamente existia una cuenta contable en la misma sede marcada como principal, esta debe ser marcada como secundaria, permitiendo que la cuenta contable recien ingresada  sea la unica cuenta contable principal en esta sede.
+
+
+2) Modificar cuenta contable: click derecho sobre la fila de la cuenta contable que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la cuenta contable a ser modificada. Se modifican algunos datos del cuenta contable  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cuentas contables registrados con un mismo  mismo nombre al cual se desea modificar en la misma sede. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Si la cuenta contable a modificar fue marcada como principal y previamente existia una cuenta contable en la misma sede marcada como principal, esta debe ser marcada como secundaria, permitiendo que la cuenta contable recien modificada  sea la unica cuenta contable principal en esta sede.
+
+3.0) Eliminar: click derecho sobre la fila de la cuenta contable que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta cuenta contable en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este cuenta contable (existentes actualmente en el sistema) como por ejemplo: Inventarios o movimientos de mercancia. En caso de que existan relaciones de inventario con esta cuenta contable, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

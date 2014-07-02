@@ -1,0 +1,42 @@
+﻿Modulo: Acciones.
+
+Descripción: 
+Módulo encargado de la gestión de las acciones o "botones" de cada uno de los módulos, es decir, todos y cada uno de los botones que se encuentran en los módulos deben ser registrados en este modulo para que estos registros posteriormente sean utilizados cuando se otorgue privilegios a un determinado usuario sobre un determinado modulo. Ejemplo: en el módulo "Países" existen los botones: "Adicionar, Consultar, Modificar y Eliminar", cada uno de estos botones deben estar registrados en el módulo "Acciones" ingresando 1= a que  módulo pertenece, 2= el nombre de la acción, 3= el nombre de la acción para el menú de privilegios. Este modulo será utilizado mayormente por los modulos de privilegios.
+
+Clases: Acción.
+
+Tablas: 
+fom_componentes_modulos: almacena la información de una acción.
+
+Estructura relacional:
+
+Una módulo tiene  1..* acciones.(cada acción representa un botón)
+
+Ayuda:
+Agregar un acción: Haga click en el boton “Adicionar acción” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un acción. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la acción sera almacenada en el sistema.
+
+Modificar una acción: Haga click derecho sobre la fila de la tabla correspondiente a la acción que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la acción a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la acción sera modificada y almacenada en el sistema.
+
+
+Eliminar una acción:  Haga click derecho sobre la fila de la tabla correspondiente a la acción que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la acción. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha acción.
+
+Consultar una acción: Haga click derecho sobre la fila de la tabla correspondiente a la acción que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la acción.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar acción: click en el boton “adicionar acción”, se despliega la ventana modal. Se ingresan los datos de la acción y se hace click en aceptar. (Funcionando perfecto, se ingresa una acción al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya acciones registrados con un mismo nombre al cual se desea ingresar en la misma sede. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar acción: click derecho sobre la fila de la acción que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la acción a ser modificada. Se modifican algunos datos del acción  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya acciones registradas con un mismo  mismo nombre al cual se desea modificar en el mismo modulo (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila de la acción que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta acción en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este acción (existentes actualmente en el sistema) como por ejemplo: Inventarios o movimientos de mercancia. En caso de que existan relaciones de inventario con esta acción, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

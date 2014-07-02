@@ -1,0 +1,23 @@
+$(document).ready(function(){
+
+$("#boton_pruebas").click(function(e){
+  e.preventDefault();
+  var nombre 	= $("#nombre_prueba").val();
+  var apellido 	= $("#apellido_prueba").val();
+  var telefono 	= $("#telefono_prueba").val();
+  if(nombre == 0){
+    alert("Nombre esta vacio");
+    
+  }else if(apellido == 0){
+    alert("Apellido esta vacio");
+    
+  }else if(telefono == 0){
+    alert("Telefono esta vacio");
+    
+  }else{
+  alert("Nombre = " + nombre + " Apellido = " + apellido + " Telefono = " + telefono);
+  
+  }
+});
+  
+});

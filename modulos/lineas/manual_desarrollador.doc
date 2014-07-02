@@ -1,0 +1,43 @@
+﻿Modulo: Lineas.
+
+Descripción: modulo encargado de gestionar la información de las lineas  registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las lineas que se utilizan en el negocio.  En el formulario de “Adicionar una linea”, a cada  linea se le debe suministrar su información básica y también posee la opción de anexar una imágen. Este modulo será utilizado mayormente por el modulos de articulos
+
+Clases: Linea.
+
+Tablas: 
+fom_lineas: almacena la información de una linea.
+
+Estructura relacional:
+
+Un articulo tiene 0...1 linea.
+
+Ayuda:
+
+Agregar un linea: Haga click en el boton “Agregar linea” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un linea. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la linea sera almacenada en el sistema.
+
+Modificar una linea: Haga click derecho sobre la fila de la tabla correspondiente a la linea que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la linea a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la linea sera modificada y almacenada en el sistema.
+
+Eliminar una linea:  Haga click derecho sobre la fila de la tabla correspondiente a la linea que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la linea. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha linea.
+
+Importar datos: Haga click en el botón “Subir Archivo” ubicado en la parte superior izquierda de la pantalla justo al lado del botón  “Agregar linea” .  Se desplegara una ventana modal con el formulario que contiene los campos para realizar la importación de los datos. Lo primero que debe hacer es cargar el archivo, despues debe seleccionar las columnas con el campo que desea ingresar. Haga uso de la ayuda ubicada en la pestaña “Ayuda”.
+
+Consultar una linea: Haga click derecho sobre la fila de la tabla correspondiente a la linea que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la linea.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar linea: click en el boton “agregar linea”, se despliega la ventana modal. Se ingresan los datos de la linea y se hace click en aceptar. (Funcionando perfecto, se ingresa una linea al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya lineas registrados con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2) Modificar linea: click derecho sobre la fila de la linea que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la linea a ser modificada. Se modifican algunos datos del linea  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya lineas registrados con un mismo  mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila de la linea que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta linea en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este linea (existentes actualmente en el sistema) como por ejemplo: articulos. En caso de que existan relaciones de articulos con esta linea, el sistema deberá notificar al usuario de dicha situación y no permitir la eliminación del registro.
+
+4)Importar datos desde un archivo xls: Haga click en el botón “Subir Archivo” ubicado en la parte superior izquierda de la pantalla justo al lado del botón  “Agregar linea” .  Se desplegara una ventana modal con el formulario que contiene los campos para realizar la importación de los datos. Cargue el archivo “prueba_importación”, seleccione las columnas y haga click en “aceptar”. Funcionando perfectamente.

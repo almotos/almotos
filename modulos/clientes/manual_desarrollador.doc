@@ -1,0 +1,82 @@
+﻿Modulo: Clientes.
+
+Descripción: modulo encargado de gestionar la información de los clientes  registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los clientes del negocio.  En el formulario de “Adicionar un cliente”, a cada  cliente se le debe suministrar la información basica, como por ejemplo su nit o identificacion, tipo de persona, maximo cupo de credito etc. Tambien se le debe suministrar como minimo la informacion de un contacto y de una sede. Posteriormente se le pueden agregar mas contactos a un cliente y mas sedes. Este modulo será utilizado mayormente por los modulos de ventas, de inteligencia de negocios y los modulos contables.
+
+
+dato: la tabla contactos_cliente  almacena 2 campos llaves, el id_cliente,  y el id_persona (que se relaciona con la tabla personas).
+asi que para traer los datos de un contacto, se debe consultar a la persona que esta relacionada con este contacto.
+
+
+Clases: Cliente.
+
+Tablas: 
+fom_clientes: almacena la información de un cliente como por ejemplo: nombre, nit, tipo de persona, etc.
+fom_contactos_cliente: almacena la información de los contactos (personas) de dicho cliente.
+fom_sedes_cliente: almacena la información de cada una de las sedes que pueda tener este cliente. 
+
+Estructura relacional:
+
+Un cliente tiene tiene 1..* contactos.
+
+Un cliente tiene tiene 1..* sedes.
+
+Un cliente tiene tiene 1..* facturas de venta.
+
+Tambien se relaciona con el modulo Factura de Venta y sus modulos integrados como son: Notas debito|credito clientes, facturas de venta.
+
+Un cliente tiene tiene 1..* facturas de venta en el sistema(para el cliente serian facturas de compra).
+
+Ayuda:
+Agregar un cliente: Haga click en el boton “Agregar cliente” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un cliente. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cliente sera almacenada en el sistema.
+
+Modificar un cliente: Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al cliente a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cliente sera modificada y almacenada en el sistema.
+Nota: en el formulario de modificacion de un cliente, se muestran las listas con los contactos y las sedes . Para modificar o eliminar alguno de estos registros pertenecientes a el cliente, haga click en la imagen del “lapiz”(Modificar) o en la imagen de la “X”(eliminar).
+
+Eliminar un cliente:  Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del cliente. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de este cliente.
+
+
+Consultar un cliente: Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al cliente.
+
+Adicionar otra sede del cliente: En caso de que un cliente tenga mas de una sede, esta informacion tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea agregarle la sede, se mostrara un menu con diferentes opciones, haga click en “Adicionar sede”. Se desplegara una ventana modal con el formulario de ingreso de datos de la sede. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva sede para este cliente sera almacenada en el sistema.
+
+Adicionar otro contacto al cliente: En caso de que un cliente tenga mas de un contacto con el cual se tenga relacion en el negocio, la informacion de estos otros contactos tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea agregarle el nuevo contacto, se mostrara un menu con diferentes opciones, haga click en “Adicionar contacto”. Se desplegara una ventana modal con el formulario de ingreso de datos del contacto. El sistema tiene ya almacenada informacion de ciertas personas, si este contacto que usted desea ingresar existe actualmente en el sistema (Ya sea porque esta persona trabaja para varios clientes, o puede ser tambien un proveedor, empleado, etc), usted podra verlo en la lista desplegable que  muestra el listado de personas a medida que se ingresan los datos del documento de identificacion. Si usted selecciona una persona de las existentes, todos los campos seran llenados con la informacion de esta persona, pero aun asi, le permite si lo desea agregar o modificar nueva informacion. Si esta persona no existe en el sistema, ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del nuevo contacto para este cliente  sera almacenada en el sistema.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar cliente: click en el boton “agregar cliente”, se despliega la ventana modal. Se ingresan los datos del cliente, del contacto principal, de la sede y se hace click en aceptar. (Funcionando perfecto, se ingresa un cliente al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya clientes registrados con un mismo identificador, o un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar cliente: click derecho sobre la fila del cliente que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del cliente a ser modificado. Se modifican algunos datos del cliente, del contacto principal, de la sede principal  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya clientes registrados con un mismo nit, o un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3)Adicionar sede. click derecho sobre la fila del cliente que desea agregarle la sede, luego hacer click en “Agregar sede”, se despliega la ventana modal con el formulario que contiene los campos para agregar la sede. Se ingresan los datos de la sede y se hace click en aceptar. (Funcionando perfecto)
+
+3.1) Adicionar sede con ventana modal de consulta y tabla de sedes visible.(Funciona perfectamente)
+
+3.2) Adicionar sede con ventana modal de modificacion y tabla de sedes visible.(Funciona perfectamente)
+
+3.3) Modificar sede. (Funciona perfectamente)
+
+3.4) Eliminar una sede. (Funciona perfectamente)
+
+
+4)Adicionar contacto. (Funciona perfectamente)
+
+4.1) Adicionar contacto con ventana modal de consulta y tabla de contactos visible. (Funciona perfectamente)
+
+4.2) Adicionar contacto con ventana modal de modificacion y tabla de contactos visible. (Funciona perfectamente)
+
+4.3) Modificar un contacto. (Funciona perfectamente)
+
+4.4) Eliminar un contacto. (Funciona perfectamente)
+
+
+6.0) Eliminar: click derecho sobre la fila del cliente que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+6.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+6.2) se confirma la eliminacion. Se deben eliminar de las tablas sedes_cliente y contactos cliente, todos los registros asociados a este cliente. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este cliente (existentes actualmente en el sistema) como por ejemplo: Facturas de venta (pendiente cuentas por pagar a clientes). En caso de tener facturas de venta relacionadas a este cliente, el sistema debera notificar al usuario de dicha situacion.

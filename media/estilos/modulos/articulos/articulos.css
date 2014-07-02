@@ -1,0 +1,83 @@
+.contenedorMenuMoverMercanciaBodega{
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-image: url('../../imagenes/mover_mercancia.png');
+    padding-left: 18px !important;
+    padding: 3px;
+    background-color: #D9DCD9;
+    height: 20px;
+    cursor: pointer;
+}
+
+.contenedorCodigoBarras{
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.botonImprimirBarcodePdf{
+    cursor: pointer !important;
+    margin-left: 25px;
+    margin-top: 15px;
+}
+
+.descripcion-articulo{
+    padding-left: 15px !important;
+    text-align: left !important;
+    width: 35% !important;
+}
+
+.contenedorKardex{
+    height: auto;
+    min-height: 320px;
+    border: 1px solid #DDD;
+    margin: 5px;
+    overflow-y: auto;
+}
+
+.parrafoMotoAplicacion {
+  border-bottom: 1px dotted #E0E0E0;
+  box-shadow: 0 0 3px #DDDDDD;
+  padding: 10px;
+}
+
+.borrarMotoAplicacion {
+  background-color: #FFFFFF;
+  border: 1px dotted #DDDDDD;
+  color: #0078AE;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-top: -5px;
+  padding: 1px;
+  position: absolute;
+  right: 5px;
+}
+
+.borrarMotoAplicacion:hover{
+    border: 1px dotted #DDD;
+    font-size: 1em;
+    color: #fff;
+    background-color: #58ACFA;    
+}
+
+.ayudaPanelMotosAplicacion{
+    float: right !important;
+    
+}
+
+.graficoBarras{
+    margin: 20px auto;
+    border: 1px solid #DDD;
+}
+
+.contenedorListaBodegasMovimiento{
+    margin: 5px;
+    border: 2px dashed #DDD;
+    padding: 5px !important;
+    overflow-y: auto;
+    height: 150px;
+}
+
+.tablaRegistros td.cantidad,
+.tablaRegistros th.cantidad{
+    display: none;
+}

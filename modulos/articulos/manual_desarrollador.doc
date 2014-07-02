@@ -1,0 +1,118 @@
+﻿Modulo: Articulos.
+
+Descripción:  Módulo encargado de gestionar la información de los artículos que se encuentran registrados en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevos articulos, la modificación de los articulos existentes en el sistema, la inactivación y la eliminación de los articulos,  previa revisión de la integridad refrencial de la Base de datos. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de los articulos.
+-Conocer el stock de un determinado articulo por bodega.
+-Realizar movimientos de mercancia entre bodegas.
+-Imprimir códigos de barra para los articulos.
+-Realizar una importación de información de articulos a través de un archivo xls.
+-Revisar el kardex de un determinado articulo.
+-Ver la información economica de un determinado articulo (ultimo precio de compra, precio promedio de compra, de venta, etc.).
+
+
+Clases: Articulo, ArticulosMoto.
+
+Tablas relacionadas al modulo: 
+
+fom_articulos: almacena la información de los articulos.
+fom_articulos_factura_compra: almacena los articulos existentes en una factura de compra.
+fom_articulos_factura_temporal_compra: almacena los articulos existentes en una factura temporal de compra.
+fom_articulos_factura_temporal_venta: almacena los articulos existentes en una factura temporal de venta.
+fom_articulos_factura_venta: almacena los articulos existentes en una factura de venta.
+fom_articulos_modificados_ncp: almacena los articulos que fueron modificados en una nota de credito a un proveedor.
+fom_articulos_modificados_ndp: almacena los articulos que fueron modificados en una nota de debito a un proveedor.
+fom_articulos_modificados_ncc: almacena los articulos que fueron modificados en una nota de credito a un cliente.
+fom_articulos_modificados_ndc: almacena los articulos que fueron modificados en una nota de debito a un cliente.
+fom_articulos_orden_compra: almacena los articulos existentes en una orden de compra.
+fom_articulos_cotizacion: almacena los articulos existentes en una cotización.
+fom_articulos_moto: almacena la relacion articulo moto (a que motos aplica un determinado articulo).
+fom_inventarios: almacena la información de existencias de un determinado articulo por bodega.
+fom_movimientos_mercancia: almacena el historial de información de movimientos de mercancia entre bodegas.
+
+Estructura relacional:
+
+Una factura de compra tiene  1..* articulos.
+Una factura de venta tiene  1..* articulos.
+Una factura temporal de compra tiene  1..* articulos.
+Una factura temporal de venta tiene  1..* articulos.
+Una cotización tiene  1..* articulos.
+Una orden de compra tiene  1..* articulos.
+Una nota crédito|debito de clientes|proveedores tiene 0...* articulos modificados.
+Un articulo aplica para 1...* motos
+Inventarios tiene 1...* articulos
+Movimiento de mercancia tiene 1...1 articulos
+
+
+
+
+
+
+
+
+
+
+
+
+Ayuda:
+
+Agregar un articulo: Haga click en el boton “Agregar articulo” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal que contiene varias pestañas. En cada una de las pestañas hay campos pertenecientes al  formulario que contiene los datos para ingresar un articulo. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion).  En la primera pestaña se encuentran los campos para ingresar los datos básicos del formulario incluida la posibilidad de anexar dos imágenes por articulo. En la segunda pestaña se encuentra la información de aplicación del articulo, haga caso de la ayuda que se encuentra en el campo para  agregar las motos a las que aplica un determinado articulo. En la tercera pestaña se encuentran los campos para agregar los precios de venta del articulo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del articulo sera almacenada en el sistema.
+
+Modificar un articulo: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal que contiene varias pestañas. En cada una de las pestañas hay campos pertenecientes al formulario que contiene los campos con los datos pertenecientes al articulo a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del articulo sera modificada y almacenada en el sistema.
+
+
+Eliminar un articulo:  Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del articulo. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de este articulo.
+
+Consultar un articulo: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al articulo.
+
+Importar datos: Haga click en el botón “Subir Archivo” ubicado en la parte superior izquierda de la pantalla justo al lado del botón  “Agregar linea” .  Se desplegara una ventana modal con el formulario que contiene los campos para realizar la importación de los datos. Lo primero que debe hacer es cargar el archivo, despues debe seleccionar las columnas con el campo que desea ingresar. Haga uso de la ayuda ubicada en la pestaña “Ayuda”.
+
+Movimiento de mercancia: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea moverle existencias de una bodega a otra, se mostrara un menu con diferentes opciones, haga click en “Movimiento mercancia”.  Se desplegara una ventana modal con el formulario para llevar a cabo dicha acción. Son 4 pasos que debe seguir para llevar a cabo exitosamente el movimiento de existencias de un articulo entre bodegas. Por favor siga los pasos en orden y haga uso de las ayudas.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar articulo: click en el boton “agregar articulo”, se despliega la ventana modal. Se ingresan los datos del articulo junto con  sus imágenes, a que motos aplica y los precios. (Funcionando perfecto, se ingresa un articulo al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar un subgrupo o una marca directamente desde el formulario de “agregar articulos”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de ingreso de datos).
+
+1.3)Se valida el formato de la imágenes a ser cargadas que sean de un tipo permitido(jpg, png).
+
+1.4)En la segunda pestaña se permite agregar a que motos aplica ese articulo, aquí se valida:
+	*Que las motos a ingresar no esten ya en el listado.
+	*El arrastrar y soltar de la lista de motos funciona perfectamente.
+	*La primera moto en el listado es la moto principal del articulo.
+
+
+2) Modificar articulo: click derecho sobre la fila del articulo que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del articulo a ser modificado. Se modifican algunos datos del articulo y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. Tambien se valida que no existan ya articulos registrados con un mismo nombre al cual se desea modificar.. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar una marca o una linea directamente desde el formulario de “modificar articulos”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de modificacion de datos).
+
+2.3)Se valida el formato de la imágenes a ser cargadas que sean de un tipo permitido(jpg, png).
+	*Se valida que al modificar la imagen, sea eliminada la imagen que habia previamente.
+
+2.4)En la segunda pestaña se permite agregar a que motos aplica ese articulo, aquí se valida:
+	*Que las motos a ingresar no esten ya en el listado.
+	*El arrastrar y soltar de la lista de motos funciona perfectamente.
+	*La primera moto en el listado es la moto principal del articulo.
+
+3)Movimiento de mercancia. Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea moverle existencias de una bodega a otra. Se selecciona la bodega de destino, la bodega de origen, la cantidad a mover  y se hace click en el botón “Mover mercancia”. (Funcionando perfecto)
+
+3.1) Validaciones:
+	*Ningún campo vacio.(Funciona perfectamente)
+	*La bodega de origen debe ser diferente a la bodega de destino. (Funcionando perfectamente)
+	*La cantidad a mover es igual o inferior a la cantidad existente en la bodega de origen.
+
+
+4.0) Eliminar: click derecho sobre la fila del articulo que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+4.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+4.2) Se confirma la eliminacion. Se deben eliminar de las tablas articulos_moto, todos los registros asociados a este articulo, es decir, los registros que asociaban a que motos aplicaba el articulo a ser eliminado. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este articulo (existentes actualmente en el sistema) como por ejemplo: articulos_factura_compra, articulos_factura_venta, etc. En caso de tener relaciones en alguna de estas tablas, el sistema debera notificar al usuario de dicha situacion.
+
+5)Importar datos desde un archivo xls: Haga click en el botón “Subir Archivo” ubicado en la parte superior izquierda de la pantalla justo al lado del botón  “Agregar linea” .  Se desplegara una ventana modal con el formulario que contiene los campos para realizar la importación de los datos. Cargue el archivo “prueba_importacion”, seleccione las columnas y haga click en “aceptar”. Funcionando perfectamente.

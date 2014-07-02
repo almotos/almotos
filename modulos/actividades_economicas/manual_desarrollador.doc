@@ -1,0 +1,42 @@
+﻿Modulo: Actividades economicas.
+
+Descripción: Módulo encargado de almacenar los registros con el listado de las actividades economicas realizadas en Colombia según la DIAN. Puede ser utilizado en el módulo de proveedores, para identificarlos o sectorizarlos por la actividad economica que realizan, y de esta forma se aplicarán las retenciones tributarias debidamente. Tambien se almacenará en este modulo el porcentaje  correspondiente al nuevo impuesto existente en Colombia desde Enero del 2013, el RETECREE.  Este modulo será utilizado mayormente por los modulos de contables (Para llevar a cabo las acciones contables tributarias).
+
+Clases: Actividad economica.
+
+Tablas: 
+fom_actividades economicas: almacena la información de una actividad economica.
+
+Estructura relacional:
+
+Un proveedor tiene tiene 1..* actividades economicas.
+
+Ayuda
+
+Agregar una actividad economica: Haga click en el boton “Agregar actividad economica” ubicado en la parte superior derecha de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un actividad economica. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la actividad economica sera almacenada en el sistema.
+
+Modificar una actividad economica: Haga click derecho sobre la fila de la tabla correspondiente a la actividad economica que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la actividad economica a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la actividad economica sera modificada y almacenada en el sistema.
+
+Eliminar una actividad economica:  Haga click derecho sobre la fila de la tabla correspondiente a la actividad economica que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la actividad economica. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha actividad economica.
+
+Consultar una actividad economica: Haga click derecho sobre la fila de la tabla correspondiente a la actividad economica que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la actividad economica.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar actividad economica: click en el boton “agregar actividad economica”, se despliega la ventana modal. Se ingresan los datos de la actividad economica y se hace click en aceptar. (Funcionando perfecto, se ingresa una actividad economica al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya actividades economicas registrados con un mismo nombre al cual se desea ingresar, así mismo se valida que no exista ya una actividad economica con el código DIAN que se va a ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+
+
+2) Modificar actividad economica: click derecho sobre la fila de la actividad economica que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la actividad economica a ser modificada. Se modifican algunos datos del actividad economica  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios  y tambien se valida que no existan ya actividades economicas registrados con un mismo nombre al cual se desea ingresar, asi mismo se valida que no exista ya una actividad economica con el código DIAN que se va a ingresar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila de la actividad economica que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta actividad economica en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este actividad economica (existentes actualmente en el sistema) como por ejemplo: Proveedores. En caso de que existan relaciones de proveedores  con esta actividad economica, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

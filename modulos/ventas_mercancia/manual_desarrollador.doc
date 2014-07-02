@@ -1,0 +1,98 @@
+﻿Modulo: Compras de Mercancia.
+
+Descripción: modulo encargado de gestionar la información relacionada a todo el proceso de compras de mercancia para el negocio. En este módulo se pueden agregar, consultar, eliminar o modificar la información de cada una de las transacciones realizadas en dicho proceso. Este módulo esta directamente relacionado con el módulo de ordenes de compra.
+
+Este módulo también trabaja con las notas debito y crédito que nos puede enviar un proveedor.
+
+dato: este módulo tiene la funcionalidad de guardar facturas temporales, esto significa que a medida que se va generando una factura se va guardando la información de la misma, esto significa que si por algun mótivo se cierra la factura en la que estamos trabajando, esta factura puede ser recuperada facilmente desde la pantalla principal del usuario que la estaba generando.
+
+En resumen este módulo es como tres módulos en uno, el primero y principal seria el módulo de registro de facturas de compra, el segundo sería el módulo de ordenes de compra, y el tercero sería el módulo que se encarga de ir guardando las facturas temporales.
+
+nota: cuando realizamos una factura a partir de una factura temporal y esta factura es finalizada, la factura temporal es inmediatamente removida del sistema. Si se desea remover una factura temporal por el motivo que sea, siempre se puede hacer desde la pantalla pricipal del usuario en donde estas son listadas.
+
+Clases: FacturaCompra, OrdenCompra, NotaCreditoProveedor, NotaDebitoProveedor.
+
+Tablas: 
+fom_facturas_compras: almacena la información de la factura, ejemplo fecha, proveedor, iva, valor flete, etc.
+fom_articulos_factura_compra: almacena la información de los articulos que fueron registrados en dicha factura.
+
+nota: este modulo trabaja con otras cuantas "muchas" tablas, debido a su relacion directa con el módulo de ordenes de co
+mpra y a la funcionalidad de "guardar facturas temporales",  a continuación se listan las otras tablas con las que trabaja este módulo:
+
+tablas de las facturas temporales:
+fom_facturas_temporales_compra
+fom_articulos_facturas_temporales_compra
+
+tablas del módulo de ordenes de compra:
+fom_ordenes_compra
+fom_articulos_orden_compra
+
+nota: tambien se incluyen las tablas que almacenan la información de las notas crédito y de las notas débito. Debido a que las notas debito y crédito pueden afectar los articulos que aparecen en las facturas, hay que guardar estos datos en ciertas tablas, a continuación se listan dichas tablas:
+fom_notas_credito_proveedor
+fom_notas_debito_proveedor
+
+fom_articulos_modificados_ncp (ncp = nota crédito proveedor)
+fom_articulos_modificados_ndp (ndp = nota débito proveedor)
+
+Estructura relacional:
+
+Una factura tiene tiene 1..* articulos.
+
+Una factura temporal tiene tiene 1..* articulos (esto significa que se empiezan a almacenar las facturas en el momento en el que se agrega el primer articulo).
+
+Una orden de compra tiene 1..* articulos.
+
+Una factura de compra tiene 1..* notas debito
+Una factura de compra tiene 1..* notas crédito
+
+Una nota crédito tiene 0 ... * articulos modificados
+Una nota débito tiene 0 ... * articulos modificados
+
+Integridad referencial:
+
+TBD
+
+
+Ayuda:
+
+Ir al módulo:
+primero debe de dirigirse al módulo, dispone de dos opciones. La primera a través del menú principal, click en procesos, Compras, Compra Mercancia, con esto el sistema desplegará el módulo en la misma pestaña donde te encuentras actualmente. La segunda opción es presionando la combinación de teclas Ctrl + F1, se desplegara la ventana modal con un campo de texto donde podras escribir el nombre del módulo al cual te deseas dirigir, en este caso "compra de mercancia", basta solo con escribir unas pocas letras y el sistema autocompletará con las opciones según los módulos disponibles, selecciona la opción "Compra de Mercancia" y el sistema desplegará el módulo en una nueva pestaña del navegador.
+
+Ingresar una factura de compra: En el formulario de ingreso de mercancia ustes podrá ver una especie de tres secciones. Una sección superior compuesta por tres filas de campos, una sección central de color azul donde aparecerá el listado de articulos a ingresar, y una sección inferior con dos filas de campos y el botón "Finalizar factura". Se mencionan los campos a llenar para ingresar una factura siguiendo el orden en el que aparecen en el formulario. Para ingresar una factura de compra primero se debe escoger un proveedor al cual se le va a realizar la compra, (si el proveedor  no se encuentra registrado en el sistema, lo puede registrar haciendo click en el simbolo "+" que se encuentra a la derecha del selector de los proveedores). Seguidamente debe de registrar el "número de factura" que aparece en la factura del proveedor (si no se agrega este número de factura, el sistema solo le permitira realizar una orden de compra). También debe de seleccionar una fecha de compra (por defecto aparece la fecha actual). Debe de escoger la bodega en la cual va a ingresar la mercancia, pero tenga en cuenta que puede cambiar la bodega para cada uno de los articulos en particular desde el listado de ingreso (esto lo hace haciendo click sobre el icono azul, es el último botón de cada fila de los articulos a ingresar). Debe de seleccionar la caja con la cual va a ingresar la mercancia. al final de la fila 2 encuentra tres botones con forma de icono. Ubique el cursor del raton encima de estos iconos y podra ver la ayuda. A continuación se resume la funcionalidad de cada uno de estos botones, mencionandolos en el mismo orden en el que aparecen de izquierda a derecha:
+
+1)Buscar facturas en el sistema: permite buscar facturas en el sistema filtrando por proveedor y por un rango de fechas.
+2)Buscar catalogo moto: permite buscar el catalogo de una moto. Ingrese algunos caracteres en el campo que aparece en el formulario, seleccione una moto de la lista y podrá ver el catálogo de la moto.
+3)Buscar orden de compra: muestra el formulario para buscar ordenes de compra registradas en el sistema (se cataloga a las ordenes de compra como pedidos registrados y que una vez arriva la mercancia, se utiliza este pedido registrado para ingresar la factura de compra al sistema, evitando asi registrar de nuevo toda esta información). click en este boton y aparecera el formulario que permite filtrar por numero de orden, o por proveedor y un rango de fechas.
+
+En la tercera fila, en primer lugar se encuentra el campo para adicionar los articulos a la factura, escribe algún caracter para iniciar la busqueda de un articulo, lo podras buscar por descripción, PLU, o referencia. Al seleccionarlo ya sea haciendo click con el mouse, o moviendose con las flechas del teclado y presionando enter, automáticamente se agregará al listado de articulos (seccion central de coor azul). Si el articulo a ser comprado no existe en el sistema, lo puedes ingresar desde este mismo formulario haciendo click en el simbolo "+" que se encuentra a la derecha del campo para "agregar articulos al listado". Despues se encuentra el boton "Ingresar Varios", este boton sirve para que el sistema muestre el listado general de articulos. Allí podras buscar los articulos que necesites e inclusive parametrizar dichas busquedas (buscar por descripcion, linea, subgrupo, etc.). Una vez tengas en pantalla los articulos que necesitas podras seleccionar varios articulos (haciendo click con el ratón sobre la fila del articulo, veras como cambia de color y queda seleccionada) y agregarlos simultaneamente (haciendo click en el boton ubicado en la parte superior izquierda con el icono "+"). Enseguida de este boton aparece e campo "Descuento general para todos los articulos", en este campo podras ingresar un valor (porcentaje de descuento) y este se aplicará a todos los articulos del listado de articulos a comprar. (Igualmente tienes la opción para cambiar el descuento a cada uno de los articulos en particular desde el listado de articulos). Enseguida encuentras el campo de texto "Porcentaje de ganancia general", ingresa alli un valor (porcentaje de ganancia) y este se aplicará a todos los articulos del listado de articulos a comprar y se verá reflejado en el campo "Precio venta" que aparece en cada una de las filas del listado. (Este valor será el porcentaje de ganancia del articulo respecto a su precio de compra y será el nuevo precio de venta).
+
+En la seccion central aparecen los articulos que se van ingresando para la compra. Dispones de diversas opciones en dicho listado, por favor presta mucha atención a todas las ayudas ofrecidas por el sistema. A medida que vas seleccionando articulos, iran apareciendo en esta sección. En cada una de las filas encuentras primero, el nombre del articulo a ingresar, un campo con la cantidad a comprar (por defecto aparece 1), un campo de "descuento" para aplicar un descuento particular a ese articulo, un campo de precio unitario (por defecto trae el ultimo precio al que fue comprado este articulo), un campo que muestra el subtotal, despues aparecen dos botones, uno con forma de "X" que es para borrar este articulo del listado, y otro con forma de binoculares que sirve para consultar toda la información de ese articulo en particular. Al final del listado aparecen dos campos de texto, el primero es el "porcentaje de ganancia" a ese determinado articulo respecto al precio de venta, es decir, si el precio de venta es 2000 y yo escribo en este campo 10, inmediatamente se modifica el precio de venta a 2200, asi mismo, si yo escribo en el campo "precio de venta" 2200 y el precio de compra fue 2000, inmediatamente se vera reflejado el porcentaje de ganancia que será del 10%. Al final de la fila se encuentra el boton "Mover mercancia a otra bodega". Como se dijo anteriormente, se debe seleccionar una bodega para ingresar la mercancia, esta será la bodega a donde ingresaran todos los articulos en la compra, excepto aquellos donde la bodega a ingresar halla sido modificada. La bodega a ingresar un articulo particular se modifica haciendo click en este ultimo boton (aparece un formulario para seleccionar sede, y bodegas segun la sede), y seleccionando la bodega a la cual desea ingresarlo.
+
+Una vez se tiene el listado total de los articulos a ingresar en la "factura de compra", se deben ingresar los campos de la seccion inferior, primero se encuentra el campo "valor flete", alli se debe ingresar el valor del flete, despues tenemos el campo "Concepto del descuento 1", Ingresa alli el concepto por el cual te realizaron el descuento (Solo ingresar valores si se realizó un descuento). Y en el campo inmediatamente seguido ingresa el valor en porcentaje del descuento (Solo ingresar valores si se realizó un descuento). Aparece tambien el boton "+dcto", click  alli si necesita aplicar más descuentos sobre esta factura y se mostrará otro campo de concepto y otro campo para ingresar el segundo descuento. En la fila final aparece el campo observaciones donde podras ingresar observaciones de dicha factura de compra. Despues esta el campo IVA, por defecto va calculando su valor a medida que se ingresan valores en el formulario (En caso de no coincidir este valor con el que viene en la factura, igualmente puede ser modificado). Por ultimo tenemos un "texto" que muestra el total de la factura, y en la parte inferior izquierda del formulario se encuentra el boton "Fin factura".
+
+Al hacer click en el boton "Fin factura" el sistema despliega un formulario donde podras escoger entre diversas opciones, como por ejemplo imprimir la factura en la impresora POS, o en la impresora normal. Tambien podras escoger si deseas en vez de ingresar la factura al sistema, solamente generar una "Orden de compra" o "pedido al proveedor"(podras generar un archivo PDF el cual podras entregar al provedor para que te traiga los articulos que aparecen en dicho pedido, y una vez el proveedor traiga dicha mercancia, podras buscar en el sistema esta "orden de compra" o "pedido" y generar el ingreso de la factura desde ese "pedido", asi no tendras que ingresar nuevamente toda la factura). 
+
+Otra de las opciones que encontramos en el formulario que se despliega al hacer click en "Fin factura" es escoger el medio de pago, pues segun el medio de pago, se despliegan campos para ingresar los valores correspondientes, por ejemplo, si vamos a pagar una factura por total de 1000, 50% en efectivo, 20% con tarjeta, y 30% a credito, debe existir un tipo de pago algo asi como "Credi-contado efectivo-tarjeta", al seleccionarlo se mostraran los campos para introducir el valor equivalente a cada porcentaje, segun esto, en el campo efectivo se ingresaria 500, en  el campo tajeta 200, y en el campo "credito" 300. Cada uno de estos ingresos afectaran la contabilidad de manera diferente.
+
+Otra de las opciones que encontramos en el formulario que se despliega al hacer click en "Fin factura" es la opcion "Imprimir codigos de barra", si se selecciona, al finalizar la factura el sistema imprimira la cantidad de codigo de barra por la cantidad de cada articulo comprado por cada uno de los articulos comprados, es decir, si compro 10 unidades del articulo A, y 5 del B, el sistema imprimira un PDF con 10 codigos de barra del articulo A y 5 del B.
+
+Modificar Factura: para modificar una "factura de compra" debe de dirigirse al módulo de "facturas de compra", hacer click derecho sobre la fila donde aparece la factura que desea modificar y ver las opciones que alli aparecen.
+
+
+Para ver el resto de ayudas y funcionalidades relacionadas con las facturas de compra debe de dirigirse a la documentación del módulo de "Facturas de compra".
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar factura: Se ingresan los datos de la factura de compra y se hace click en "Fin factura". (Funcionando perfecto, el sistema despliega el formulario para finalizar la factura).
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados).
+
+1.1.1) Si el proveedor no se encuentra registrado en el  sistema, se ingresa haciendo click en el botón "+" ubiacado al lado del selector de proveedores.(Funcionando perfecto, se ingresa el proveedor y los cambios se ven reflejados en el selector de proveedores).
+
+1.1.2)Se busca una factura en el sistema por proveedor y en un rango de fechas (validando que ninguno de los datos del formulario debe de estar vacio). (Funcionando perfecto)
+
+1.1.3)se hace click en "buscar catalogo de moto", se despliega el formulario y se selecciona una moto. (Funcionando perfecto, el autocompletable muestra las motos según lo que escriba el usuario y carga el catálogo)
+
+1.1.4)Se hace click en "cargar orden de compra", se despliega el formulario para buscar la orden, ya sea en busqueda simple (por numero de orden), o busqueda avanzada (por proveedor y entre un rango de fechas). (Funcionando perfecto, se carga la orden de compra y se puede facturar a partir de ella)
+
+*Para ver el resto de la documentación de la interacción del módulo de compras de mercancias por favor dirigirse al módulo de facturas de compras.

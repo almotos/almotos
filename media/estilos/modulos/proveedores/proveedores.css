@@ -1,0 +1,37 @@
+/* 
+    Document   : proveedores
+    Created on : 11/06/2013, 11:06:16 PM
+    Author     : pablo
+    Description:
+        Hoja de estilos con estilos propios del modulo de proveedores.
+*/
+
+#checkAutoretenedor{
+    margin-left: 50px;
+}
+
+#checkRetefuente{
+    margin-left: 65px;  
+}
+
+#checkReteica{
+    margin-left: 45px;  
+}
+
+#checkRetecre{
+    margin-left: 45px;  
+}
+
+.descripcion-proveedor{
+    padding-left: 15px !important;
+    text-align: left !important;
+    width: 35% !important;
+}
+
+.nombre-contacto{
+    width: 12% !important;
+}
+
+.apellido-contacto{
+    width: 12% !important;
+}

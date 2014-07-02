@@ -1,0 +1,82 @@
+﻿Modulo: Oden de compra.
+
+Descripción: modulo encargado de gestionar la información relacionada a Ordenes de compra o pedidos a proveedores que son generadas cuando se va a realizar compra de mercancia dentro del sistema. Podria ser una especie de pedido que generamos en el sistema, el cual permite generar un archivo PDF con la información que se introdujo. Dicho archivo puede ser entregado a el proveedor para que recuerde exactamente nuestro pedido. Una vez el proveedor trae el pedido, podemos buscar la orden de compra con la que realizamos el pedido y generar una factura de compra a partir de esta información, ahorrandonos asi la necesidad de volver a introducir toda esta información.
+
+En este módulo también se listan las ordenes de compra existentes en el sistema, y desde este listado se permite generar una factura de compra a partir de una orden de compra.
+
+dato: este módulo tiene relacion directa con el módulo de compra de mercancia, ya que podemos generar una orden de compra desde el mismo formulario de compra de mercancia.
+
+En resumen para generar una orden de compra se debe realizar el mismo procedimiento como si se fuera a ingresar una compra de mercancia con la única diferencia que no se debe, ni se puede ingresar el número de factura del proveedor, por supuesto porque aun no existe.
+
+Clases: OrdenCompra, FacturaCompra.
+
+Tablas: 
+fom_ordenes_compras: almacena la información de la orden, ejemplo fecha, proveedor, iva, valor flete, etc.
+fom_articulos_orden_compra: almacena la información de los articulos que fueron registrados en dicha orden.
+
+
+Estructura relacional:
+
+Una orden de compra tiene tiene 1..* articulos.
+
+
+Ayuda:
+
+Ir al módulo:
+primero debe de dirigirse al módulo, dispone de dos opciones. La primera a través del menú principal, click en procesos, Compras, Ordenes de compra, con esto el sistema desplegará el módulo en la misma pestaña donde te encuentras actualmente. La segunda opción es presionando la combinación de teclas Ctrl + F1, se desplegara la ventana modal con un campo de texto donde podras escribir el nombre del módulo al cual te deseas dirigir, en este caso "Odenes de compra", basta solo con escribir unas pocas letras y el sistema autocompletará con las opciones según los módulos disponibles, selecciona la opción "Ordenes de compra" y el sistema desplegará el módulo en una nueva pestaña del navegador.
+
+Ingresar una orden de compra: En el formulario de ingreso de mercancia usted debera ingresar los campos como si fuera a ingresar una compra, con la unica excepción del campo número de factura de proveedor (Para mayores detalles ver la documentación del módulo de compra de mercancia).
+
+Al hacer click en el boton "Fin factura" el sistema despliega un formulario donde deberas hacer click en el boton. (podras generar un archivo  el cual podras entregar al provedor para que te traiga los articulos que aparecen en dicho pedido, y una vez el proveedor traiga dicha mercancia, podras buscar en el sistema esta "orden de compra" o "pedido" y generar el ingreso de la factura desde ese "pedido", asi no tendras que ingresar nuevamente toda la factura). 
+
+
+Modificar una orden: Debes dirigirte al módulo de ordenes de compra y hacer click derecho sobre la orden que deseas editar. (Básicamente editar una orden de compra se refiere a facturar desde una orden de compra)
+
+Eliminar un cliente:  Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del cliente. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de este cliente.
+
+
+Consultar un cliente: Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al cliente.
+
+Adicionar otra sede del cliente: En caso de que un cliente tenga mas de una sede, esta informacion tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea agregarle la sede, se mostrara un menu con diferentes opciones, haga click en “Adicionar sede”. Se desplegara una ventana modal con el formulario de ingreso de datos de la sede. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva sede para este cliente sera almacenada en el sistema.
+
+Adicionar otro contacto al cliente: En caso de que un cliente tenga mas de un contacto con el cual se tenga relacion en el negocio, la informacion de estos otros contactos tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea agregarle el nuevo contacto, se mostrara un menu con diferentes opciones, haga click en “Adicionar contacto”. Se desplegara una ventana modal con el formulario de ingreso de datos del contacto. El sistema tiene ya almacenada informacion de ciertas personas, si este contacto que usted desea ingresar existe actualmente en el sistema (Ya sea porque esta persona trabaja para varios clientes, o puede ser tambien un proveedor, empleado, etc), usted podra verlo en la lista desplegable que  muestra el listado de personas a medida que se ingresan los datos del documento de identificacion. Si usted selecciona una persona de las existentes, todos los campos seran llenados con la informacion de esta persona, pero aun asi, le permite si lo desea agregar o modificar nueva informacion. Si esta persona no existe en el sistema, ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del nuevo contacto para este cliente  sera almacenada en el sistema.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar cliente: click en el boton “agregar cliente”, se despliega la ventana modal. Se ingresan los datos del cliente, del contacto principal, de la sede y se hace click en aceptar. (Funcionando perfecto, se ingresa un cliente al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya clientes registrados con un mismo identificador, o un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar cliente: click derecho sobre la fila del cliente que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del cliente a ser modificado. Se modifican algunos datos del cliente, del contacto principal, de la sede principal  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya clientes registrados con un mismo nit, o un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3)Adicionar sede. click derecho sobre la fila del cliente que desea agregarle la sede, luego hacer click en “Agregar sede”, se despliega la ventana modal con el formulario que contiene los campos para agregar la sede. Se ingresan los datos de la sede y se hace click en aceptar. (Funcionando perfecto)
+
+3.1) Adicionar sede con ventana modal de consulta y tabla de sedes visible.(Funciona perfectamente)
+
+3.2) Adicionar sede con ventana modal de modificacion y tabla de sedes visible.(Funciona perfectamente)
+
+3.3) Modificar sede. (Funciona perfectamente)
+
+3.4) Eliminar una sede. (Funciona perfectamente)
+
+
+4)Adicionar contacto. (Funciona perfectamente)
+
+4.1) Adicionar contacto con ventana modal de consulta y tabla de contactos visible. (Funciona perfectamente)
+
+4.2) Adicionar contacto con ventana modal de modificacion y tabla de contactos visible. (Funciona perfectamente)
+
+4.3) Modificar un contacto. (Funciona perfectamente)
+
+4.4) Eliminar un contacto. (Funciona perfectamente)
+
+
+6.0) Eliminar: click derecho sobre la fila del cliente que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+6.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+6.2) se confirma la eliminacion. Se deben eliminar de las tablas sedes_cliente y contactos cliente, todos los registros asociados a este cliente. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este cliente (existentes actualmente en el sistema) como por ejemplo: Facturas de venta (pendiente cuentas por pagar a clientes). En caso de tener facturas de venta relacionadas a este cliente, el sistema debera notificar al usuario de dicha situacion.

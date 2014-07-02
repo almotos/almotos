@@ -1,0 +1,57 @@
+﻿Modulo: Cajas.
+
+Descripción:   Clase encargada de gestionar la información del listado de cajas existentes en el negocio para el proceso de compra y venta. Modulo utilizado en los modulos de compra, de venta y de sus modulos asociados, mostrando en ellos un select con las cajas pertenecientes a la sede con la que inició sesión el usuario. También utilizado en los modulos de administración contable para la generación de reportes.
+
+Clases: Caja.
+
+Tablas: 
+fom_cajas: almacena la información de un caja.
+
+
+Estructura relacional:
+
+Una sede tiene tiene 1..* cajas.(cada caja esta relacionada con una sede)
+fom_cajas.id_sede  ---->  sedes_empresa.id
+
+Relacion con modulos externos:
+
+cotizaciones.id_caja
+facturas_compras.id_caja
+facturas_venta.id_caja
+facturas_temporales_compra.id_caja
+facturas_temporales_venta.id_caja
+ordenes_compra.id_caja
+
+
+Ayuda:
+Agregar una caja: Haga click en el boton “Agregar caja” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar una caja. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la caja sera almacenada en el sistema.
+
+Modificar una caja: Haga click derecho sobre la fila de la tabla correspondiente a la caja que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la caja a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la caja sera modificada y almacenada en el sistema.
+
+
+Eliminar una caja:  Haga click derecho sobre la fila de la tabla correspondiente a la caja que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la caja. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de esta caja.
+
+Consultar una caja: Haga click derecho sobre la fila de la tabla correspondiente a la caja que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la caja.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar caja: click en el boton “agregar caja”, se despliega la ventana modal. Se ingresan los datos de la caja y se hace click en aceptar. (Funcionando perfecto, se ingresa una caja al sistema con los datos adecuados)
+
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cajas registradas con un mismo nombre en la misma sede donde se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Si la caja a ingresar se marca como principal, primero se verifica si existe una caja principal en la sede en la que se va a ingresar. Si no existe, esta es la caja principal. En caso de existir, esta será tambien la caja principal, pero el sistema deberá modificar la caja previamente marcada como principal y modificarla como caja secundaria.
+
+
+2) Modificar caja: click derecho sobre la fila de la caja que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la caja a ser modificada. Se modifican algunos datos de la caja  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cajas registrados con un mismo nit, o un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+
+3.0) Eliminar: click derecho sobre la fila del caja que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de este caja en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este caja (existentes actualmente en el sistema) como por ejemplo: Facturas compra|venta|temporales, cotizaciones, ordenes compra. En caso de que un proveedor tenga cuentas relacionadas a este caja, el sistema debera notificar al usuario de dicha situacion.

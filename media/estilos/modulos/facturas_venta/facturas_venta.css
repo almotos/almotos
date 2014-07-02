@@ -1,0 +1,28 @@
+.contenedorMenuAdicionarNotaCredito{
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-image: url('../../imagenes/nota_factura.png');
+    padding-left: 18px !important;
+    padding: 3px;
+    background-color: #D9DCD9;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+.contenedorMenuAdicionarNotaDebito{
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-image: url('../../imagenes/nota_factura2.png');
+    padding-left: 18px !important;
+    padding: 3px;
+    background-color: #D9DCD9;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+.parrafoTotal{
+    position: absolute;
+    right: 10px;
+}

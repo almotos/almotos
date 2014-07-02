@@ -1,0 +1,122 @@
+﻿Modulo: Articulos.
+
+Descripción:  Módulo encargado de gestionar la información de los artículos que se encuentran registrados en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevos articulos, la modificación de los articulos existentes en el sistema, la inactivación y la eliminación de los articulos, claramente previa revisión de la integridad refrencial de la BD. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de los articulos.
+-Conocer el stock de un determinado articulo por bodega.
+-Realizar movimientos de mercancia entre bodegas.
+-Imprimir códigos de barra para los articulos.
+-Realizar una importación de información de articulos a través de un archivo xls.
+-Revisar el kardex de un determinado articulo.
+-Ver la información economica de un determinado articulo (ultimo precio de compra, precio promedio de compra, de venta, etc.).
+
+
+Clases: Articulo, ArticulosMoto.
+
+Tablas: 
+fom_articulos: almacena la información de los articulos.
+fom_articulos_factura_compra: almacena los articulos existentes en una factura de compra.
+fom_articulos_factura_temporal_compra: almacena los articulos existentes en una factura temporal de compra.
+fom_articulos_factura_temporal_venta: almacena los articulos existentes en una factura temporal de venta.
+fom_articulos_factura_venta: almacena los articulos existentes en una factura de venta.
+fom_articulos_modificados_ncp: almacena los articulos que fueron modificados en una nota de credito a un proveedor.
+fom_articulos_modificados_ndp: almacena los articulos que fueron modificados en una nota de debito a un proveedor.
+fom_articulos_modificados_ncc: almacena los articulos que fueron modificados en una nota de credito a un cliente.
+fom_articulos_modificados_ndc: almacena los articulos que fueron modificados en una nota de debito a un cliente.
+fom_articulos_orden_compra: almacena los articulos existentes en una orden de compra.
+fom_articulos_cotizacion: almacena los articulos existentes en una cotización.
+fom_articulos_moto: almacena la relacion articulo moto (a que motos aplica un determinado articulo).
+fom_inventarios: almacena la información de existencias de un determinado articulo por bodega.
+fom_movimientos_mercancia: almacena el historial de información de movimientos de mercancia entre bodegas.
+
+Estructura relacional:
+
+Una factura de compra tiene  1..* articulos.
+Una factura de venta tiene  1..* articulos.
+Una factura temporal de compra tiene  1..* articulos.
+Una factura temporal de venta tiene  1..* articulos.
+Una cotización tiene  1..* articulos.
+Una orden de compra tiene  1..* articulos.
+Una nota crédito|debito de clientes|proveedores tiene 0...* articulos modificados.
+Un articulo aplica para 1...* motos
+Inventarios tiene 1...* articulos
+Movimiento de mercancia tiene 1...1 articulos
+
+
+
+
+
+
+
+
+
+
+
+
+Ayuda:
+Agregar un articulo: Haga click en el boton “Agregar articulo” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal que contiene varias pestañas. En cada una de las pestañas hay campos pertenecientes al  formulario que contiene los datos para ingresar un articulo. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion).  En la primera pestaña se encuentran los campos para ingresar los datos básicos del formulario incluida la posibilidad de anexar dos imágenes por articulo. En la segunda pestaña se encuentra la información de aplicación del articulo, haga caso de la ayuda que se encuentra en el campo para  agregar las motos a las que aplica un determinado articulo. En la tercera pestaña se encuentran los campos para agregar los precios de venta del articulo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del articulo sera almacenada en el sistema.
+
+Modificar un articulo: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal que contiene varias pestañas. En cada una de las pestañas hay campos pertenecientes al formulario que contiene los campos con los datos pertenecientes al articulo a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del articulo sera modificada y almacenada en el sistema.
+Nota: en el formulario de modificacion de un articulo, se muestran las listas con los contactos, las sedes y las cuentas bancarias. Para modificar o eliminar alguno de estos registros pertenecientes a el articulo, haga click en la imagen del “lapiz”(Modificar) o en la imagen de la “X”(eliminar).
+
+Eliminar un articulo:  Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del articulo. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de este articulo.
+
+Consultar un articulo: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al articulo.
+
+Movimiento de mercancia: Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea moverle existencias de una bodega a otra, se mostrara un menu con diferentes opciones, haga click en “Movimiento mercancia”.  Se desplegara una ventana modal con el formulario para llevar a cabo dicha acción. Son 4 pasos que debe seguir para llevar a cabo exitosamente el movimiento de existencias de un articulo entre bodegas. Por favor siga los pasos en orden y haga uso de las ayudas.
+
+
+
+Adicionar otra sede del articulo: En caso de que un articulo tenga mas de una sede, esta informacion tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea agregarle la sede, se mostrara un menu con diferentes opciones, haga click en “Adicionar sede”. Se desplegara una ventana modal con el formulario de ingreso de datos de la sede. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva sede para este articulo sera almacenada en el sistema.
+
+Adicionar otro contacto al articulo: En caso de que un articulo tenga mas de un contacto con el cual se tenga relacion en el negocio, la informacion de estos otros contactos tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea agregarle el nuevo contacto, se mostrara un menu con diferentes opciones, haga click en “Adicionar contacto”. Se desplegara una ventana modal con el formulario de ingreso de datos del contacto. El sistema tiene ya almacenada informacion de ciertas personas, si este contacto que usted desea ingresar existe actualmente en el sistema (Ya sea porque esta persona trabaja para varios articulos, o puede ser tambien un cliente), usted podra verlo en la lista desplegable de personas que se muestra a medida que se ingresan los datos del documento de identificacion. Si usted selecciona una persona de las existentes, todos los campos seran llenados con la informacion de esta persona, pero aun asi, le permite si lo desea agregar o modificar nueva informacion. Si esta persona no existe en el sistema, ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del nuevo contacto para este articulo  sera almacenada en el sistema.
+
+Adicionar otro numero de cuenta del articulo: En caso de que se desee almacenar nueva informacion de numeros de cuenta bancarios de un articulo, el sistema le permite almacenar dicha informacion. Haga click derecho sobre la fila de la tabla correspondiente al articulo que desea agregarle el numero de cuenta, se mostrara un menu con diferentes opciones, haga click en “Adicionar cuenta”. Se desplegara una ventana modal con el formulario de ingreso de datos de la cuenta. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva cuenta bancaria para este articulo sera almacenada en el sistema.
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar articulo: click en el boton “agregar articulo”, se despliega la ventana modal. Se ingresan los datos del articulo, del contacto principal, de la sede principal y de las cuentas bancarias y se hace click en aceptar. (Funcionando perfecto, se ingresa un articulo al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya articulos registrados con un mismo nit, o un mismo nombre al cual se desea ingresar. Tambien cuando se van a agregar las cuentas bancarias, se validan los campos del banco y numero de cuenta, y de que el banco exista realmente en el sistema, es decir, que se escoja un banco de la lista. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar un banco o una actividad economica directamente desde el formulario de “agregar articulos”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de ingreso de datos).
+
+
+2) Modificar articulo: click derecho sobre la fila del articulo que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del articulo a ser modificado. Se modifican algunos datos del articulo, del contacto principal, de la sede principal  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya articulos registrados con un mismo nit, o un mismo nombre al cual se desea modificar. . (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar un banco o una actividad economica directamente desde el formulario de “modificar articulos”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de modificacion de datos).
+
+3)Adicionar sede. click derecho sobre la fila del articulo que desea agregarle la sede, luego hacer click en “Agregar sede”, se despliega la ventana modal con el formulario que contiene los campos para agregar la sede. Se ingresan los datos de la sede y se hace click en aceptar. (Funcionando perfecto)
+
+3.1) Adicionar sede con ventana modal de consulta y tabla de sedes visible.(Funciona perfectamente)
+
+3.2) Adicionar sede con ventana modal de modificacion y tabla de sedes visible.(Funciona perfectamente)
+
+3.3) Modificar sede. (Funciona perfectamente)
+
+3.4) Eliminar una sede. (Funciona perfectamente)
+
+
+4)Adicionar contacto. (Funciona perfectamente)
+
+4.1) Adicionar contacto con ventana modal de consulta y tabla de contactos visible. (Funciona perfectamente)
+
+4.2) Adicionar contacto con ventana modal de modificacion y tabla de contactos visible. (Funciona perfectamente)
+
+4.3) Modificar un contacto. (Funciona perfectamente)
+
+4.4) Eliminar un contacto. (Funciona perfectamente)
+
+5)Adicionar cuenta.(Funciona perfectamente)
+
+5.1) Adicionar cuenta con ventana modal de consulta y tabla de cuentas bancarias visible.(Funciona perfectamente)
+
+5.2) Adicionar cuenta con ventana modal de modificacion y tabla de cuentas bancarias visible.(Funciona perfectamente)
+
+6.0) Eliminar: click derecho sobre la fila del articulo que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+6.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+6.2) se confirma la eliminacion. Se deben eliminar de las tablas sedes_articulo, cuentas_articulo y contactos articulo, todos los registros asociados a este articulo. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este articulo (existentes actualmente en el sistema) como por ejemplo: Facturas de compra (pendiente cuentas por pagar a articulos). En caso de tener facturas de compra relacionadas a este cliente, el sistema debera notificar al usuario de dicha situacion.

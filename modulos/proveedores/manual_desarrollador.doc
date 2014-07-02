@@ -1,0 +1,96 @@
+﻿Modulo: Proveedores.
+
+Descripción: modulo encargado de gestionar la información de los proveedores  registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los proveedores del negocio.  En el formulario de “Adicionar un proveedor”, a cada  proveedor se le debe suministrar la información basica, como por ejemplo su nit, tipo de persona, informacion tributaria, etc. Tambien se le debe suministrar como minimo la informacion de un contacto, de una sede y si se desea, se puede almacenar informacion correspondiente a sus numeros de cuenta para posteriores pagos de facturas. Posteriormente se le pueden agregar mas contactos a un proveedor y mas sedes. Tambien permite guardar numeros de cuentas bancarios del proveedor, esto para facilitar la gestion de pagos. Este modulo será utilizado mayormente por los modulos de compras, inteligencia de negocios y los modulos contables.
+
+
+dato: la tabla contactos_proveedor  almacena 2 campos llaves, el id_proveedor,  y el id_persona (que se relaciona con la tabla personas).
+asi que para traer los datos de un contacto, se debe consultar a la persona que esta relacionada con este contacto.
+
+
+Clases: Proveedor.
+
+Tablas: 
+fom_proveedores: almacena la información de un proveedor como por ejemplo: nombre, nit, tipo de persona, etc..
+fom_contactos_proveedor: almacena la información de los contactos (personas) de dicho proveedor.
+fom_sedes_proveedor: almacena la información de cada una de las sedes que pueda tener este proveedor. 
+fom_cuentas_proveedor: almacena la información de cada una de los numeros bancarios que pueda tener este proveedor. 
+
+Estructura relacional:
+
+Un proveedor tiene tiene 1..* contactos.
+
+Un proveedor tiene tiene 1..* sedes.
+
+Un proveedor tiene tiene 1..* cuentas.
+
+Un proveedor tiene tiene 1..* facturas de compra.
+
+Tambien se relaciona con el modulo Factura de Compra y sus modulos integrados como son: Notas debito|credito proveedores, facturas de compra.
+
+Un proveedor tiene tiene 1..* facturas de compra en el sistema(para el cliente serian facturas de venta).
+
+Ayuda:
+Agregar un proveedor: Haga click en el boton “Agregar proveedor” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un proveedor. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del proveedor sera almacenada en el sistema.
+
+Modificar un proveedor: Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al proveedor a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del proveedor sera modificada y almacenada en el sistema.
+Nota: en el formulario de modificacion de un proveedor, se muestran las listas con los contactos, las sedes y las cuentas bancarias. Para modificar o eliminar alguno de estos registros pertenecientes a el proveedor, haga click en la imagen del “lapiz”(Modificar) o en la imagen de la “X”(eliminar).
+
+Eliminar un proveedor:  Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del proveedor. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de este proveedor.
+
+Consultar un proveedor: Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al proveedor.
+
+
+
+Adicionar otra sede del proveedor: En caso de que un proveedor tenga mas de una sede, esta informacion tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea agregarle la sede, se mostrara un menu con diferentes opciones, haga click en “Adicionar sede”. Se desplegara una ventana modal con el formulario de ingreso de datos de la sede. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva sede para este proveedor sera almacenada en el sistema.
+
+Adicionar otro contacto al proveedor: En caso de que un proveedor tenga mas de un contacto con el cual se tenga relacion en el negocio, la informacion de estos otros contactos tambien puede ser almacenada en el sistema. Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea agregarle el nuevo contacto, se mostrara un menu con diferentes opciones, haga click en “Adicionar contacto”. Se desplegara una ventana modal con el formulario de ingreso de datos del contacto. El sistema tiene ya almacenada informacion de ciertas personas, si este contacto que usted desea ingresar existe actualmente en el sistema (Ya sea porque esta persona trabaja para varios proveedores, o puede ser tambien un cliente), usted podra verlo en la lista desplegable de personas que se muestra a medida que se ingresan los datos del documento de identificacion. Si usted selecciona una persona de las existentes, todos los campos seran llenados con la informacion de esta persona, pero aun asi, le permite si lo desea agregar o modificar nueva informacion. Si esta persona no existe en el sistema, ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del nuevo contacto para este proveedor  sera almacenada en el sistema.
+
+Adicionar otro numero de cuenta del proveedor: En caso de que se desee almacenar nueva informacion de numeros de cuenta bancarios de un proveedor, el sistema le permite almacenar dicha informacion. Haga click derecho sobre la fila de la tabla correspondiente al proveedor que desea agregarle el numero de cuenta, se mostrara un menu con diferentes opciones, haga click en “Adicionar cuenta”. Se desplegara una ventana modal con el formulario de ingreso de datos de la cuenta. Ingrese los datos correspondientes a cada campo. Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la nueva cuenta bancaria para este proveedor sera almacenada en el sistema.
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar proveedor: click en el boton “agregar proveedor”, se despliega la ventana modal. Se ingresan los datos del proveedor, del contacto principal, de la sede principal y de las cuentas bancarias y se hace click en aceptar. (Funcionando perfecto, se ingresa un proveedor al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya proveedores registrados con un mismo nit, o un mismo nombre al cual se desea ingresar. Tambien cuando se van a agregar las cuentas bancarias, se validan los campos del banco y numero de cuenta, y de que el banco exista realmente en el sistema, es decir, que se escoja un banco de la lista. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar un banco o una actividad economica directamente desde el formulario de “agregar proveedores”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de ingreso de datos).
+
+
+2) Modificar proveedor: click derecho sobre la fila del proveedor que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del proveedor a ser modificado. Se modifican algunos datos del proveedor, del contacto principal, de la sede principal  y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado, por ejemplo, en el campo ciudades, se debe escoger un valor de la lista que se despliega. Tambien se valida que no existan ya proveedores registrados con un mismo nit, o un mismo nombre al cual se desea modificar. . (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar un banco o una actividad economica directamente desde el formulario de “modificar proveedores”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de modificacion de datos).
+
+3)Adicionar sede. click derecho sobre la fila del proveedor que desea agregarle la sede, luego hacer click en “Agregar sede”, se despliega la ventana modal con el formulario que contiene los campos para agregar la sede. Se ingresan los datos de la sede y se hace click en aceptar. (Funcionando perfecto)
+
+3.1) Adicionar sede con ventana modal de consulta y tabla de sedes visible.(Funciona perfectamente)
+
+3.2) Adicionar sede con ventana modal de modificacion y tabla de sedes visible.(Funciona perfectamente)
+
+3.3) Modificar sede. (Funciona perfectamente)
+
+3.4) Eliminar una sede. (Funciona perfectamente)
+
+
+4)Adicionar contacto. (Funciona perfectamente)
+
+4.1) Adicionar contacto con ventana modal de consulta y tabla de contactos visible. (Funciona perfectamente)
+
+4.2) Adicionar contacto con ventana modal de modificacion y tabla de contactos visible. (Funciona perfectamente)
+
+4.3) Modificar un contacto. (Funciona perfectamente)
+
+4.4) Eliminar un contacto. (Funciona perfectamente)
+
+5)Adicionar cuenta.(Funciona perfectamente)
+
+5.1) Adicionar cuenta con ventana modal de consulta y tabla de cuentas bancarias visible.(Funciona perfectamente)
+
+5.2) Adicionar cuenta con ventana modal de modificacion y tabla de cuentas bancarias visible.(Funciona perfectamente)
+
+6.0) Eliminar: click derecho sobre la fila del proveedor que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+6.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+6.2) se confirma la eliminacion. Se deben eliminar de las tablas sedes_proveedor, cuentas_proveedor y contactos proveedor, todos los registros asociados a este proveedor. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este proveedor (existentes actualmente en el sistema) como por ejemplo: Facturas de compra (pendiente cuentas por pagar a proveedores). En caso de tener facturas de compra relacionadas a este cliente, el sistema debera notificar al usuario de dicha situacion.
