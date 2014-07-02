@@ -18,6 +18,10 @@ $textos = array(
     'FECHA_FINAL'                               => 'Fecha final',
     'FILTRAR_TODAS_LAS_CAJAS'                   => 'Usar todas las cajas',
     'GENERAR_CONSULTA'                          => 'Generar consulta',
+    "SELECCIONE_ULTIMOS"                        => "Para generar el reporte seleccione los Ultimo(s)",
+    "RANGO_FECHA_PERSONALIZADO"                 => "Ó seleccione un rango de fechas personalizado",
+    'USAR_TODAS_LAS_CAJAS'                      => 'Para el reporte utilice todas las cajas',
+    'USAR_CAJA_PARTICULAR'                      => 'ó utilice una caja en particular',
     
 
     /*Errores*/

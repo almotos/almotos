@@ -64,10 +64,10 @@ function consultarCuadreCaja(obj){
      */
     function filtrarTodasCajas(obj){
         if(obj.is(":checked")){
-            $("#contenedorSelectorCajas").fadeOut("fast");
+            $("#contenedorSelectorCajas").fadeIn("fast");
             
         } else {
-            $("#contenedorSelectorCajas").fadeIn("fast");
+            $("#contenedorSelectorCajas").fadeOut("fast");
             
         }
         
@@ -77,4 +77,25 @@ function consultarCuadreCaja(obj){
         $(".selectChosen").chosen({no_results_text: "Oops, sin resultados!"});      
         
     }
+    
+    
+    /**
+     * función que muestra los campos para seleccionar la bodega para que el 
+     * kardex sea filtrado por bodega tambien
+     */
+    function mostrarContenedorRangoFechas(obj){
+        if(obj.is(":checked")){
+            $("#contenedorRangoFechas").fadeIn("fast");
+            
+        } else {
+            $("#contenedorRangoFechas").fadeOut("fast");
+            
+        }
+        
+        /**
+         * Función que agrega el plugin chosen ver 
+         **/
+        $("#contenedorRangoFechas .selectChosen").chosen({no_results_text: "Oops, sin resultados!"});      
+        
+    }    
 
