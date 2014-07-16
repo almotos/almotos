@@ -21,9 +21,9 @@ $codigo         = '';
  * */
 if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id)) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
 
-    $fechaInicial .= HTML::parrafo($textos->id('FECHA_INICIAL'), 'margenSuperior negrilla');
+    $fechaInicial  = HTML::parrafo($textos->id('FECHA_INICIAL'), 'margenSuperior negrilla');
     $fechaInicial .= HTML::campoTexto("datos[fecha_inicial]", 12, 12, '', "fechaAntigua", "fechaInicioCuadre", array("alt" => $textos->id("SELECCIONE_FECHA_INICIAL")));
-    $fechaFinal   .= HTML::parrafo($textos->id('FECHA_FINAL'), 'margenSuperior negrilla');
+    $fechaFinal    = HTML::parrafo($textos->id('FECHA_FINAL'), 'margenSuperior negrilla');
     $fechaFinal   .= HTML::campoTexto("datos[fecha_final]", 12, 12, '', "fechaAntigua", "fechaFinCuadre", array("alt" => $textos->id("SELECCIONE_FECHA_FINAL")));
 
     $listaSedes = array();
@@ -51,39 +51,44 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $selectorCajas = HTML::listaDesplegable('datos[caja]', $listaCajas, $idCajaPrincipal, 'margenIzquierdaDoble ', 'selectorCajas', '', array(), '');
 
-    $checkFiltroCaja = HTML::campoChequeo("datos[filtrar_todas_cajas]", false, '', 'filtrarTodasCajas', array('onclick' => 'filtrarTodasCajas($(this))'), $textos->id("FILTRAR_TODAS_LAS_CAJAS"));
-    $filtrarPorCaja  = HTML::contenedor($checkFiltroCaja, 'checkFiltroCaja');
+    $checkFiltroCaja = HTML::campoChequeo("datos[filtrar_todas_cajas]", false, '', 'filtrarTodasCajas', array('onclick' => 'filtrarTodasCajas($(this))'));
+    
+    $parrafo1  = HTML::frase($textos->id("USAR_TODAS_LAS_CAJAS"), "claseTextoReporte");
+    $parrafo2  = HTML::frase($textos->id("USAR_CAJA_PARTICULAR").$checkFiltroCaja, "claseTextoReporte");
+    
+    $filtrarPorCaja .= HTML::contenedor($parrafo1.$parrafo2, 'checkFiltroCaja');
 
     //filtros predeterminados: se agrega el texto y un selector para "últimos X Tiempo"
-    $selectorUltimos = HTML::frase("Ultimo(s)", "claseTextoUltimos", "idTextoUltimos");
+    $selectorUltimos = HTML::frase($textos->id("SELECCIONE_ULTIMOS"), "claseTextoReporte", "idTextoUltimos");
     
     $arregloTiempos = array(
-                        "ultimo_dia"            => "Dia",
-                        "ultima_semana"         => "Semana",
-                        "ultimo_mes"            => "Mes",
-                        "ultimos_tres_meses"    => "Tres Meses",
-                        "ultimos_seis_meses"    => "Seis Meses",
-                        "ultimo_año"            => "Año"
+                        ""               => $textos->id("SELECCIONAR"),
+                        "dia"            => $textos->id("DIA"),
+                        "semana"         => $textos->id("SEMANA"),
+                        "mes"            => $textos->id("MES"),
+                        "tres_meses"     => $textos->id("TRES_MESES"),
+                        "seis_meses"     => $textos->id("SEIS_MESES"),
+                        "año"            => $textos->id("ANYO")
                     );
     
     $selectorUltimos .= HTML::listaDesplegable("selectorTiempos", $arregloTiempos, "", "claseSelectorTiempos", "idSelectorTiempos");
     
-    $check = HTML::campoChequeo("rango_personalizado", false, "rangoPersonalizado margenIzquierda", 'rangoPersonalizado');
+    $check = HTML::campoChequeo("rango_personalizado", false, "rangoPersonalizado", 'rangoPersonalizado', array('onclick' => 'mostrarContenedorRangoFechas($(this))'));
     
-    $selectorUltimos .= HTML::frase("Rango de fechas personalizado".$check, "textoRangoPersonalizado", "textoRangoPersonalizado");
+    $selectorUltimos .= HTML::parrafo($textos->id("RANGO_FECHA_PERSONALIZADO").$check, "textoRangoPersonalizado negrita claseTextoReporte", "textoRangoPersonalizado");
     
     
     $codigo .= HTML::contenedor($selectorUltimos, "claseContenedorUltimos", "idContenedorUltimos");
     
     //formulario para generar el reporte en un rango de fechas parametrizado, por defecto esta oculto
-    $codigo .= HTML::contenedorCampos($fechaInicial, $fechaFinal, 'contenedorCuadreCaja');
+    $codigo .= HTML::contenedorCampos($fechaInicial, $fechaFinal, 'contenedorCuadreCaja oculto', 'contenedorRangoFechas');
     
     //check para usar todas las cajas en la consulta
     
     $codigo .= $filtrarPorCaja;
     
     //codigo que muestra los selectores de sedes y cajas
-    $sedesAndCajas = HTML::contenedorCampos($selectorSedes, $selectorCajas, 'contenedorSelectorCajas');
+    $sedesAndCajas = HTML::contenedorCampos($selectorSedes, $selectorCajas, 'contenedorSelectorCajas oculto', 'contenedorSelectorCajas');
     
     $codigo .= $sedesAndCajas;
     
