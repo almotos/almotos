@@ -1,0 +1,43 @@
+﻿Modulo: Ciudades.
+
+Descripción: Modulo encargado de gestionar la información de las ciudades registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las ciudades que se utilizan en el negocio.  En el formulario de “Agregar ciudad”, a cada ciudad se le debe suministrar su información básica.
+
+Clases: Ciudad.
+
+Tablas relacionadas al modulo: 
+
+fom_ciudades: almacena la información de una ciudad.
+fom_estados: almacena la información de un estado.
+fom_paises: almacena la información de un pais.
+
+Estructura relacional:
+
+Un estado tiene 1...* ciudades.
+Un pais tiene 1...* ciudades.
+
+Ayuda
+
+Agregar una ciudad: Haga click en el boton “Agregar ciudad” ubicado en la parte superior derecha de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar una ciudad. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la ciudad sera almacenada en el sistema.
+
+Modificar una ciudad: Haga click derecho sobre la fila de la tabla correspondiente a la ciudad que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la ciudad a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la ciudad sera modificada y almacenada en el sistema.
+
+Eliminar una ciudad: Haga click derecho sobre la fila de la tabla correspondiente a la ciudad que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la ciudad. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha ciudad.
+
+Consultar una ciudad: Haga click derecho sobre la fila de la tabla correspondiente a la ciudad que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la ciudad.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar ciudad: click en el boton “agregar ciudad”, se despliega la ventana modal. Se ingresan los datos de la ciudad y se hace click en aceptar. (Funcionando perfecto, se ingresa una ciudad al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya ciudades registradas con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2) Modificar ciudad: click derecho sobre la fila de la ciudad que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la ciudad a ser modificada. Se modifican algunos datos de la ciudad y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios  y tambien se valida que no existan ya ciudades registradas con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila de la ciudad que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta ciudad en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a esta ciudad (existentes actualmente en el sistema) como por ejemplo: Proveedores. En caso de que existan relaciones de proveedores  con esta ciudad, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

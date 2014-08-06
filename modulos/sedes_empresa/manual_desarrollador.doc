@@ -1,0 +1,52 @@
+﻿Modulo: Sedes empresa.
+
+Descripción:  Módulo encargado de gestionar la información de las sedes de la empresa que se encuentran registradas en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevas ciudades; la modificación de las sedes existentes en el sistema, y la eliminación de las sedes con previa revisión de la integridad refrencial de la Base de datos.
+
+Clase: Sede empresa.
+
+Tablas relacionadas al modulo: 
+
+fom_proveedores: almacena la informacion de los proveedores.
+fom_bodegas: almacena la informacion de las bodegas existentes en el sistema.
+fom_cajas: almacena la informacion de las cajas.
+fom_centro_costo: almacena la informacion de los centros de costos registrados en el sistema.
+fom_empleados: almacena la informacion de los empleados del negocio, actualmente registrados en el sistema.
+
+Estructura relacional:
+
+Una sede empresa tiene  1..* proveedores.
+Una sede empresa tiene  1..* bodegas.
+Una sede empresa tiene  1..* cajas.
+Una sede empresa tiene  1..* empleados.
+
+Ayuda:
+
+Agregar una sede: Haga clic en el boton “Agregar sede” ubicado en la parte superior izquierda de la pantalla, Se desplegara una ventana modal con los campos pertenecientes al  formulario que contiene los datos para ingresar una sede. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la sede sera almacenada en el sistema.
+
+Modificar una sede: Haga clic derecho sobre la fila de la tabla correspondiente a la sede que desea modificar, se mostrara un menu con diferentes opciones, haga clic en “Editar”. Se desplegara una ventana modal con los datos pertenecientes a la sede a ser modificada. Modifique los datos que desea y haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la sede sera modificada y almacenada en el sistema.
+
+Eliminar una sede: Haga clic derecho sobre la fila de la tabla correspondiente a la sede que desea eliminar, se mostrara un menu con diferentes opciones, haga clic en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la sede. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo clic sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario clic en el boton “Aceptar” para confirmar la eliminacion de la informacion de esta sede.
+
+Consultar una sede: Haga clic derecho sobre la fila de la tabla correspondiente a la sede que desea consultar, se mostrara un menu con diferentes opciones, haga clic en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la sede.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar sede: clic en el boton “agregar sede”, se despliega la ventana modal. Se ingresan los datos basicos de la sede . (Funcionando perfecto, se ingresa una sede al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar una ciudad directamente desde el formulario de “agregar sede”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de ingreso de datos).
+
+2) Modificar sede: clic derecho sobre la fila de la sede que desea modificar, luego hacer clic en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la sede a ser modificada. Se modifican algunos datos de la sede y se hace clic en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. Tambien se valida que no existan ya sedes registradas con un mismo nombre al cual se desea modificar.(Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar una ciudad directamente desde el formulario de “modificar sede”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de modificacion de datos).
+
+3.0) Eliminar: clic derecho sobre la fila de la sede que desea eliminar, luego hacer clic en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+4.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+4.2) Se confirma la eliminacion. Se deben eliminar de las tablas todos los registros asociados a esta sede. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a esta sede (existentes actualmente en el sistema) como por ejemplo: empleadoes, proveedores, bodegas etc. En caso de tener relaciones en alguna de estas tablas, el sistema debera notificar al usuario de dicha situacion.
+

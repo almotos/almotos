@@ -1,0 +1,40 @@
+﻿Modulo: Gondolas.
+
+Descripción: modulo encargado de gestionar la información de las gondolas registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las gondolas que se utilizan en el negocio.  En el formulario de “Adicionar una gondola”, a cada  gondola se le debe suministrar la bodega a la que pertenece, su nombre, lados y bandeja.Este modulo será utilizado mayormente por el modulo bodegas.
+
+Clases: Gondola.
+
+Tablas: 
+fom_gondolas: almacena la información de una gondola.
+fom_bodegas: almacena en que bodega se encuentra cada articulo y su cantidad.
+
+Estructura relacional:
+
+Una bodega tiene 1...* gondolas.
+
+
+Ayuda:
+Agregar una gondola: Haga click en el boton “Agregar gondola” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar una gondola. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la gondola sera almacenada en el sistema.
+
+Modificar una gondola: Haga click derecho sobre la fila de la tabla correspondiente a la gondola que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la gondola a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la gondola sera modificada y almacenada en el sistema.
+
+Eliminar una gondola:  Haga click derecho sobre la fila de la tabla correspondiente a la gondola que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la gondola. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicha gondola.
+
+Consultar una gondola: Haga click derecho sobre la fila de la tabla correspondiente a la gondola que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la gondola.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar gondola: clic en el boton “agregar gondola”, se despliega la ventana modal. Se ingresan los datos de la gondola y se hace clic en aceptar. (Funcionando perfecto, se ingresa una gondola al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya gondolas registradas con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2) Modificar gondola: clic derecho sobre la fila de la gondola que desea modificar, luego hacer clic en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la gondola a ser modificada. Se modifican algunos datos de la gondola y se hace clic en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya gondolas registradas con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: clic derecho sobre la fila de la gondola que desea eliminar, luego hacer clic en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de esta gondola en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a esta gondola (existentes actualmente en el sistema) como por ejemplo: Bodegas. En caso de que existan relaciones de bodegas con esta gondola, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

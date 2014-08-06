@@ -1,0 +1,42 @@
+﻿Modulo: Paises.
+
+Descripción: modulo encargado de gestionar la información de los paises registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los paises que se utilizan en el negocio.  En el formulario de “Agregar pais”, a cada pais se le debe suministrar su información básica. Este modulo sera utilizado mayormente por el modulo estados (Encargado de almacenar los estados de un pais). 
+
+Clases: Pais.
+
+Tablas: 
+fom_paises: almacena la información de un pais.
+fom_estados: almacena la informacón de un estado.
+fom_ciudades: almacena la informacion de una ciudad.
+
+Estructura relacional:
+
+Un pais tiene 1..* estados.
+Un estado tiene 1..* ciudades.
+
+Ayuda
+
+Agregar un pais: Haga clic en el boton “Agregar pais” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un pais. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la información del pais sera almacenada en el sistema.
+
+Modificar un pais: Haga clic derecho sobre la fila de la tabla correspondiente al pais que desea modificar, se mostrara un menu con diferentes opciones, haga clic en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al pais a ser modificado. Modifique los datos que desea y haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del pais sera modificada y almacenada en el sistema.
+
+Eliminar un pais: Haga clic derecho sobre la fila de la tabla correspondiente al pais que desea eliminar, se mostrara un menu con diferentes opciones, haga clic en “Borrar”. Se desplegara una ventana modal con el formulario de confirmación de eliminación del pais. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo clic sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario clic en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicho pais.
+
+Consultar un pais: Haga clic derecho sobre la fila de la tabla correspondiente al pais que desea consultar, se mostrara un menu con diferentes opciones, haga clic en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al pais.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar pais: clic en el boton “agregar pais”, se despliega la ventana modal. Se ingresan los datos del pais y se hace clic en aceptar. (Funcionando perfecto, se ingresa un pais al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya paises registrados con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2) Modificar pais: clic derecho sobre la fila del pais que desea modificar, luego hacer clic en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del pais a ser modificado. Se modifican algunos datos del pais y se hace clic en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya paises registrados con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: clic derecho sobre la fila del pais que desea eliminar, luego hacer clic en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminación.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de este pais en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este pais (existentes actualmente en el sistema) como por ejemplo: estados o ciudades. En caso de que existan relaciones de estados con este pais, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

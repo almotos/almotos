@@ -1,0 +1,26 @@
+﻿Modulo: Movimientos mercancia.
+
+Descripción: modulo encargado de gestionar la información de los movimientos de mercancia registrada en el sistema. En este módulo se pueden consultar los datos del movimientos de mercancia que se lleva en el negocio. Este modulo sera utilizado mayormente por los modulos articulos y bodegas  (control de los movimientos de mercancia realizados en el sistema).   
+
+Clase: Movimiento mercancia.
+
+Tablas: 
+fom_movimientos_mercancia: almacena la información de los movimientos de mercancia.
+fom_bodegas: almacena la información de las bodegas.
+fom_articulo: almacena la información de los articulos.
+fom_usuarios: almacena la información de los usuarios.
+
+Estructura relacional:
+
+Un movimiento mercancia tiene 1...* articulos.
+Una bodega tiene 1...* articulos.
+
+Ayuda
+
+Consultar movimientos mercacia: Haga clic derecho sobre la fila de la tabla correspondiente al articulo utilizado en el movimiento que desea consultar, se mostrara un menu con la respectiva opcion, haga clic en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al articulo utilizado en el movimiento de mercancia realizado en el sistema.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1.0) Consultar movimientos mercancia: clic derecho sobre la fila del articulo utilizado en el movimiento de mercancia que desea consultar, luego hacer clic en “consultar”, se despliega la ventana modal con el formulario que contiene la información del articulo consultado. (Funcionando perfecto)
+

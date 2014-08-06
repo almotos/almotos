@@ -1,4 +1,4 @@
-﻿Modulo: Actividades economicas.
+﻿﻿Modulo: Actividades economicas.
 
 Descripción: Módulo encargado de almacenar los registros con el listado de las actividades economicas realizadas en Colombia según la DIAN. Puede ser utilizado en el módulo de proveedores, para identificarlos o sectorizarlos por la actividad economica que realizan, y de esta forma se aplicarán las retenciones tributarias debidamente. Tambien se almacenará en este modulo el porcentaje  correspondiente al nuevo impuesto existente en Colombia desde Enero del 2013, el RETECREE.  Este modulo será utilizado mayormente por los modulos de contables (Para llevar a cabo las acciones contables tributarias).
 

@@ -1,0 +1,31 @@
+﻿Modulo: Empresas.
+
+Descripción: Modulo encargado de gestionar o almacenar la información de las empresas registradas en el sistema, con su respectivo nit y nombre original.
+
+Clases: Empresa.
+
+Tablas: 
+fom_empresas: almacena la información de una empresa.
+fom_actividad_economica: almacena la información de una actividad economica. 
+fom_imagen: almacena la informacion de una imagen.
+
+Estructura relacional:
+
+Una actividad economica tiene 1..* empresas.
+Una imagen tiene 1..1 empresa.
+
+
+Ayuda:
+
+Modificar una empresa: Haga click derecho sobre la fila de la tabla correspondiente a la empresa que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la empresa a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la empresa sera modificada y almacenada en el sistema.
+
+Consultar una empresa: Haga click derecho sobre la fila de la tabla correspondiente a la empresa que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la empresa.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Modificar empresa: click derecho sobre la fila de la empresa que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la empresa a ser modificada. Se modifican algunos datos de la empresa y se hace click en aceptar. (Funcionando perfecto)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya empresas registrados con un mismo nit, o un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+

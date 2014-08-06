@@ -1,4 +1,4 @@
-﻿Modulo: Facturas de compra.
+﻿﻿Modulo: Facturas de compra.
 
 Descripción: modulo encargado de gestionar la información de las facturas de compra  registradas en el sistema. En este módulo se pueden  consultar o "modificar" la información de las facturas de compra que se utilizan en el negocio. Por factura de compra nos referimos a las facturas que genera un proveedor (para el proveedor es una factura de venta) en el momento en el que se le realiza una compra de mercancia. Este módulo básicamente muestra el listado de todas las facturas de compra registradas en el sistema, y permite el tratamiento de la información de las mismas, habilitando opciones como poder agregar notas debito o credito sobre una factura, poder anexar a una factura su soporte digital, es decir, poder anexar una copia digital de la factura original que fue generada por el proveedor, etc.
 

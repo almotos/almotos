@@ -1,4 +1,4 @@
-﻿Modulo: Compras de Mercancia.
+﻿﻿Modulo: Compras de Mercancia.
 
 Descripción: modulo encargado de gestionar la información relacionada a todo el proceso de compras de mercancia para el negocio. En este módulo se pueden agregar, consultar, eliminar o modificar la información de cada una de las transacciones realizadas en dicho proceso. Este módulo esta directamente relacionado con el módulo de ordenes de compra.
 
