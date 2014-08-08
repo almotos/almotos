@@ -18,7 +18,7 @@ $objeto = new DiaFestivo(); /* creacion del objeto */
 $excluidas = array('0'); //items excluidos en la consulta
 $item = '';
 $contenido = '';
-$contenido .= HTML::contenedor(HTML::contenedor($textos->id('AYUDA_MODULO'), 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
+$contenido .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
 
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');

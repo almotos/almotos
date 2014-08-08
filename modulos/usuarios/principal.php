@@ -16,7 +16,7 @@ if (isset($url_ruta)) {
 
     $contenido  = "";
     $contenido .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
-
+    
 
     $usuario = new Usuario($url_ruta);
 

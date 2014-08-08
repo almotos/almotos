@@ -1,0 +1,18 @@
+﻿﻿Modulo: Inicio.
+
+Descripción:  Módulo encargado de gestionar la información principal que se encuentra registrada en el sistema. A través de este módulo se genera la publicidad del negocio, dando acceso al uso de los demas modulos existentes en el sistema, por medio del menu desplegable encargado de organizar todos los modulos en gerarquia, haciendo del negocio un sistema mas versatil. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información inicial del sistema.
+-Conocer la estructura funcional del sistema.
+-Acceder a cualquier modulo por medio del menu desplegable.
+-Visualizar el orden de los modulos de acuerdo a la rama que aplica.
+-Generar ofertas y publicidad.
+
+Ayuda:
+
+Consultar inicio: Este modulo esta conformado por varias pestañas que almacenan la informacion basica del sistema, para acceder a ella siga las instrucciones, primero haga clic en la pestaña pagina2, y a continuacion vera que se despliga la informacion basica de las motos a las que mayormente aplica el negocio, ahora clic en la pestaña prueba, mostara los articulos en oferta con su respectiva imagen, clic en la pestaña Nueva moto YZF 115, desplegara el panel con una pequeña descripcion de la moto acompañada de su imagen, por ultimo clic en la pestaña titulo en donde se encontrara detalles mas explicitos del sistema.  
+
+
+Pruebas de usuario realizadas al modulo: 
+
+Acceder a cada una de las pestañas de inicio y verificar que la informacion se este cargando adecuadamente con sus imagenes. (Funcionando perfectamente)

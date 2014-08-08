@@ -1,0 +1,43 @@
+﻿﻿Modulo: Eventos.
+
+Descripción: Módulo encargado de gestionar la informacion de las facturas sin finalizar, como notificaciones que se encuentran registradas en el sistema. A través de este módulo se gestionan actividades como la modificacion de una factura iniciada y su eliminación. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de las facturas sin finalizar.
+-Visualizar la fecha del registro.
+-Notifica el creador de la factura.
+-Eliminar la notificacion de acuerdo al requerimiento.
+
+Clases: Evento.
+
+Tablas relacionadas al modulo: 
+
+fom_eventos: almacena la informacion de los eventos.
+fom_usuarios: almacena la informacion de los usuarios.
+fom_facturas_temporales_compra: almacena la informacion de las facturas de compra temporales.
+fom_facturas_temporales_venta: almacena la informacion de las facturas de venta temporales.
+
+Estructura relacional:
+
+Una factura temporal de compra tiene  1..1 evento.
+Una factura temporal de venta tiene  1..1 evento.
+Un usuario tiene 1..* eventos.
+
+
+Ayuda:
+
+Modificar evento: Haga clic sobre el boton "Modificar factura" correspondiente a la notificacion de la factura "Compra" o "Venta" que desea modificar, Se dirigira al modulo de la factura con los datos registrados. Modifique los datos que desea y haga clic en el boton “Fin factura” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la factura sera modificada y almacenada en el sistema.
+
+Eliminar evento: Haga clic sobre el boton "Borrar" correspondiente a la factura que desea eliminar. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de la notificacion. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo clic sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario clic en el boton “Aceptar” para confirmar la eliminacion de la informacion de esta notificacion.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Modificar evento: clic en el boton “Modificar factura”, se carga la informacion de la factura a ser modificada. Se modifican los datos de la factura, haga clic en el boton "Fin factura". (Funcionando perfecto, se modifico la informacion de la factura en el sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2.0) Eliminar evento: clic sobre el boton "Borrar" se encuentra en fila de la notificacion de la factura que desea eliminar, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+2.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+
