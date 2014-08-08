@@ -1,0 +1,31 @@
+﻿Modulo: Configuraciones.
+
+Descripción: modulo encargado de gestionar la información de las configuraciones registradas en el sistema. En este módulo se pueden consultar o modificar la información de las configuraciones que se utilizan en el negocio.   
+
+Clases: Configuración.
+
+Tablas: 
+fom_configuraciones: almacena la información de una configuracion.
+
+Estructura relacional:
+
+Un articulo tiene 1...* configuraciones.
+
+
+Ayuda
+
+
+Modificar una configuración: Haga click derecho sobre la fila de la tabla correspondiente a la configuración que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes a la configuracion a ser modificada. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la configuración sera modificada y almacenada en el sistema.
+
+Consultar una configuración: Haga click derecho sobre la fila de la tabla correspondiente a la configuración que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la configuración
+.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Modificar configuración: click derecho sobre la fila de la configuración que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la configuración a ser modificada. Se modifican algunos datos de la configuración y se hace click en aceptar. (Funcionando perfecto)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya configuraciones registradas con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.0) Consultar configuración: click derecho sobre la fila de la configuración que desea consultar, luego hacer click en “consultar”, se despliega la ventana modal con el formulario que contiene la información de la configuración consultada. (Funcionando perfecto)
+

@@ -1,4 +1,4 @@
-﻿Modulo: Cajas.
+﻿﻿Modulo: Cajas.
 
 Descripción:   Clase encargada de gestionar la información del listado de cajas existentes en el negocio para el proceso de compra y venta. Modulo utilizado en los modulos de compra, de venta y de sus modulos asociados, mostrando en ellos un select con las cajas pertenecientes a la sede con la que inició sesión el usuario. También utilizado en los modulos de administración contable para la generación de reportes.
 

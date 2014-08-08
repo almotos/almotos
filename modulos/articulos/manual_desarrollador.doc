@@ -1,4 +1,4 @@
-﻿Modulo: Articulos.
+﻿﻿Modulo: Articulos.
 
 Descripción:  Módulo encargado de gestionar la información de los artículos que se encuentran registrados en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevos articulos, la modificación de los articulos existentes en el sistema, la inactivación y la eliminación de los articulos,  previa revisión de la integridad refrencial de la Base de datos. Este modulo permite realizar acciones como las siguientes:
 

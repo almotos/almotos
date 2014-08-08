@@ -1,4 +1,4 @@
-﻿Modulo: Acciones.
+﻿﻿Modulo: Acciones.
 
 Descripción: 
 Módulo encargado de la gestión de las acciones o "botones" de cada uno de los módulos, es decir, todos y cada uno de los botones que se encuentran en los módulos deben ser registrados en este modulo para que estos registros posteriormente sean utilizados cuando se otorgue privilegios a un determinado usuario sobre un determinado modulo. Ejemplo: en el módulo "Países" existen los botones: "Adicionar, Consultar, Modificar y Eliminar", cada uno de estos botones deben estar registrados en el módulo "Acciones" ingresando 1= a que  módulo pertenece, 2= el nombre de la acción, 3= el nombre de la acción para el menú de privilegios. Este modulo será utilizado mayormente por los modulos de privilegios.
@@ -10,7 +10,7 @@ fom_componentes_modulos: almacena la información de una acción.
 
 Estructura relacional:
 
-Una módulo tiene  1..* acciones.(cada acción representa un botón)
+Un módulo tiene  1..* acciones.(cada acción representa un botón)
 
 Ayuda:
 Agregar un acción: Haga click en el boton “Adicionar acción” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un acción. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la acción sera almacenada en el sistema.
