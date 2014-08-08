@@ -283,6 +283,8 @@ $textos = array(
     'ERROR_FORMATO_ARCHIVO'             => 'Error, formato de archivo invalido.',
     'ERROR_DEBE_LLENAR_TODOS_LOS_CAMPOS_DEL_FORMULARIO' => 'Error, debe de llenar todos los campos del formulario.',
     'FORMATO_ARCHIVO_INVALIDO'          => 'Error, formato de archivo invalido',
+    'ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO' => 'Se eliminaron %1 items. No se pudo eliminar %2 items que son los siguientes: %3.',
+    'NINGUN_ITEM_ELIMINADO'             => 'Ningún item eliminado.',
     
     'TEXTO_NUMERICO_DE_X_CARACTERES'    => 'Debe introducir numeros y maximo <br>  %1 caracter(es)',
     'TEXTO_CODIGO_INTERNO'              => 'Escriba un codigo corto para %1',

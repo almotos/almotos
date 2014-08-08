@@ -357,7 +357,8 @@ class SQL {
      * 
      * @return  void
      */
-    public function cancelarTransaccion() {
+    public function cancelarTransaccion($textoError = "") {
+        syslog(LOG_DEBUG, $textoError);
         $this->ejecutar("ROLLBACK");
         return false;
     }    
