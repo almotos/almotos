@@ -43,7 +43,7 @@ if (!empty($idFactura)) {
     $tituloBloque   = $textos->id('MODULO_ACTUAL') . ' :: ' . $textos->id('CREAR_COTIZACION');
 
 } elseif (!empty($idFactTemp)) {
-    $objeto     = new FacturaVenta(); /* creacion del objeto */
+    $objeto     = new FacturaTemporalVenta(); /* creacion del objeto */
     
     $objeto->cargarFacturaTemporal($idFactTemp);
     

@@ -47,7 +47,7 @@ if (!empty($idFactura)) {
     $tituloBloque   = $textos->id('MODULO_ACTUAL') . ' :: ' . $textos->id('CREAR_ORDEN_COMPRA');
 
 } elseif (!empty($idFactTemp)) {
-    $objeto     = new FacturaCompra(); /* creacion del objeto */
+    $objeto     = new FacturaTemporalCompra(); /* creacion del objeto */
     
     $objeto->cargarFacturaTemporal($idFactTemp);
     
@@ -171,8 +171,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     }
 
     $linea1 .= HTML::campoTexto('datos[fecha_factura]', 9, 12, $fechaFactura, 'campoObligatorio fechaAntigua campoCalendario', '', array()+$tutorial["4"], $textos->id('AYUDA_FECHA_FACTURA'));
-    $linea1 .= HTML::frase($fechaFact[1], 'margenIzquierda negrilla');
-
+    $linea1 .= HTML::frase( isset($fechaFact[1]) ? $fechaFact[1] : "", 'margenIzquierda negrilla');
 
     $linea1 .= HTML::campoOculto('datos[es_orden_compra]', '', 'esOrdenDeCompra'); //Segun se ingrese o se quite el numero de factura de proveedor, este campo va a determinar si solo puede ser una orden de compra
     $linea1 .= HTML::campoOculto('datos[es_modificacion]', $forma_idFactura, 'esModificacion'); //el valor de este campo determina si se trata de la edicion de una factura
@@ -238,7 +237,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
 //    $linea2 .= HTML::frase($textos->id('SEDE').': ', 'margenIzquierdaDoble');
 //    $linea2 .= HTML::frase($sesion_usuarioSesion->sede->nombre, 'subtitulo negrilla');
-    $linea2 .= HTML::frase($textos->id('BODEGA'), '');
+    $linea2  = HTML::frase($textos->id('BODEGA'), '');
     $linea2 .= $selectorBodega;
     $linea2 .= HTML::campoOculto('datos[id_bodega]', (int)$idBodegaPrincipal, 'idBodegaGeneral');//campo oculto en el DOM que almacena el idBodegaPrincipal. Este es usado por javascript para ciertas funciones
     $linea2 .= HTML::frase($textos->id('CAJA') . ': ', 'margenIzquierda');
@@ -280,9 +279,11 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     $filas = array();
     $opcionesFilas = array();    
     
+
+    $cadenaListadoDeArticulos   = '';
+    
     if (!empty($objeto->listaArticulos)) {
         $codigoLista                = '';
-        $cadenaListadoDeArticulos   = '';
         $counter                    = 0;
         
         
@@ -440,7 +441,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $codigo .= HTML::parrafo($linea4, 'linea4');
     
-    $linea5 .= HTML::frase($textos->id('OBSERVACIONES'), '');
+    $linea5  = HTML::frase($textos->id('OBSERVACIONES'), '');
     $linea5 .= HTML::campoTexto('datos[observaciones]', 35, 250, $objeto->observaciones, '', 'campoObservaciones', array()+$tutorial["22"]); 
     
     $valorIva = ($objeto->iva == '') ? 0 : $objeto->iva;

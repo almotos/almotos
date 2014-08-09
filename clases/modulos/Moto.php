@@ -471,7 +471,7 @@ class Moto {
         
     }
 
-//Fin del metodo eliminar Unidades
+//Fin del metodo eliminar Moto
 
     /**
      *

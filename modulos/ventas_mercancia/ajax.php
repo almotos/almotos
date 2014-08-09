@@ -507,7 +507,7 @@ function imprimirFacturaVentaPdf($datos) {
         $idItem     = $objeto->adicionar($datos);
         
         if (!empty($idItem)) {//si se pudo crear la factura de venta
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada   
+            FacturaTemporalVenta::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada   
 
         }
         
@@ -888,7 +888,7 @@ function imprimirFacturaVentaPos($datos) {
         $idItem = $objeto->adicionar($datos);
         
         if (!empty($idItem)) {//si se pudo crear la factura de venta
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada    
+            FacturaTemporalVenta::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada    
             
         }
     } else {
@@ -1244,7 +1244,7 @@ function buscarCotizacion($datos) {
  * @param type $datos 
  */
 function guardarFacturaTemporal($datos) {
-    $objeto = new FacturaVenta();
+    $objeto = new FacturaTemporalVenta();
     $idItem = $objeto->adicionarFacturaTemporal($datos);
 
     $respuesta = array();
@@ -1255,7 +1255,7 @@ function guardarFacturaTemporal($datos) {
 }
 
 function modificarFacturaTemporal($datos) {
-    $objeto = new FacturaVenta();
+    $objeto = new FacturaTemporalVenta();
     $idItem = $objeto->modificarFacturaTemporal($datos);
 
     $respuesta = array();
