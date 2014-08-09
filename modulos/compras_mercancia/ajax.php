@@ -508,7 +508,7 @@ function imprimirFacturaCompraPdf($datos) {
         $idItem     = $objeto->adicionar($datos);
 
         if (!empty($idItem)) {//si se pudo crear la factura de compra
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
+            FacturaTemporalCompra::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
             
         }
         
@@ -979,9 +979,9 @@ function imprimirFacturaCompraPos($datos) {
     } else if (!empty($datos['id_factura_temporal'])) { //si se trata de generar una factura desde una factura que no se finalizo previamente
         $objeto     = new FacturaCompra();
         $idItem     = $objeto->adicionar($datos);
-        echo "jueputa";
+
         if (!empty($idItem)) {//si se pudo crear la factura de compra
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
+            FacturaTemporalCompra::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
 
         }
 
@@ -1295,7 +1295,7 @@ function imprimirFacturaCompraPos($datos) {
  */
 function guardarFacturaTemporal($datos) {
     
-    $objeto     = new FacturaCompra();
+    $objeto     = new FacturaTemporalCompra();
     $idItem     = $objeto->adicionarFacturaTemporal($datos);
 
     $respuesta              = array();
@@ -1315,7 +1315,7 @@ function guardarFacturaTemporal($datos) {
  */
 function modificarFacturaTemporal($datos) {
 
-    $objeto     = new FacturaCompra();
+    $objeto     = new FacturaTemporalCompra();
     $idItem     = $objeto->modificarFacturaTemporal($datos);
 
     $respuesta              = array();

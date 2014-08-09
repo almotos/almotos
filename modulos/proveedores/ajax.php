@@ -931,7 +931,71 @@ function modificarItem($id, $datos = array()) {
  * @param int $id           = id del registro a modificar
  * @param array $datos      = arreglo con la informacion a adicionar
  */
-function eliminarItem($id, $confirmado, $dialogo) {
+function eliminarItem($id, $confirmado, $dialogo)
+{
+    global $textos, $sql;
+
+    if (!isset($id) || (isset($id) && !$sql->existeItem('proveedores', 'id', $id))) {
+        $respuesta              = array();
+        $respuesta['error']     = true;
+        $respuesta['mensaje']   = $textos->id('NO_HA_SELECCIONADO_ITEM');
+
+        Servidor::enviarJSON($respuesta);
+        return NULL;
+        
+    }
+
+    $objeto     = new Proveedor($id);
+    $destino    = '/ajax' . $objeto->urlBase . '/delete';
+    $respuesta  = array();
+
+    if (!$confirmado) {
+        $titulo     = HTML::frase($objeto->nombre, 'negrilla');
+        $titulo1    = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION'));
+        $codigo     = HTML::campoOculto('procesar', 'true');
+        $codigo     .= HTML::campoOculto('id', $id);
+        $codigo     .= HTML::parrafo($titulo1);
+        $codigo     .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
+        $codigo     .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
+        $codigo1    = HTML::forma($destino, $codigo);
+
+        $respuesta['generar']       = true;
+        $respuesta['codigo']        = $codigo1;
+        $respuesta['destino']       = '#cuadroDialogo';
+        $respuesta['titulo']        = HTML::parrafo($textos->id('ELIMINAR_ITEM'), 'letraBlanca negrilla subtitulo');
+        $respuesta['ancho']         = 350;
+        $respuesta['alto']          = 150;
+        
+    } else {
+        $respuesta['error']     = true;
+        
+        $respuestaEliminar = $objeto->eliminar();
+        
+        if ($respuestaEliminar['respuesta']) {
+            $respuesta['error']     = false;
+            $respuesta['accion']    = 'insertar';
+            $respuesta['idDestino'] = '#tr_' . $id;            
+
+            if ($dialogo == '') {
+                $respuesta['eliminarFilaTabla'] = true;
+
+            } else {
+                $respuesta['eliminarFilaDialogo']   = true;
+                $respuesta['ventanaDialogo']        = $dialogo;
+
+            }
+
+        } else {
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }
+        
+    }
+
+    Servidor::enviarJSON($respuesta);
+    
+}
+/*function eliminarItem($id, $confirmado, $dialogo) {
     global $textos, $sql;
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('proveedores', 'id', $id))) {
@@ -1002,7 +1066,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
     Servidor::enviarJSON($respuesta);
     
-}
+}*/
 
 /**
  * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
@@ -1015,7 +1079,8 @@ function eliminarItem($id, $confirmado, $dialogo) {
  * @param arreglo $data                = arreglo con los parametros de busqueda
  * @param int $cantidadRegistros   = cantidad de registros aincluir por busqueda
  */
-function buscarItem($data, $cantidadRegistros = NULL) {
+function buscarItem($data, $cantidadRegistros = NULL) 
+{
     global $textos, $configuracion;
 
     $data = explode('[', $data);
@@ -2305,27 +2370,60 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
         
     } else {
 
-        $cadenaIds  = substr($cadenaItems, 0, -1);
-        $arregloIds = explode(",", $cadenaIds);
+        $cadenaIds = substr($cadenaItems, 0, -1);
+        $arregloIds = explode(',', $cadenaIds);
+        
+        /**
+         * arreglo que va a contener la respuesta a enviar al javascript, contendra las siguientes posiciones
+         * -numero de items eliminados7
+         * -numero de items que no se pudieron eliminar
+         * -nombre(s) de los items que no se pudieron eliminar 
+         */
+        $arregloRespuesta = array(
+            'items_eliminados'          => 0,
+            'items_no_eliminados'       => 0,
+            'lista_items_no_eliminados' => array(),
+        );
 
-        $eliminarVarios = true;
         
         foreach ($arregloIds as $val) {
             $objeto = new Proveedor($val);
-            
             $eliminarVarios = $objeto->eliminar();
+            
+            if ($eliminarVarios['respuesta']) {
+                $arregloRespuesta['items_eliminados']++;
+                
+            } else {
+                $arregloRespuesta['items_no_eliminados']++;
+                $arregloRespuesta['lista_items_no_eliminados'][] = $objeto->nombre;
+            }
             
         }
 
-        if ($eliminarVarios) {
-
+        if ($arregloRespuesta['items_eliminados']) {
+            //por defecto asumimos que se pudieron eliminar todos los items
+            $mensajeEliminarVarios = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+            //por eso enviamos texto exito como "true" para que muestre el "chulo verde" en la alerta
+            $respuesta['textoExito']   = true;
+            //Aqui verificamos si hubo algun item que no se pudo eliminar
+            if ($arregloRespuesta['items_no_eliminados']) {
+                $respuesta['textoExito']   = false;//para que muestre el signo de admiracion o advertencia
+                
+                /**
+                 * reemplazo los valores de lo sucedido en la cadena a ser mostrada en la alerta
+                 */
+                $mensajeEliminarVarios     = str_replace('%1', $arregloRespuesta['items_eliminados'], $textos->id('ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO'));//modificamos el texto
+                $mensajeEliminarVarios     = str_replace('%2', $arregloRespuesta['items_no_eliminados'], $mensajeEliminarVarios);
+                $mensajeEliminarVarios     = str_replace('%3', implode(', ', $arregloRespuesta['lista_items_no_eliminados']), $mensajeEliminarVarios);
+            }
+            
             $respuesta['error']         = false;
-            $respuesta['textoExito']    = true;
-            $respuesta['mensaje']       = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+
+            $respuesta['mensaje']       = $mensajeEliminarVarios;
             $respuesta['accion']        = 'recargar';
             
         } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+            $respuesta['mensaje'] = $textos->id('NINGUN_ITEM_ELIMINADO');
             
         }
         

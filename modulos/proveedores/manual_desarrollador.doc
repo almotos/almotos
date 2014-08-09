@@ -15,6 +15,11 @@ fom_contactos_proveedor: almacena la informaci√≥n de los contactos (personas) de
 fom_sedes_proveedor: almacena la informaci√≥n de cada una de las sedes que pueda tener este proveedor. 
 fom_cuentas_proveedor: almacena la informaci√≥n de cada una de los numeros bancarios que pueda tener este proveedor. 
 
+Nota: al tratar de eliminar un proveedor, el sistema valida si tiene alguna factura de compra creada,
+o si tiene alguna orden de compra pendiente, en caso de que cumpla cualquiera de las condiciones anteriores,
+no se le permitir· al usuario borrar el proveedor. Por otro lado, si el proveedor tiene facturas temporales pendientes,
+estas facturas temporales ser·n borradas junto con el proveedor.
+
 Estructura relacional:
 
 Un proveedor tiene tiene 1..* contactos.
