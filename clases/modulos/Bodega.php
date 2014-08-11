@@ -266,22 +266,49 @@ class Bodega {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $configuracion, $textos;
 
         if (!isset($this->id)) {
             return false;
         }
-
-        $consulta = $consulta = $sql->eliminar('bodegas', 'id = "' . $this->id . '"');
         
-        if ($consulta) {
-            return true;
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('inventarios',            'id_bodega = "'.$this->id.'"', $textos->id('REGISTROS_INVENTARIOS'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('movimientos_mercancia',  'id_bodega_origen = "'.$this->id.'"', $textos->id('MOVIMIENTOS_MERCANCIA'));
+        $arreglo3 = array('movimientos_mercancia',  'id_bodega_destino = "'.$this->id.'"', $textos->id('MOVIMIENTOS_MERCANCIA'));
+        
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('BODEGA'), $arregloIntegridad);
+                   
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('bodegas', 'id = "' . $this->id . '"');
+
+        if (!($consulta)) {
+            return $respuestaEliminar;
             
         } else {
-            return false;
-            
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
         }
     }
+//Fin del metodo eliminar Bodega.
 
     /**
      * Listar las bodegas
