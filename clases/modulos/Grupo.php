@@ -228,18 +228,48 @@ class Grupo {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $configuracion, $textos;
 
         if (!isset($this->id)) {
-            return NULL;
-        }
-
-        if (!($consulta = $sql->eliminar('grupos', 'id = "' . $this->id . '"'))) {
             return false;
+        }
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        //hago la validacion de la integridad referencial
+        $arreglo1          = array('subgrupos', 'id_grupo = "'.$this->id.'"', $textos->id('SUBGRUPOS'));//arreglo del que sale la info a consultar
+        $arregloIntegridad = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad        = Recursos::verificarIntegridad($textos->id('GRUPO'), $arregloIntegridad);
+
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('grupos', 'id = "' . $this->id . '"');
+        
+        if (!($consulta)) {
+            return $respuestaEliminar;
+            
         } else {
-            return true;
-        }//fin del si funciono eliminar
-    }
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+            
+        }//Fin de la funcion eliminar.
+        
+    }//Fin del metodo eliminar Grupo.
+
 
     /**
      * Listar los grupos
