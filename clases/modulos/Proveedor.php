@@ -754,47 +754,7 @@ class Proveedor {
          
 
         //Fin del metodo eliminar proveedor 
-        /*public function eliminar() {
-        global $sql;
-
-        if (!isset($this->id)) {
-            return NULL;
-        }
-
-        $sql->iniciarTransaccion();
-        
-        $eliminaSedes           = $sql->eliminar('sedes_proveedor', 'id_proveedor = "' . $this->id . '"');
-        if (!$eliminaSedes){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando sedes';
-            return false;            
-        }
-        
-        $eliminaContactos       = $sql->eliminar('contactos_proveedor', 'id_proveedor = "' . $this->id . '"');
-        if (!$eliminaContactos){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando contactos';
-            return false;            
-        }   
-        
-        $eliminaCuentas         = $sql->eliminar('cuentas_proveedor', 'id_proveedor = "' . $this->id . '"');
-        if (!$eliminaCuentas){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando cuentas';
-            return false;            
-        }    
-        
-        $eliminaProveedor = $sql->eliminar('proveedores', 'id = "' . $this->id . '"');
-        if (!$eliminaProveedor){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando proveedor';
-            return false;            
-        }           
-
-        $sql->finalizarTransaccion();
-        return true;
-    }*/
-
+       
 
     /**
      *
