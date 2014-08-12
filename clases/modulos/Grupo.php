@@ -230,15 +230,15 @@ class Grupo {
     public function eliminar() {
         global $sql, $configuracion, $textos;
 
-        if (!isset($this->id)) {
-            return false;
-        }
-        
         //arreglo que será devuelto como respuesta
         $respuestaEliminar = array(
             'respuesta' => false,
             'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
         );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
         
         //hago la validacion de la integridad referencial
         $arreglo1          = array('subgrupos', 'id_grupo = "'.$this->id.'"', $textos->id('SUBGRUPOS'));//arreglo del que sale la info a consultar
@@ -258,6 +258,7 @@ class Grupo {
         $consulta = $sql->eliminar('grupos', 'id = "' . $this->id . '"');
         
         if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
             return $respuestaEliminar;
             
         } else {
@@ -266,9 +267,9 @@ class Grupo {
             $respuestaEliminar['respuesta'] = true;
             return $respuestaEliminar;
             
-        }//Fin de la funcion eliminar.
+        }
         
-    }//Fin del metodo eliminar Grupo.
+    }
 
 
     /**

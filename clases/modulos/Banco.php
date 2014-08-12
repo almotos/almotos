@@ -222,16 +222,15 @@ class Banco {
      */
     public function eliminar() {
         global $sql, $configuracion, $textos;
-
-        if (!isset($this->id)) {
-            return false;
-        }
-        
         //arreglo que será devuelto como respuesta
         $respuestaEliminar = array(
             'respuesta' => false,
             'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
         );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
         
         //hago la validacion de la integridad referencial
         $arreglo1          = array('cuentas_proveedor', 'id_banco = "'.$this->id.'"', $textos->id('NUMEROS_DE_CUENTA_DE_PROVEEDOR'));//arreglo del que sale la info a consultar
@@ -251,6 +250,7 @@ class Banco {
         $consulta = $sql->eliminar('bancos', "id = '" . $this->id . "'");
         
         if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
             return $respuestaEliminar;
             
         } else {
@@ -260,10 +260,6 @@ class Banco {
             return $respuestaEliminar;
         }
     }
-
-//Fin del metodo eliminar Moto
-
-
 
     /**
      *

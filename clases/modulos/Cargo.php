@@ -251,16 +251,16 @@ class Cargo {
      */
     public function eliminar() {
         global $sql, $configuracion, $textos;
-
-        if (!isset($this->id)) {
-            return false;
-        }
         
         //arreglo que será devuelto como respuesta
         $respuestaEliminar = array(
             'respuesta' => false,
             'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
         );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
         
         //hago la validacion de la integridad referencial
         $arreglo1          = array('empleados', 'id_cargo = "'.$this->id.'"', $textos->id('EMPLEADOS'));//arreglo del que sale la info a consultar
@@ -280,6 +280,7 @@ class Cargo {
         $consulta = $sql->eliminar('cargos', 'id = "'.$this->id.'"');
         
         if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
             return $respuestaEliminar;
             
         } else {

@@ -282,11 +282,7 @@ class Marca {
      *
      */
      public function eliminar() {
-        global $sql, $configuracion, $textos;
-
-        if (!isset($this->id)) {
-            return false;
-        }
+        global $sql, $textos;
         
         //arreglo que será devuelto como respuesta
         $respuestaEliminar = array(
@@ -294,6 +290,10 @@ class Marca {
             'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
         );
         
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+         
         //hago la validacion de la integridad referencial.
         $arreglo1           = array('articulos', 'id_marca = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
         $arreglo2           = array('motos',     'id_marca = "'.$this->id.'"', $textos->id('MOTOS'));
