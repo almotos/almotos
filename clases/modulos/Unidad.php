@@ -293,6 +293,7 @@ class Unidad {
         $consulta = $sql->eliminar('unidades', "id = '".$this->id."'");
         
         if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
             return $respuestaEliminar;
             
         } else {
