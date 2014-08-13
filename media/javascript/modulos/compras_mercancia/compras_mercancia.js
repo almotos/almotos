@@ -481,13 +481,13 @@ $(document).ready(function(){
     
     
     //Evento enter sobre el campo de agregar articulos
-    //Evento enter sobre el campo de agregar articulos
+    //Utilizado por el lector del codigo de barras
     $("#articuloFactura").on("keyup", function(e){
         e.preventDefault();
         var tecla = (document.all) ? e.keyCode : e.which; 
         
         if (tecla == "13") {
-               
+            
             var id          = $(this).val();
             
             if (id == "") {
@@ -507,10 +507,11 @@ $(document).ready(function(){
                         $("ul.ui-autocomplete").css("display", "none"); 
                     },250);   
                     
-                    if (data.id != "")
+                    if (data.id == ""){
                         return false;
-                    
-                        agregarItemListaArticulo(data[0]);
+                    }
+                        
+                    agregarItemListaArticulo(data[0]);
                         
                 }
             });
