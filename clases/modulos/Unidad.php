@@ -262,23 +262,48 @@ class Unidad {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      *
      */
-    public function eliminar() {
-        global $sql;
-       
+     public function eliminar() {
+        global $sql, $textos;
+
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
         }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('articulos',  'id_unidad = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
+        $arregloIntegridad  = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('UNIDAD'), $arregloIntegridad);
 
-        if(!($consulta = $sql->eliminar('unidades', "id = '".$this->id."'"))){                  
-            return false;
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('unidades', "id = '".$this->id."'");
+        
+        if (!($consulta)) {
+            return $respuestaEliminar;
             
-         }else{
-           return true;
-
-         }
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
         
     }
-
+    
     /**
      *
      * Listar las unidades 
