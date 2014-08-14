@@ -14,6 +14,8 @@ Estructura relacional:
 Un pais tiene 1..* estados.
 Un estado tiene 1..* ciudades.
 
+id_pais -> articulos (Cada articulo pertenece a un pais).
+
 Ayuda
 
 Agregar un pais: Haga clic en el boton “Agregar pais” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un pais. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la información del pais sera almacenada en el sistema.
