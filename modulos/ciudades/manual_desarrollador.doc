@@ -1,4 +1,4 @@
-﻿Modulo: Ciudades.
+Modulo: Ciudades.
 
 Descripción: Modulo encargado de gestionar la información de las ciudades registradas en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de las ciudades que se utilizan en el negocio.  En el formulario de “Agregar ciudad”, a cada ciudad se le debe suministrar su información básica.
 
@@ -14,6 +14,12 @@ Estructura relacional:
 
 Un estado tiene 1...* ciudades.
 Un pais tiene 1...* ciudades.
+
+localidades
+personas(para ciudad residencia y para ciudad documento)
+sedes_cliente
+sedes_empresa
+sedes_proveedor
 
 Ayuda
 

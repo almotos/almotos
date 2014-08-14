@@ -14,10 +14,13 @@ fom_empleados: almacena la informacion de los empleados del negocio, actualmente
 
 Estructura relacional:
 
-Una sede empresa tiene  1..* proveedores.
 Una sede empresa tiene  1..* bodegas.
 Una sede empresa tiene  1..* cajas.
 Una sede empresa tiene  1..* empleados.
+
+permisos_componentes_usuarios -> componentes(botones)
+permisos_modulos_usuarios->privilegios
+resoluciones->resoluciones
 
 Ayuda:
 

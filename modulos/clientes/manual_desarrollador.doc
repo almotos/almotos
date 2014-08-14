@@ -16,17 +16,16 @@ fom_sedes_cliente: almacena la información de cada una de las sedes que pueda t
 
 Estructura relacional:
 
-Un cliente tiene tiene 1..* contactos.
-
-Un cliente tiene tiene 1..* sedes.
-
-Un cliente tiene tiene 1..* facturas de venta.
+Un cliente tiene 1..* contactos.
+Un cliente tiene 1..* sedes.
+Un cliente tiene 1..* facturas de venta.
 
 Tambien se relaciona con el modulo Factura de Venta y sus modulos integrados como son: Notas debito|credito clientes, facturas de venta.
 
-Un cliente tiene tiene 1..* facturas de venta en el sistema(para el cliente serian facturas de compra).
+Un cliente tiene 1..* facturas de venta en el sistema(para el cliente serian facturas de compra).
 
 Ayuda:
+
 Agregar un cliente: Haga click en el boton “Agregar cliente” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un cliente. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cliente sera almacenada en el sistema.
 
 Modificar un cliente: Haga click derecho sobre la fila de la tabla correspondiente al cliente que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al cliente a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cliente sera modificada y almacenada en el sistema.
