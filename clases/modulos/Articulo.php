@@ -745,14 +745,45 @@ class Articulo {
      * @return lógico       = Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
-
-        if (!isset($this->id)) {
-            return NULL;
-        }
-
-        $sql->iniciarTransaccion();
+        global $sql, $textos;
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
         
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+        
+        $arreglo1   = array('articulos_factura_compra',             'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_COMPRA'));//arreglo del que sale la info a consultar
+        $arreglo2   = array('articulos_factura_venta',              'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_VENTA'));
+        $arreglo3   = array('articulos_factura_temporal_compra',    'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
+        $arreglo4   = array('articulos_factura_temporal_venta',     'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
+        $arreglo5   = array('articulos_cotizacion',                 'id_articulo = "'.$this->id.'"', $textos->id('COTIZACIONES'));
+        $arreglo6   = array('articulos_orden_compra',               'id_articulo = "'.$this->id.'"', $textos->id('ORDENES_COMPRA'));
+        $arreglo7   = array('articulos_modificados_ncp',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_CREDITO_P'));
+        $arreglo8   = array('articulos_modificados_ndp',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_DEBITO_P'));
+        $arreglo9   = array('articulos_modificados_ncc',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_CREDITO_C'));
+        $arreglo10  = array('articulos_modificados_ndc',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_DEBITO_C')); 
+        $arreglo11  = array('inventarios',                          'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_INVENTARIO'));
+        $arreglo12  = array('movimientos_mercancia',                'id_articulo = "'.$this->id.'"', $textos->id('MOVIMIENTOS_MERCANCIA_ARTICULO'));
+        
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6, $arreglo7,
+                                    $arreglo8, $arreglo9, $arreglo10, $arreglo11, $arreglo12);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        
+        $integridad = Recursos::verificarIntegridad($textos->id('ARTICULO'), $arregloIntegridad);  
+        
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }        
+
+        $sql->iniciarTransaccion();    
         $consulta = $sql->eliminar('articulos', 'id = "' . $this->id . '" ');
         
         if ($consulta) {
@@ -769,14 +800,18 @@ class Articulo {
             $query = $aplicacionMoto->eliminarMotoAplicacion($this->id);
             
             if(!$query){
-                $sql->cancelarTransaccion();
+                $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                return $respuestaEliminar;
             }
             
             $sql->finalizarTransaccion();
-            return true;
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
             
         } else {
-            $sql->cancelarTransaccion();
+           $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+           return $respuestaEliminar;
             
         }
         
