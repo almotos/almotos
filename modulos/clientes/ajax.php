@@ -341,7 +341,7 @@ function adicionarItem($datos = array()) {
         $pestana1b .= HTML::parrafo($textos->id('TELEFONO'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[telefono_sede]', 30, 50, '', 'campoObligatorio', 'telefonoSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('CELULAR'), 'negrilla margenSuperior');
-        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, '', 'campoObligatorio', 'celularSede', array('title' => $textos->id('')));         
+        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, '', '', 'celularSede', array('title' => $textos->id('')));         
 
         $pestana1b .= HTML::parrafo($textos->id('DIRECCION'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[direccion_sede]', 30, 50, '', 'campoObligatorio', 'direccionSede', array('title' => $textos->id('')));
@@ -571,7 +571,7 @@ function modificarItem($id, $datos = array()) {
         $pestana1b .= HTML::parrafo($textos->id('TELEFONO'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[telefono_sede]', 30, 50, $objeto->sede->telefono, 'campoObligatorio', 'telefonoSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('CELULAR'), 'negrilla margenSuperior');
-        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, $objeto->sede->celular, 'campoObligatorio', 'celularSede', array('title' => $textos->id('')));          
+        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, $objeto->sede->celular, '', 'celularSede', array('title' => $textos->id('')));          
         $pestana1b .= HTML::parrafo($textos->id('DIRECCION'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[direccion_sede]', 30, 50, $objeto->sede->direccion, 'campoObligatorio', 'direccionSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('OBSERVACIONES'), 'negrilla margenSuperior');

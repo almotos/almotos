@@ -10,15 +10,19 @@ asi que para traer los datos de un contacto, se debe consultar a la persona que 
 Clases: Cliente.
 
 Tablas: 
+
+fom_articulos_factura_venta: almacena la informacion de los articulos registrados en una factura de venta del cliente.
 fom_clientes: almacena la información de un cliente como por ejemplo: nombre, nit, tipo de persona, etc.
 fom_contactos_cliente: almacena la información de los contactos (personas) de dicho cliente.
+fom_cotizaciones: almacena la informacion de las cotizaciones realizadas al cliente. 
+fom_facturas_temporales_venta: almacena la informacion de las facturas temporales de venta a las que aplica el cliente.
+fom_facturas_venta: almacena la informacion de las facturas de venta a las que aplica el cliente.
 fom_sedes_cliente: almacena la información de cada una de las sedes que pueda tener este cliente. 
 
 Estructura relacional:
 
 Un cliente tiene 1..* contactos.
-Un cliente tiene 1..* sedes.
-Un cliente tiene 1..* facturas de venta.
+Un sedes tiene 1..* Clientes .
 
 Tambien se relaciona con el modulo Factura de Venta y sus modulos integrados como son: Notas debito|credito clientes, facturas de venta.
 

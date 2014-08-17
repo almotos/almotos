@@ -286,7 +286,7 @@ function adicionarMasivo($datos = array()) {
             $formato = strtolower(substr($archivo_masivo['name'], strrpos($archivo_masivo['name'], '.') + 1));
 
             if (!in_array($formato, array('xls'))) {
-                $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_ARCHIVO' . $formato);
+                $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_ARCHIVO');
 
             } else {
 
