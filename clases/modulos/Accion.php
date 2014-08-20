@@ -204,18 +204,47 @@ class Accion {
     /**
      * Eliminar la accion
      * @return lógico Indica si el procedimiento se pudo realizar correctamente o no
-     */
+     */    
     public function eliminar() {
-        global $sql;
-
-        if (!isset($this->id)) {
-            return NULL;
-        }
-
-        $consulta = $sql->eliminar('componentes_modulos', 'id = "' . $this->id . '"');
-
-        return $consulta;
+        global $sql, $textos;
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
         
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+        
+        //hago la validacion de la integridad referencial
+        $arreglo1          = array('permisos_componentes_perfiles',   'id_componente = "'.$this->id.'"', $textos->id('PERMISOS_COMPONENTES_PERFILES'));//arreglo del que sale la info a consultar
+        $arreglo2          = array('permisos_componentes_usuarios',   'id_componente = "'.$this->id.'"', $textos->id('PERMISOS_COMPONENTES_USUARIOS'));//arreglo del que sale la info a consultar
+        $arregloIntegridad = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad        = Recursos::verificarIntegridad($textos->id('ACCION'), $arregloIntegridad);
+
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('componentes_modulos', 'id = "' . $this->id . '"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
     }
 
     /**
