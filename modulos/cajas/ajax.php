@@ -340,48 +340,34 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['alto']      = 150;
         
     } else {
+
+        $respuesta['error']     = true;
+        $respuestaEliminar = $objeto->eliminar();
         
-        $arreglo1 = array('cotizaciones',                   'id_caja = "'.$id.'"', $textos->id('COTIZACIONES'));//arreglo del que sale la info a consultar
-        $arreglo2 = array('facturas_compras',               'id_caja = "'.$id.'"', $textos->id('FACTURAS_COMPRA'));
-        $arreglo3 = array('facturas_venta',                 'id_caja = "'.$id.'"', $textos->id('FACTURAS_VENTA'));
-        $arreglo4 = array('facturas_temporales_venta',      'id_caja = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
-        $arreglo5 = array('facturas_temporales_compra',     'id_caja = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
-        $arreglo6 = array('ordenes_compra',                 'id_caja = "'.$id.'"', $textos->id('ORDENES_COMPRA'));
-        
-        $arregloIntegridad = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
-        $integridad = Recursos::verificarIntegridad($textos->id('CAJA'), $arregloIntegridad);
-        
-        if ($integridad != '') {
-            $respuesta['error']     = true;
-            $respuesta['mensaje']   = $integridad;
-            
-        } else {        
+        if ($respuestaEliminar['respuesta']) {
+                $respuesta['error']     = false;
+                $respuesta['accion']    = 'insertar';
+                $respuesta['idDestino'] = '#tr_' . $id;            
 
-            if ($objeto->eliminar()) {
-
-                $respuesta['error'] = false;
-                $respuesta['accion'] = 'insertar';
-                $respuesta['idDestino'] = '#tr_' . $id;
-
-                if ($dialogo == '') {
-                    $respuesta['eliminarFilaTabla'] = true;
-
-                } else {
-                    $respuesta['eliminarFilaDialogo'] = true;
-                    $respuesta['ventanaDialogo'] = $dialogo;
-
-                }
+            if ($dialogo == '') {
+                $respuesta['eliminarFilaTabla'] = true;
 
             } else {
-                $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+                $respuesta['eliminarFilaDialogo'] = true;
+                $respuesta['ventanaDialogo'] = $dialogo;
 
             }
-        
-        }
+        } else {
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }  
+
     }
 
     Servidor::enviarJSON($respuesta);
 }
+
+
 
 /**
  * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se

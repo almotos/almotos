@@ -481,41 +481,46 @@ $(document).ready(function(){
     
     
     //Evento enter sobre el campo de agregar articulos
-    //Evento enter sobre el campo de agregar articulos
+    //Utilizado por el lector del codigo de barras
     $("#articuloFactura").on("keyup", function(e){
         e.preventDefault();
         var tecla = (document.all) ? e.keyCode : e.which; 
         
         if (tecla == "13") {
-               
-            var id          = $(this).val();
-            
-            if (id == "") {
-                return;
-            }
-            
-            var idBodega    = $("#selectorBodegas").val();
-            var destino     = "/ajax/articulos/listarArticulosCompra?extra="+idBodega+"&term="+id;
-            
-            $.ajax({
-                type:"POST",
-                url: destino,
-                dataType:"json",
-                data: {},
-                success:function(data) {
-                    setTimeout(function(){
-                        $("ul.ui-autocomplete").css("display", "none"); 
-                    },250);   
-                    
-                    if (data.id != "")
-                        return false;
-                    
-                        agregarItemListaArticulo(data[0]);
-                        
+            var that = $(this);
+            setTimeout(function(){
+
+                if (that.attr("autocompletable") !== "true") {
+                    var id          = that.val();
+
+                    if (id == "") {
+                        return;
+                    }
+
+                    var idBodega    = $("#selectorBodegas").val();
+                    var destino     = "/ajax/articulos/listarArticulosCompra?extra="+idBodega+"&term="+id;
+
+                    $.ajax({
+                        type:"POST",
+                        url: destino,
+                        dataType:"json",
+                        data: {},
+                        success:function(data) {
+                            setTimeout(function(){
+                                $("ul.ui-autocomplete").css("display", "none"); 
+                            },250);   
+
+                            if (data.id == ""){
+                                return false;
+                            }
+
+                            agregarItemListaArticulo(data[0]);
+
+                        }
+                    });
                 }
-            });
-            
-            
+
+            }, 75);
         }
     });
     
@@ -606,7 +611,24 @@ $(document).ready(function(){
     /*Funcion que es lanzada sobre el evento selected del plugin autocomplete sobre el
      *campo de seleccionar articulos en una factura, esto para el precio de venta*/
     $("#articuloFactura").bind("autocompleteselect", function( event, ui) { 
+        /**
+         * Hubo un conflicto con el plugin de jquery y el lector del codigo de barras. El conflicto
+         * se daba porque para agregar el item con el lector se capturaba el evento con la tecla enter,
+         * y el autocomplete de jquery utiliza la tecla enter, asi que para solucionar esto, en este metodo
+         * agregamos un atributo llamado autocompletable al campo de articuloFactura para saber si el evento 
+         * keypress se lanza usando el plugin autocomplete. Asi mismo en el codigo encargado de capturar el
+         * evento keypress lanzado por el codigo de barras se agregó un delay y un condicional para saber
+         * si el evento venia del autocomplete o del lector.
+         */
+        $(this).attr("autocompletable", "true");
+        
         agregarItemListaArticulo(ui.item);
+        
+        var that = $(this);
+        
+        setTimeout(function(){
+            that.attr("autocompletable", "");
+        }, 200);
     
     });   
         
@@ -1914,6 +1936,11 @@ function agregarItemListaArticulo(_obj) {
         if($("#contenedorInfoArticulo").is(":visible")){
             $("#contenedorInfoArticulo").slideUp("fast");
         }        
+        
+        if (typeof(_obj) == "undefined") {
+            $("#BoxOverlayTransparente").css("display","none");
+            return;
+        }
         
         var articulo = _obj.label;//nombre del articulo, viene en la respuesta
         

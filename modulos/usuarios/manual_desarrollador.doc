@@ -1,4 +1,4 @@
-﻿Modulo: Usuarios.
+Modulo: Usuarios.
 
 Descripción: Módulo encargado de gestionar la información de los usuarios existentes en el sistema; este modulo se alimenta del tipo de documento y ciudades. Su funcion principal es crear los usuarios con su informacion basica incluyendo nombre de usuario y contraseña de la persona a ser registrada en el sistema.
  
@@ -9,12 +9,39 @@ Tablas:
 fom_usuarios: almacena la información de un usuario.
 fom_tipos_documento: almacena la información de un tipo de documento.
 fom_personas: almacena la información de una persona.
+fom_documentos: almacena la informacion de los documentos.
+fom_eventos: almacena la informacion de los eventos.
+fom_facturas_compras: almacena la informacion de las facturas de compra.
+fom_facturas_temporales_compra: almacena la informacion de las facturas de compra que no se finalizan y se guardan temporalmente.
+fom_facturas_temporales_venta: almacena la informacion de las facturas de venta que no se finalizan y se guardan temporalmente.
+fom_facturas_venta: almacena la informacion de las facturas de venta.
+fom_movimientos_mercancia: almacena la informacion de los movimiento de mercancia entre bodegas.
+fom_notificaciones: almacena la informacion de las actividades sin finalizar; realizadas en el sistema.
+fom_ordenes_compra: almacena la informacion de las ordenes de compra.
+fom_paginas: almacena la informacion de las paginas.
+fom_permisos_componentes_usuarios: almacena la informacion de los permisos de cada componente al que aplica el usuario.
+fom_permisos_modulos_usuarios: almacena la informacion de 
+los permisos de cada modulo al que aplica el usuario.
+fom_proveedores (id_usuario_crea): almacena la informacion de los proveedores.
+fom_cambios_inventarios: almacena la informacion de los cambios de inventario.
+fom_clientes (id_usuario_crea): almacena la informacion de los clientes. 
+fom_cotizaciones: almacena la informacion de las cotizaciones.
 
 Estructura relacional:
 
-Un tipo de documento tiene 1..* usuarios. 
 Una persona tiene 1..* usuarios.
 Un tipo de documento tiene 1..* personas. 
+Un usuario tiene 1..* eventos.
+Un usuario tiene 1..* facturas de compra.
+Un usuario tiene 1..* facturas temporales de compra.
+Un usuario tiene 1..* facturas temporales de venta.
+Un usuario tiene 1..* facturas de venta.
+Un usuario tiene 1..* ordenes de compra.
+Un usuario tiene 1..* componentes (fom_permisos_componentes_usuarios).
+Un usuario tiene 1..* modulos (fom_permisos_modulos_usuarios).
+Un usuario tiene 1..* clientes.
+Un usuario tiene 1..* cotizaciones.
+
 
 Ayuda:
 

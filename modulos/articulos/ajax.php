@@ -962,59 +962,35 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['ancho']         = 350;
         $respuesta['alto']          = 150;
         
-    } else {
-        
-        $arreglo1   = array('articulos_factura_compra',             'id_articulo = "'.$id.'"', $textos->id('FACTURAS_COMPRA'));//arreglo del que sale la info a consultar
-        $arreglo2   = array('articulos_factura_venta',              'id_articulo = "'.$id.'"', $textos->id('FACTURAS_VENTA'));
-        $arreglo3   = array('articulos_factura_temporal_compra',    'id_articulo = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
-        $arreglo4   = array('articulos_factura_temporal_venta',     'id_articulo = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
-        $arreglo5   = array('articulos_cotizacion',                 'id_articulo = "'.$id.'"', $textos->id('COTIZACIONES'));
-        $arreglo6   = array('articulos_orden_compra',               'id_articulo = "'.$id.'"', $textos->id('ORDENES_COMPRA'));
-        $arreglo7   = array('articulos_modificados_ncp',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_CREDITO_P'));
-        $arreglo8   = array('articulos_modificados_ndp',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_DEBITO_P'));
-        $arreglo9   = array('articulos_modificados_ncc',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_CREDITO_C'));
-        $arreglo10  = array('articulos_modificados_ndc',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_DEBITO_C')); 
-        $arreglo11  = array('inventarios',                          'id_articulo = "'.$id.'"', $textos->id('ARTICULO_INVENTARIO'));
-        $arreglo12  = array('movimientos_mercancia',                'id_articulo = "'.$id.'"', $textos->id('MOVIMIENTOS_MERCANCIA_ARTICULO'));
-        
-        
-        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6, $arreglo7,
-                                    $arreglo8, $arreglo9, $arreglo10, $arreglo11, $arreglo12);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
-        
-        $integridad = Recursos::verificarIntegridad($textos->id('ARTICULO'), $arregloIntegridad);  
-        
-        if ($integridad != '') {
+ } else {
+                
             $respuesta['error']     = true;
-            $respuesta['mensaje']   = $integridad;
-            
-        } else {  
+            $respuestaEliminar = $objeto->eliminar();
+        
+        if ($respuestaEliminar['respuesta']) {
 
-            if ($objeto->eliminar()) {
                 $respuesta['error']     = false;
                 $respuesta['accion']    = 'insertar';
-                $respuesta['idDestino'] = '#tr_' . $id;
+                $respuesta['idDestino'] = '#tr_' . $id;            
 
-                if ($dialogo == '') {
-                    $respuesta['eliminarFilaTabla'] = true;
-
-                } else {
-                    $respuesta['eliminarFilaDialogo'] = true;
-                    $respuesta['ventanaDialogo'] = $dialogo;
-
-                }
+            if ($dialogo == '') {
+                $respuesta['eliminarFilaTabla'] = true;
 
             } else {
-                $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+                $respuesta['eliminarFilaDialogo'] = true;
+                $respuesta['ventanaDialogo'] = $dialogo;
 
-            }            
-            
-        }        
-        
-    }
+            }
+        } else {
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }  
+
+    } 
 
     Servidor::enviarJSON($respuesta);
-    
 }
+
 
 /**
  * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
@@ -1529,55 +1505,89 @@ function verificarItem($cadena) {
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     global $textos;
 
-    $destino    = '/ajax/articulos/eliminarVarios';
-    $respuesta  = array();
+
+    $destino = '/ajax/articulos/eliminarVarios';
+    $respuesta = array();
 
     if (!$confirmado) {
-        $titulo   = HTML::frase($cantidad, 'negrilla');
-        $titulo_f = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
-        $codigo   = HTML::campoOculto('procesar', 'true');
-        $codigo  .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
-        $codigo  .= HTML::parrafo($titulo_f);
-        $codigo  .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
-        $codigo  .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
-        $codigo_f = HTML::forma($destino, $codigo);
+        $titulo  = HTML::frase($cantidad, 'negrilla');
+        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
+        $codigo  = HTML::campoOculto('procesar', 'true');
+        $codigo .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
+        $codigo .= HTML::parrafo($titulo1);
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
+        $codigo .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
+        $codigo1 = HTML::forma($destino, $codigo);
 
-        $respuesta['generar']       = true;
-        $respuesta['codigo']        = $codigo_f;
-        $respuesta['destino']       = '#cuadroDialogo';
-        $respuesta['titulo']        = HTML::parrafo($textos->id('ELIMINAR_VARIOS_REGISTROS'), 'letraBlanca negrilla subtitulo');
-        $respuesta['ancho']         = 350;
-        $respuesta['alto']          = 150;
+        $respuesta['generar']   = true;
+        $respuesta['codigo']    = $codigo1;
+        $respuesta['destino']   = '#cuadroDialogo';
+        $respuesta['titulo']    = HTML::parrafo($textos->id('ELIMINAR_VARIOS_REGISTROS'), 'letraBlanca negrilla subtitulo');
+        $respuesta['ancho']     = 350;
+        $respuesta['alto']      = 150;
         
     } else {
 
-        $cadenaIds = substr($cadenaItems, 0, -1);
-        $arregloIds = explode(",", $cadenaIds);
+        $cadenaIds  = substr($cadenaItems, 0, -1);
+        $arregloIds = explode(',', $cadenaIds);
+        
+        /**
+         * arreglo que va a contener la respuesta a enviar al javascript, contendra las siguientes posiciones
+         * -numero de items eliminados7
+         * -numero de items que no se pudieron eliminar
+         * -nombre(s) de los items que no se pudieron eliminar 
+         */
+        $arregloRespuesta = array(
+            'items_eliminados'          => 0,
+            'items_no_eliminados'       => 0,
+            'lista_items_no_eliminados' => array(),
+        );
 
-        $eliminarVarios = true;
         
         foreach ($arregloIds as $val) {
-            $objeto         = new Articulo($val);
+            $objeto = new Articulo($val);
             $eliminarVarios = $objeto->eliminar();
+            
+            if ($eliminarVarios['respuesta']) {
+                $arregloRespuesta['items_eliminados']++;
+                
+            } else {
+                $arregloRespuesta['items_no_eliminados']++;
+                $arregloRespuesta['lista_items_no_eliminados'][] = $objeto->nombre;
+            }
             
         }
 
-        if ($eliminarVarios) {
+        if ($arregloRespuesta['items_eliminados']) {
+            //por defecto asumimos que se pudieron eliminar todos los items
+            $mensajeEliminarVarios = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+            //por eso enviamos texto exito como "true" para que muestre el "chulo verde" en la alerta
+            $respuesta['textoExito']   = true;
+            //Aqui verificamos si hubo algun item que no se pudo eliminar
+            if ($arregloRespuesta['items_no_eliminados']) {
+                $respuesta['textoExito']   = false;//para que muestre el signo de admiracion o advertencia
+                
+                /**
+                 * reemplazo los valores de lo sucedido en la cadena a ser mostrada en la alerta
+                 */
+                $mensajeEliminarVarios     = str_replace('%1', $arregloRespuesta['items_eliminados'], $textos->id('ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO'));//modificamos el texto
+                $mensajeEliminarVarios     = str_replace('%2', $arregloRespuesta['items_no_eliminados'], $mensajeEliminarVarios);
+                $mensajeEliminarVarios     = str_replace('%3', implode(', ', $arregloRespuesta['lista_items_no_eliminados']), $mensajeEliminarVarios);
+            }
+            
             $respuesta['error']         = false;
-            $respuesta['textoExito']    = true;
-            $respuesta['mensaje']       = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+
+            $respuesta['mensaje']       = $mensajeEliminarVarios;
             $respuesta['accion']        = 'recargar';
             
         } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+            $respuesta['mensaje'] = $textos->id('NINGUN_ITEM_ELIMINADO');
             
         }
-        
     }
 
     Servidor::enviarJSON($respuesta);
 }
-
 /**
  * Función que se encarga de mostrar la tabla de los articulos en la ventana modal
  * ademas muestra un boton que es el que permite agregar a las facturas los articulos
@@ -1693,7 +1703,7 @@ function moverMercancia($id) {
     $imagen3 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/3_verde.png', 'imagenAyuda3 margen3', 'imagenAyuda3', array('ayuda' => $textos->id('AYUDA_MOVER_MERCANCIA_3')));
     $imagen4 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/4_verde.png', 'imagenAyuda4 margen3', 'imagenAyuda4', array('ayuda' => $textos->id('AYUDA_MOVER_MERCANCIA_4')));
 
-    $imagen5 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/pregunta_azul.png', 'imagenPregunta4 margen3', 'imagenPregunta', array('ayuda' => $textos->id('AYUDA_RESTAURAR_VALORES')));
+    $imagen5 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/pregunta_azul.png', 'imagenPregunta4 margen3', 'imagenPregunta4', array('ayuda' => $textos->id('AYUDA_RESTAURAR_VALORES')));
 
     //si el nombre del articulo es largo, lo recortamos
     if (strlen($objeto->nombre) > 60) {

@@ -298,16 +298,51 @@ class TipoCompra {
      * @param entero $id    Código interno o identificador de un tipo_compra en la base de datos
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
+
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
 
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
         }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('tipo_compra_cuenta_afectada',   'id_tipo_compra    = "'.$this->id.'"', $textos->id('TIPO_COMPRA_CUENTA_AFECTADA'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('cuentas_tipo_compra',           'id_tipo_compra    = "'.$this->id.'"', $textos->id('CUENTAS_TIPO_COMPRA'));//arreglo del que sale la info a consultar
+        
+        $arregloIntegridad  = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('TIPO_DE_COMPRA'), $arregloIntegridad);
 
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+            
+        }
+              
+        $sql->iniciarTransaccion();
         $consulta = $sql->eliminar('tipos_compra', 'id = "' . $this->id . '"');
         
-        return ($consulta) ? true : false;
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
     }
 
     /**

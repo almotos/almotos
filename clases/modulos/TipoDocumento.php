@@ -248,26 +248,51 @@ class TipoDocumento{
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      *
      */
+
     public function eliminar() {
-        global $sql;
-       
-        if (!isset($this->id)) {
-            return NULL;
-        }
+        global $sql, $textos;
 
-        $consulta = $sql->eliminar('tipos_documento', 'id = "'.$this->id.'"');
-        if(!($consulta)){                  
-            return false;
-            
-         }else{
-           return true;
-
-         }//fin del si funciono eliminar
-  
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
         
-    }//Fin del metodo eliminar Tipos de documento
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('personas',   'id_tipo_documento   = "'.$this->id.'"', $textos->id('PERSONAS'));//arreglo del que sale la info a consultar
+   
+        $arregloIntegridad  = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('TIPO_DE_DOCUMENTO'), $arregloIntegridad);
 
-
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+            
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('tipos_documento', 'id = "'.$this->id.'"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
+    }
 
     
 

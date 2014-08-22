@@ -237,19 +237,51 @@ class Caja {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
 
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
         }
-
-        if (($consulta = $sql->eliminar('cajas', 'id = "' . $this->id . '"'))) {
-            return true;
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('cotizaciones',                   'id_caja = "'.$this->id.'"', $textos->id('COTIZACIONES'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('facturas_compras',               'id_caja = "'.$this->id.'"', $textos->id('FACTURAS_COMPRA'));
+        $arreglo3 = array('facturas_venta',                 'id_caja = "'.$this->id.'"', $textos->id('FACTURAS_VENTA'));
+        $arreglo4 = array('facturas_temporales_venta',      'id_caja = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
+        $arreglo5 = array('facturas_temporales_compra',     'id_caja = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
+        $arreglo6 = array('ordenes_compra',                 'id_caja = "'.$this->id.'"', $textos->id('ORDENES_COMPRA'));
+        
+        $arregloIntegridad = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad = Recursos::verificarIntegridad($textos->id('CAJA'), $arregloIntegridad);
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('cajas', 'id = "' . $this->id . '"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
             
         } else {
-            return false;
-            
-        }//fin del si funciono eliminar
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
     }
 
     /**

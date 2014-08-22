@@ -10,7 +10,7 @@ fom_inventarios: almacena en que bodega se encuentra cada articulo y su cantidad
 
 Estructura relacional:
 
-Una sede tiene tiene 0..* bodegas.(cada bodega esta relacionada con una sede “bodega.id_sede”)
+Una sede tiene 0..* bodegas.(cada bodega esta relacionada con una sede “bodega.id_sede”)
 fom_movimientos_mercancia : almacena los registros historicos de los movimientos de mercancia entre bodegas, almacenando tanto la bodega de origen como la bodega de destino.
 fom_inventarios = Aquí se almacena el articulo, la cantidad y la bodega donde se encuentra.
 

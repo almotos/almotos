@@ -260,21 +260,56 @@ class Ciudad {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      *
      */
+  
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
 
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
         }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('localidades',      'id_ciudad            = "'.$this->id.'"', $textos->id('LOCALIDADES'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('personas',         'id_ciudad_residencia = "'.$this->id.'"', $textos->id('PERSONAS'));//arreglo del que sale la info a consultar
+        $arreglo3 = array('personas',         'id_ciudad_documento  = "'.$this->id.'"', $textos->id('PERSONAS'));//arreglo del que sale la info a consultar
+        $arreglo4 = array('sedes_cliente',    'id_ciudad            = "'.$this->id.'"', $textos->id('SEDES_CLIENTE'));//arreglo del que sale la info a consultar
+        $arreglo5 = array('sedes_empresa',    'id_ciudad            = "'.$this->id.'"', $textos->id('SEDES_EMPRESA'));//arreglo del que sale la info a consultar
+        $arreglo6 = array('sedes_proveedor',  'id_ciudad            = "'.$this->id.'"', $textos->id('SEDES_PROVEEDOR'));//arreglo del que sale la info a consultar
+        
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('CIUDAD'), $arregloIntegridad);
 
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+            
+        }
+              
+        $sql->iniciarTransaccion();
         $consulta = $sql->eliminar('ciudades', "id = '".$this->id."'");
-        return $consulta;
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
     }
-
-
-
-
-
     /**
      *
      * Listar las ciudades

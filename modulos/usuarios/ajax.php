@@ -686,16 +686,44 @@ function eliminarItem($id, $confirmado, $dialogo) {
         
     } else {
 
-        if ($objeto->inactivar()) {
+      /* if ($objeto->inactivar()) {
                /*                 * ************** Creo el nuevo item que se insertara via ajax *************** */
-                $objeto     = new Usuario($id);
+                /*$objeto     = new Usuario($id);
 
                 $estado     = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
 
                 $celdas         = array($objeto->tipo, $objeto->persona->primerNombre, $objeto->persona->primerApellido, $objeto->usuario, $estado);
-                $celdas1    = HTML::crearFilaAModificar($celdas);
+                $celdas1    = HTML::crearFilaAModificar($celdas);*/
+                
+            $respuesta['error']     = true;
+            $respuestaEliminar = $objeto->eliminar();
+        
+        if ($respuestaEliminar['respuesta']) {
 
-                $respuesta['error']         = false;
+                $respuesta['error']     = false;
+                $respuesta['accion']    = 'insertar';
+                $respuesta['idDestino'] = '#tr_' . $id;            
+
+            if ($dialogo == '') {
+                $respuesta['eliminarFilaTabla'] = true;
+
+            } else {
+                $respuesta['eliminarFilaDialogo'] = true;
+                $respuesta['ventanaDialogo'] = $dialogo;
+
+            }
+        } else {
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }  
+
+    } 
+
+    Servidor::enviarJSON($respuesta);
+}
+
+
+    /*            $respuesta['error']         = false;
                 $respuesta['accion']        = 'insertar';
                 $respuesta['contenido']     = $celdas1;
                 $respuesta['idContenedor']  = '#tr_' . $id;
@@ -718,7 +746,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
     Servidor::enviarJSON($respuesta);
     
-}
+}*/
 
 /**
  * Funcion que termina la sesion de un usuario
