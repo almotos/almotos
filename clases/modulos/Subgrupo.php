@@ -211,18 +211,19 @@ class Subgrupo {
                     $row++;
                     $campos = array();
                     
-                    if ($datos['id'] != 0)
-                        $campos['id'] = $datos['id'];   
-                    
-                    if ($datos['nombre'] != 0)
+                    if ($datos['nombre'] != 0){
                         $campos['nombre'] = $datos['nombre'];
+                    }
                     
-                    if ($datos['id_grupo'] != 0)
-                        $campos['id_grupo'] = $datos['id_grupo'];                      
+                    if ($datos['id_grupo'] != 0){
+                        $campos['id_grupo'] = $datos['id_grupo'];
+                    }
                 }
 
                 $valor1    = $data->val($row, $col);
                 $respuesta = array();
+                
+                $grupo = new Grupo();
 
                 while ($valor1 != null) {
                     if ($datos['inicial'] == 0) {
@@ -237,9 +238,16 @@ class Subgrupo {
                         foreach ($campos AS $nombre => $valor) {
 
                             $valor = $data->val($row, $valor);
-//                            if ($nombre == 'id_grupo') {
-//                                $valor = $sql->obtenerValor('grupos', 'id', "nombre LIKE '%" . $valor . "%'");
-//                            } 
+                            if ($nombre == 'id_grupo') {
+                                $idGrupo = $sql->obtenerValor('grupos', 'id', "nombre = '" . $valor . "'");
+                                
+                                if ($idGrupo == "") {
+                                    $datosGrupo = array("nombre" => $valor, "tipo" => "I", "activo" => TRUE );
+                                    $idGrupo = $grupo->adicionar($datosGrupo);
+                                }
+                                
+                                $valor = $idGrupo;
+                            } 
 
                             $datosArticulo[$nombre] = $valor;
                         }

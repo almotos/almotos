@@ -469,13 +469,11 @@ class Linea {
                 if ($datos['inicial'] == 1) {
 
                     $row++;
-                    $campos = array();
+                    $campos = array(); 
                     
-                    if ($datos['id'] != 0)
-                        $campos['id'] = $datos['id'];   
-                    
-                    if ($datos['nombre'] != 0)
-                        $campos['nombre'] = $datos['nombre'];  
+                    if ($datos['nombre'] != 0) {
+                        $campos['nombre'] = $datos['nombre'];
+                    }
                     
                 }
 
@@ -498,7 +496,7 @@ class Linea {
                             $datosLinea[$nombre]    = $valor;
                             
                         }
-                        $sql->depurar = true;
+                        
                         $sql->insertar('lineas', $datosLinea);
 
                         $row++;
