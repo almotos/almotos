@@ -244,12 +244,12 @@ class Persona {
 
             $tablas = array(
                 'p'  => 'personas',
-                'c1' => 'ciudades',
+                /*'c1' => 'ciudades',
                 'c2' => 'lista_ciudades',
                 'e1' => 'estados',
                 'p1' => 'paises',
                 'td' => 'tipos_documento',
-                'i'  => 'imagenes'
+                'i'  => 'imagenes'*/
             );
 
             $columnas = array(
@@ -283,9 +283,15 @@ class Persona {
                 'activo'                => 'p.activo'
             );
 
-            $condicion = 'p.id_tipo_documento = td.id AND p.id_ciudad_documento = c2.id AND p.id_ciudad_residencia = c1.id AND c1.id_estado = e1.id AND e1.id_pais = p1.id AND p.id_imagen = i.id AND p.id = "'.$id.'"';
-            //$sql->depurar = true;
-            $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
+            $condicion = ' LEFT JOIN fom_tipos_documento td ON p.id_tipo_documento = td.id '
+                    . 'LEFT JOIN fom_lista_ciudades c2 ON p.id_ciudad_documento = c2.id '
+                    . 'LEFT JOIN fom_ciudades c1 ON p.id_ciudad_residencia = c1.id '
+                    . 'LEFT JOIN fom_estados e1 ON c1.id_estado = e1.id '
+                    . 'LEFT JOIN fom_paises p1 ON e1.id_pais = p1.id '
+                    . 'LEFT JOIN fom_imagenes i ON p.id_imagen = i.id '
+                    . 'WHERE p.id = "'.$id.'"';
+
+            $consulta = $sql->seleccionar($tablas, $columnas, $condicion, "", "", NULL, NULL, FALSE);
 
             if ($sql->filasDevueltas) {
                 $datos = $sql->filaEnObjeto($consulta);

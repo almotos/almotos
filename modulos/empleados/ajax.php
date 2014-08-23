@@ -250,6 +250,9 @@ function adicionarItem($datos = array()) {
         $existetipoEmpleado         = $sql->existeItem('tipos_empleado', 'nombre', $datos['id_tipo_empleado']);
         $existeSede                 = $sql->existeItem('sedes_empresa', 'nombre', $datos['id_sede']);
         $existeCargo                = $sql->existeItem('cargos', 'id', $datos['id_cargo']);
+        
+        $idPersona                  = $sql->obtenerValor('personas', 'id', 'documento_identidad = "'. $datos['documento_identidad'] .'"'); 
+        $existeEmpleado             = ($idPersona == "") ? FALSE : $sql->existeItem('empleados', 'id_persona', $idPersona);
 
         if (empty($datos['id_tipo_empleado'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_TIPO_EMPLEADO');
@@ -278,6 +281,9 @@ function adicionarItem($datos = array()) {
         } elseif (empty($datos['documento_identidad'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_DOCUMENTO_CONTACTO');
             
+        } elseif ($existeEmpleado) {
+            $respuesta['mensaje'] = $textos->id('ERROR_EXISTENCIA_DOCUMENTO_EMPLEADO');
+ 
         } elseif (empty($datos['primer_nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
             

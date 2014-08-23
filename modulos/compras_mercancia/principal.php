@@ -204,7 +204,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las bodegas existentes en el sistema
     $listaBodegas   = array();//arreglo que almacenará el listado de bodegas y será pasado como parametro al metodo HTML::listaDesplegable
     
-    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');//consulto las bodegas de la sede actual del usuario
+    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id != "0"', '', 'nombre ASC');//consulto las bodegas de la sede actual del usuario
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {//recorro las respuesta, y voy guardandolas en el arreglo
@@ -216,7 +216,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las cajas existentes en el sistema
     $listaCajas = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
     
-    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');
+    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"  AND id != "0"', '', 'nombre ASC');
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {//recorro las respuesta, y voy guardandolas en el arreglo
