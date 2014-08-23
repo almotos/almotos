@@ -219,11 +219,8 @@ function adicionarMasivo($datos = array()) {
             $textos->id('CAMPO_BASE_DATOS'),
             $textos->id('CAMPO_ARCHIVO')
         );
-        $filas = array(
-            array(
-                HTML::parrafo($textos->id('ID'), 'negrilla margenSuperior'),
-                HTML::listaDesplegable('datos[id]', array('' => ''), '', 'selectorCampo', 'id', '', array('onChange' => 'seleccionarCampo(this)'))
-            ),            
+        
+        $filas = array(          
             array(
                 HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior'),
                 HTML::listaDesplegable('datos[nombre]', array('' => ''), '', 'selectorCampo', 'nombre', '', array('onChange' => 'seleccionarCampo(this)'))
@@ -238,11 +235,10 @@ function adicionarMasivo($datos = array()) {
         $codigo2 = HTML::contenedorCampos($tabla, '');
         $pestana1 = HTML::contenedor($codigo1 . $codigo2, 'altura400px');
 
-
         $texto1 = HTML::parrafo($textos->id('INDICACIONES_ARCHIVO_MASIVO_1'), 'negrilla margenSuperior');
         $imagen1 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones2.jpg', 'imagenItem margenIzquierda', '');
         $texto2 = HTML::parrafo($textos->id('INDICACIONES_ARCHIVO_MASIVO_2'), 'negrilla margenSuperior');
-        $imagen2 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones1.jpg', 'imagenItem margenIzquierda', '');
+        $imagen2 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones_masivo_subgrupos.png', 'imagenItem margenIzquierda', '');
         $codigo3 = HTML::contenedor($texto1 . $imagen1 . $texto2 . $imagen2);
 
         $pestana2 = HTML::contenedor($codigo3, 'altura400px');
