@@ -376,7 +376,7 @@ class SQL {
      * 
      * @return recurso
      */
-    public function seleccionar($tablas, $columnas, $condicion = "", $agrupamiento = "", $ordenamiento = "", $filaInicial = NULL, $numeroFilas = NULL) {
+    public function seleccionar($tablas, $columnas, $condicion = "", $agrupamiento = "", $ordenamiento = "", $filaInicial = NULL, $numeroFilas = NULL, $where = true) {
         $listaColumnas  = array();
         $listaTablas    = array();
         $limite         = "";
@@ -417,7 +417,8 @@ class SQL {
         }
 
         if (!empty($condicion)) {
-            $condicion = ' WHERE ' . $condicion;
+            $cond = ($where) ? ' WHERE ' : '';
+            $condicion = $cond . $condicion;
         }
 
         if (!empty($agrupamiento)) {

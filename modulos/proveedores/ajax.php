@@ -384,7 +384,7 @@ function adicionarItem($datos = array()) {
         $pestana1b .= HTML::parrafo($textos->id('TELEFONO'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[telefono_sede]', 30, 50, '', 'campoObligatorio', 'telefonoSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('CELULAR'), 'negrilla margenSuperior');
-        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, '', 'campoObligatorio', 'celularSede', array('title' => $textos->id('')));        
+        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, '', '', 'celularSede', array('title' => $textos->id('')));        
 
         $pestana1b .= HTML::parrafo($textos->id('DIRECCION'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[direccion_sede]', 30, 50, '', 'campoObligatorio', 'direccionSede', array('title' => $textos->id('')));
@@ -437,9 +437,9 @@ function adicionarItem($datos = array()) {
         );
         $listaTipoCuenta = HTML::listaDesplegable('datos[tipo_cuenta]', $arregloTipoCuenta, '', '', 'listaTipoCuenta');
 
-        $banco = HTML::parrafo($textos->id('BANCO'), 'negrilla margenSuperior');
+        $banco  = HTML::parrafo($textos->id('BANCO'), 'negrilla margenSuperior');
         $banco .= HTML::campoTexto('datos[banco]', 40, 255, '', 'autocompletable campoObligatorio', 'campoNombreBanco', array('title' => HTML::urlInterna('BANCOS', 0, true, 'listarBancos')), $textos->id('AYUDA_USO_AUTOCOMPLETAR'), HTML::urlInterna('BANCOS', 0, true, 'add'), 'datos[id_banco]');
-        $numCuenta = HTML::parrafo($textos->id('NUMERO_CUENTA'), 'negrilla margenSuperior');
+        $numCuenta  = HTML::parrafo($textos->id('NUMERO_CUENTA'), 'negrilla margenSuperior');
         $numCuenta .= HTML::campoTexto('datos[numero_cuenta]', 25, 50, '', 'campoObligatorio', 'campoNumeroCuenta') . HTML::frase($listaTipoCuenta, 'margenIzquierda');
 
         $codigo1 = HTML::contenedorCampos($banco, $numCuenta);
@@ -650,7 +650,7 @@ function modificarItem($id, $datos = array()) {
         $pestana1b .= HTML::parrafo($textos->id('TELEFONO'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[telefono_sede]', 30, 50, $objeto->sede->telefono, 'campoObligatorio', 'telefonoSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('CELULAR'), 'negrilla margenSuperior');
-        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, $objeto->sede->celular, 'campoObligatorio', 'celularSede', array('title' => $textos->id('')));         
+        $pestana1b .= HTML::campoTexto('datos[celular_sede]', 30, 50, $objeto->sede->celular, '', 'celularSede', array('title' => $textos->id('')));         
         $pestana1b .= HTML::parrafo($textos->id('DIRECCION'), 'negrilla margenSuperior');
         $pestana1b .= HTML::campoTexto('datos[direccion_sede]', 30, 50, $objeto->sede->direccion, 'campoObligatorio', 'direccionSede', array('title' => $textos->id('')));
         $pestana1b .= HTML::parrafo($textos->id('OBSERVACIONES'), 'negrilla margenSuperior');
