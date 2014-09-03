@@ -376,7 +376,7 @@ class Plantilla {
             self::$etiquetas['BLOQUE_SESION'] = HTML::contenedor(HTML::acordeon($titulosPestana, $contenidoPestana, 'pestanasInicioSesion', ""), "bloqueLogueo");
         } else {
             $contenido = HTML::enlace(HTML::imagen($sesion_usuarioSesion->persona->imagenPrincipal, 'imagenPrincipalUsuario'), $sesion_usuarioSesion->url, '', '');
-            $contenido .= HTML::parrafo($sesion_usuarioSesion->persona->nombreCompleto . ' ' . substr($sesion_usuarioSesion->persona->primerApellido, 0, 1), 'nombreSesion cursiva');
+            $contenido .= HTML::parrafo($sesion_usuarioSesion->persona->nombreCompleto, 'nombreSesion cursiva');
             $contenido .= HTML::parrafo($sesion_usuarioSesion->sede->nombre, '', 'sedeEmpresa');
             $contenido .= HTML::contenedor('', 'contenedorCerrarSesion enlaceAjaxRuta', 'contenedorCerrarSesion', array('ruta' => '/ajax/usuarios/logout', 'ayuda' => $textos->id('FINALIZAR')));
 

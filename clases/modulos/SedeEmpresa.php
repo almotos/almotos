@@ -168,7 +168,6 @@ class SedeEmpresa {
 
             $tablas = array(
                 's'  => 'sedes_empresa',
-                'c'  => 'lista_ciudades'
             );
 
             $columnas = array(
@@ -186,9 +185,9 @@ class SedeEmpresa {
                 'activo'            => 's.activo'
             );
 
-            $condicion = 's.id_ciudad = c.id AND s.id = "'.$id.'"';
-
-            $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
+            $condicion = ' LEFT JOIN fom_lista_ciudades c ON s.id_ciudad = c.id WHERE s.id = "'.$id.'"';
+            
+            $consulta = $sql->seleccionar($tablas, $columnas, $condicion, "", "", NULL, NULL, FALSE);
 
             if ($sql->filasDevueltas) {
                 $fila = $sql->filaEnObjeto($consulta);
