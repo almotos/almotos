@@ -435,7 +435,7 @@ class FacturaCompra {
      *
      */
     public function adicionar($datos) {
-        global $sql, $sesion_usuarioSesion;
+        global $sql, $sesion_usuarioSesion, $textos;
         
         //verificar si este mismo proveedor nos habia traido una factura antes con el mismo numero
         $idFacturaPrevia = $sql->obtenerValor('facturas_compras', 'id', 'id_proveedor = "'.$datos['id_proveedor'].'" AND num_factura_proveedor = "'.$datos['num_factura_proveedor'].'" ');
@@ -454,9 +454,9 @@ class FacturaCompra {
             'id_caja'                   => $datos['id_caja'],
             'subtotal'                  => $datos['subtotal'],
             'iva'                       => $datos['iva'],
-            'concepto1'                 => $datos['concepto1'],
+            'concepto1'                 => (!empty($datos['concepto1'])) ? $datos['concepto1'] : $textos->id("DESCUENTO_1"),
             'descuento1'                => $datos['descuento1'],
-            'concepto2'                 => $datos['concepto2'],
+            'concepto2'                 => (!empty($datos['concepto2'])) ? $datos['concepto2'] : $textos->id("DESCUENTO_2"),
             'descuento2'                => $datos['descuento2'],
             'valor_flete'               => $datos['valor_flete'],
             'total'                     => $datos['total'],

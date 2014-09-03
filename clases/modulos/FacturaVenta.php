@@ -389,7 +389,7 @@ class FacturaVenta {
      * @return entero               Código interno o identificador de la factura en la base de datos (NULL si hubo error)
      */
     public function adicionar($datos) {
-        global $sql, $sesion_usuarioSesion, $textos, $sesion_configuracionGlobal;
+        global $sql, $sesion_usuarioSesion, $textos, $sesion_configuracionGlobal, $textos;
 
         //verifico el regimen de la empresa para ver si usa o no usa resolucion
         $regimenEmpresa = $sesion_configuracionGlobal->empresa->regimen;
@@ -442,9 +442,9 @@ class FacturaVenta {
             'id_caja'                   => $datos['id_caja'],
             'iva'                       => $datos['iva'],
             'retenciones'               => $datos['retenciones'],
-            'concepto1'                 => $datos['concepto1'],
+            'concepto1'                 => (!empty($datos['concepto1'])) ? $datos['concepto1'] : $textos->id("DESCUENTO_1"),
             'descuento1'                => $datos['descuento1'],
-            'concepto2'                 => $datos['concepto2'],
+            'concepto2'                 => (!empty($datos['concepto2'])) ? $datos['concepto2'] : $textos->id("DESCUENTO_2"),
             'descuento2'                => $datos['descuento2'],
             'fecha_limite_dcto_1'       => $datos['fecha_limite_dcto_1'],
             'porcentaje_dcto_1'         => $datos['porcentaje_dcto_1'],
