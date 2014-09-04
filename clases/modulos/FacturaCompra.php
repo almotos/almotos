@@ -871,12 +871,6 @@ class FacturaCompra {
             $condicion = '';
         }
 
-        /*         * * Validar que la excepción sea un arreglo y contenga elementos ** */
-        if (isset($excepcion) && is_array($excepcion) && count($excepcion)) {
-            $excepcion = implode(',', $excepcion);
-            $condicion .= 'fc.id NOT IN (' . $excepcion . ') AND ';
-        }
-
         /*         * * Definir el orden de presentación de los datos ** */
         if (!isset($orden)) {
             $orden = 'fc.fecha_factura';
@@ -891,10 +885,6 @@ class FacturaCompra {
 
         $tablas = array(
             'fc' => 'facturas_compras',
-            'c1' => 'cajas',
-            's'  => 'sedes_empresa',
-            'p'  => 'proveedores',
-            'u'  => 'usuarios'
         );
 
         $columnas = array(
@@ -902,6 +892,7 @@ class FacturaCompra {
             'idFactura'         => 'fc.id_factura',
             'idProveedor'       => 'fc.id_proveedor',
             'proveedor'         => 'p.nombre',
+            'nitProveedor'      => 'p.id_proveedor',
             'numeroFactura'     => 'fc.num_factura_proveedor',
             'fechaFactura'      => 'fc.fecha_factura',
             'idCaja'            => 'fc.id_caja',
@@ -914,21 +905,32 @@ class FacturaCompra {
             'activo'            => 'fc.activo',
         );
 
-
-
+        $condicion .=   ' LEFT JOIN fom_cajas c1 ON fc.id_caja = c1.id'. 
+                        ' LEFT JOIN fom_sedes_empresa s ON c1.id_sede = s.id'.
+                        ' LEFT JOIN fom_usuarios u ON fc.id_usuario = u.id'.
+                        ' LEFT JOIN fom_proveedores p ON fc.id_proveedor = p.id';
+        
+        $where = '';
+        
+        /*         * * Validar que la excepción sea un arreglo y contenga elementos ** */
+        if (isset($excepcion) && is_array($excepcion) && count($excepcion)) {
+            $where = ' WHERE ';
+            $excepcion = implode(',', $excepcion);
+            $condicion .= ' '.$where.' fc.id NOT IN (' . $excepcion . ')';
+        }
+        
         if (!empty($condicionGlobal)) {
-            $condicion .= $condicionGlobal . ' AND ';
+            $cond = (empty($where)) ? ' WHERE ' : ' AND ';
+            $condicion .= $cond .$condicionGlobal;
         }
 
-        $condicion .= 'fc.id_caja = c1.id AND c1.id_sede = s.id  AND fc.id_usuario = u.id AND fc.id_proveedor = p.id';
-
         if (is_null($this->registrosConsulta)) {
-            $sql->seleccionar($tablas, $columnas, $condicion);
+            $sql->seleccionar($tablas, $columnas, $condicion, "", "", NULL, NULL, FALSE);
             $this->registrosConsulta = $sql->filasDevueltas;
         }
 
-//        $sql->depurar = true;
-        $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad);
+        $sql->depurar = true;
+        $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad, FALSE);
 
         if ($sql->filasDevueltas) {
             $lista = array();
@@ -959,7 +961,7 @@ class FacturaCompra {
         $datosTabla = array(
             HTML::parrafo($textos->id('NUMERO_DE_FACTURA'), 'centrado')     => 'id|fc.id',
             HTML::parrafo($textos->id('SEDE'), 'centrado')                  => 'sede|s.nombre',
-            HTML::parrafo($textos->id('ID_PROVEEDOR'), 'centrado')          => 'idProveedor|fc.id_proveedor',             
+            HTML::parrafo($textos->id('ID_PROVEEDOR'), 'centrado')          => 'nitProveedor|p.id_proveedor',             
             HTML::parrafo($textos->id('PROVEEDOR'), 'centrado')             => 'proveedor|p.nombre',
             HTML::parrafo($textos->id('NUM_FACT_PROVEEDOR'), 'centrado')    => 'numeroFactura|fc.num_factura_proveedor',
             HTML::parrafo($textos->id('USUARIO_CREADOR'), 'centrado')       => 'usuario|u.usuario',

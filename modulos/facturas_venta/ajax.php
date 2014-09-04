@@ -643,7 +643,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
         $condicionales = $data[1];
 
         if ($condicionales == '') {
-            $condicion = '(p.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            $condicion = '(c.nombre REGEXP "(' . implode('|', $palabras) . ')")';
         } else {
             //$condicion = str_replace(']', ''', $data[1]);
             $condicionales = explode('|', $condicionales);
@@ -659,7 +659,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
             $condicion .= ')';
         }
 
-        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'p.nombre');
+        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'c.nombre');
 
         if ($objeto->registrosConsulta) {//si la consulta trajo registros
             $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina, $objeto->registrosConsulta);
@@ -737,7 +737,7 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
 
             $consultaGlobal = $condicion;
         } else {
-            $consultaGlobal = '(p.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            $consultaGlobal = '(c.nombre REGEXP "(' . implode('|', $palabras) . ')")';
         }
     } else {
         $consultaGlobal = '';
