@@ -375,7 +375,7 @@ $configuracion["JAVASCRIPT"]["GENERAL"] = array(
     //"plugins/bootstrap.min.js",
     "plugins/jquery.prettyPhoto.js",
     "plugins/chosen.jquery.min.js",  
-    "plugins/jquery.pnotify.min.js",
+    "plugins/jquery.pnotify.min.js",   
 );
 
 
@@ -396,6 +396,7 @@ $configuracion["JAVASCRIPT"]["USUARIOS"] = array(
 $configuracion["JAVASCRIPT"]["ARTICULOS"] = array( 
     "plugins/jquery-barcode.min.js",
     "plugins/chart.min.js",
+    'plugins/underscore-min.js',
 
 );
 
@@ -408,6 +409,7 @@ $configuracion["JAVASCRIPT"]["COMPRAS_MERCANCIA"] = array(
     "modulos/articulos/articulos.js",
     "plugins/jquery-barcode.min.js",
     "plugins/chart.min.js",
+    'plugins/underscore-min.js',
 );
 
 
@@ -416,6 +418,7 @@ $configuracion["JAVASCRIPT"]["VENTAS_MERCANCIA"] = array(
     "modulos/articulos/articulos.js",
     "plugins/jquery-barcode.min.js",
     "plugins/chart.min.js",
+    'plugins/underscore-min.js',
     
 );
 
@@ -423,6 +426,11 @@ $configuracion["JAVASCRIPT"]["CLIENTES"] = array(
 );
 
 $configuracion["JAVASCRIPT"]["PROVEEDORES"] = array( 
+);
+
+$configuracion["JAVASCRIPT"]["CUADRE_CAJA"] = array(
+    'plugins/underscore-min.js',
+    'plugins/backbone-min.js', 
 );
 
 /**

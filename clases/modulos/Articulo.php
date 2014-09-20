@@ -924,7 +924,7 @@ class Articulo {
                 $indicador_completo = ($objeto->completo == '1') ? 'activo' : 'inactivo';
                 $objeto->completo = HTML::frase($textos->id('COMPLETO_' . $objeto->completo), $indicador_completo);
                 
-                $objeto->campoCantidad = '<input type="text" class="campo-cantidad-articulo" value="1" maxlength="20" size="5">';
+                $objeto->campoCantidad = HTML::campoTexto("campo-cantidad-articulo", 5, 20, "1", "campo-cantidad-articulo", "campoCantidadArticulo");
 
                 $objeto->codigoPais = $objeto->codigoPais . HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['iconosBanderas'] . '/' . strtolower($objeto->codigo) . '.png', 'miniaturaBanderas');
 
