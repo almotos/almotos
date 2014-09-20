@@ -1477,13 +1477,15 @@ $("#botonFinalizarFactura").bind("click", function(e){
       
     if(cantArticulosCompra.length <= 0){
         Sexy.alert("Debes al menos ingresar un articulo para generar una compra");
+        $boton.removeAttr("disabled");
         return;        
         
     } else if (total <= 0) {
         /**
         * Verificar que la factura tenga vaores adecuados
         **/
-        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");         
+        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");   
+        $boton.removeAttr("disabled");
         return; 
     }
 
