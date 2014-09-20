@@ -1208,8 +1208,6 @@ $(document).ready(function(){
         var descuento   = padre.find(".descuentoGeneralArticuloVenta");
         
         var precio      = $(this).val();
-        
-        console.log(precio);
 
         if(precio == ''){precio = 0;}
         
@@ -2113,7 +2111,13 @@ function resetFactura(){
 }
 
 
-
+/**
+ * Funcion encargada de crear el objeto "articulo" para ser agregado a la lista
+ * 
+ * @param object _obj   objeto que contiene toda la informacion del articulo, i.e=
+ *                      Object { id="9291", iva="17", label="14224 :: +ESPEJO AKT EVO II # 10 JUE (M)", value="1500"}
+ * @returns false para terminar la ejecucion
+ */
 function agregarItemListaArticulo(_obj) {
     $("#BoxOverlayTransparente").css("display","block");
         

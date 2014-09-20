@@ -1120,7 +1120,7 @@ function imprimirFacturaVentaPos($datos) {
     $respuesta["recargar"]      = true;
     $respuesta["textoInfo"]     = $textos->id('FACTURA_GENERADA_EXITOSAMENTE');
     
-    unlink($fichero);
+    //unlink($fichero);
 
     Servidor::enviarJSON($respuesta);
 
