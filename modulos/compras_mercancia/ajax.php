@@ -675,6 +675,8 @@ function imprimirFacturaCompraPdf($datos) {
     if($idPrincipalArticulo == 'id'){
         $idPrincipalArticulo = 'idArticulo';
     }    
+    
+    $dctoTotalSobreArticulos = 0;
 
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
     foreach ($objeto->listaArticulos as $obj) {
@@ -684,10 +686,12 @@ function imprimirFacturaCompraPdf($datos) {
         if (strlen($obj->articulo) > 45) {
             $obj->articulo = substr($obj->articulo, 0, 44) . '.';
         }
-        if ($obj->descuento == 0 || $obj->descuento == "0") {
+        if ($obj->descuento == "0") {
             $obj->subtotal = $obj->cantidad * $obj->precio;
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
         }
         
         $obj->descuento = Recursos::formatearNumero($obj->descuento, '%', '0');
@@ -742,6 +746,11 @@ function imprimirFacturaCompraPdf($datos) {
     $pdf->SetFont('times', '', 7);
     $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->valorFlete, '$'), 0, 0, 'R');    
    
+    $pdf->Ln(4);
+    $pdf->SetFont('times', 'B', 8);
+    $pdf->Cell(170, 7, $textos->id("DCTO_TOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
+    $pdf->SetFont('times', 'B', 8);
+    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$'), 0, 0, 'R'); 
     
     $pdf->Ln(4);
     $pdf->SetFont('times', 'B', 10);
@@ -988,11 +997,9 @@ function imprimirFacturaCompraPos($datos) {
     } else {
         $objeto     = new FacturaCompra();
         $idItem     = $objeto->adicionar($datos);
-        echo "entra bien donde es";
         
     }
     
-    return true;
 
     //verificar que del mismo proveedor no vayamos a ingresar la misma orden de compra
     if ($objeto->existeFacturaProveedor) {
@@ -1072,6 +1079,7 @@ function imprimirFacturaCompraPos($datos) {
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
 
     $contador = 0;
+    $dctoTotalSobreArticulos = 0;
 
     foreach ($objeto->listaArticulos as $obj) {
         $contador++;
@@ -1084,7 +1092,9 @@ function imprimirFacturaCompraPos($datos) {
             $obj->subtotal = $obj->cantidad * $obj->precio;
             
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
             
         }
 
@@ -1121,6 +1131,8 @@ function imprimirFacturaCompraPos($datos) {
     $totalFactura = $subtotalFactura;
     
     $pieTirilla .= $textos->id("VALOR_FLETE") . ": $" . $objeto->valorFlete . "\n\n";    
+    
+    $pieTirilla .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': $' . Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";
     
     $pieTirilla .= $textos->id("SUBTOTAL") . ': $' . Recursos::formatearNumero($subtotalFactura, '$') . "\n";  
     
@@ -1277,7 +1289,7 @@ function imprimirFacturaCompraPos($datos) {
     $respuesta["recargar"]          = true;
     $respuesta["textoInfo"]         = $textos->id('FACTURA_GENERADA_EXITOSAMENTE');
     
-    unlink($fichero);
+    //unlink($fichero);
 
     Servidor::enviarJSON($respuesta);
 

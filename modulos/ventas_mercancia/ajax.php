@@ -675,7 +675,7 @@ function imprimirFacturaVentaPdf($datos) {
     $pdf->Ln(1);
 
     $subtotalFactura    = 0;
-    //$ivaFactura         = 0;
+    $dctoTotalSobreArticulos = 0;
 
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
     foreach ($objeto->listaArticulos as $obj) {
@@ -685,11 +685,13 @@ function imprimirFacturaVentaPdf($datos) {
             $obj->articulo = substr($obj->articulo, 0, 44) . '.';
             
         }
-        if ($obj->descuento == 0 || $obj->descuento == "0") {
+        if ($obj->descuento == "0") {
             $obj->subtotal = $obj->cantidad * $obj->precio;
             
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
             
         }
         $obj->descuento = Recursos::formatearNumero($obj->descuento, '%', '0');
@@ -704,6 +706,8 @@ function imprimirFacturaVentaPdf($datos) {
         //consulto la referencia del articulo
         //$sql->depurar = true;
         $referencia = $sql->obtenerValor('articulos', 'referencia', 'id = "'.$obj->idArticulo.'" ');
+        
+        $referencia = ($referencia) ? $referencia : "000000";
 
         $pdf->SetFont('times', '', 7);
         $pdf->Cell(15, 8, (int)$obj->$idPrincipalArticulo, 0, 0, 'C');
@@ -749,6 +753,12 @@ function imprimirFacturaVentaPdf($datos) {
     if ($objeto->iva > 0) {
         $subtotalFactura -= $objeto->iva;
     }
+    
+    $pdf->Ln(4);
+    $pdf->SetFont('times', 'B', 8);
+    $pdf->Cell(170, 7, $textos->id("DCTO_TOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
+    $pdf->SetFont('times', 'B', 8);
+    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$'), 0, 0, 'R');
     
     $pdf->Ln(4);
     $pdf->SetFont('times', 'B', 10);
@@ -996,6 +1006,7 @@ function imprimirFacturaVentaPos($datos) {
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
 
     $contador = 0;
+    $dctoTotalSobreArticulos = 0;
 
     foreach ($objeto->listaArticulos as $obj) {
         $contador++;
@@ -1003,11 +1014,13 @@ function imprimirFacturaVentaPos($datos) {
             $obj->articulo = substr($obj->articulo, 0, 29) . '.';
             
         }
-        if ($obj->descuento == 0 || $obj->descuento == "0") {
+        if ($obj->descuento == "0") {
             $obj->subtotal = $obj->cantidad * $obj->precio;
             
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ((($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
             
         }
         
@@ -1051,6 +1064,8 @@ function imprimirFacturaVentaPos($datos) {
     if ($objeto->iva){
         $pieTirilla    .= $textos->id("IVA") . ": " . '$'.Recursos::formatearNumero($objeto->iva, '$') . "\n";
     }
+    
+    $pieTirilla    .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': ' . '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";
     
     $pieTirilla    .= $textos->id("SUBTOTAL") . ': ' . '$'.Recursos::formatearNumero($subtotalFactura, '$') . "\n";
 
