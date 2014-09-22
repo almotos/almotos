@@ -1,0 +1,45 @@
+﻿Modulo: Modulos.
+
+Descripción: modulo encargado de gestionar la información de los modulos registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los modulos que se utilizan en el negocio.  En el formulario de “Agregar modulo”, a cada modulo se le debe suministrar su información básica. 
+
+Clases: Modulo.
+
+Tablas: 
+
+fom_modulos: almacena la información de los modulos registrados en el sistema.
+fom_componentes_modulos: almacena la informacion de los componentes que aplican para cada modulo.
+
+Estructura relacional:
+
+Un modulo tiene 1..* componentes.
+
+Ayuda
+
+Agregar un modulo: Haga click en el boton “Agregar modulo” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un modulo. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del modulo sera almacenada en el sistema.
+
+
+Modificar un modulo: Haga click derecho sobre la fila de la tabla correspondiente al modulo que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al modulo a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del modulo sera modificada y almacenada en el sistema.
+
+
+Eliminar un modulo: Haga click derecho sobre la fila de la tabla correspondiente al modulo que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del modulo. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicho modulo.
+
+
+Consultar un cargo: Haga click derecho sobre la fila de la tabla correspondiente al modulo que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al modulo.
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar modulo: click en el boton “agregar modulo”, se despliega la ventana modal. Se ingresan los datos del modulo y se hace click en aceptar. (Funcionando perfecto, se ingresa un modulo al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya modulos registrados con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar modulo: click derecho sobre la fila del modulo que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del modulo a ser modificado. Se modifican algunos datos del modulo y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya modulos registrados con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila del modulo que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminación.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de este modulo en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este modulo (existentes actualmente en el sistema) como por ejemplo: componentes. En caso de que existan relaciones de componentes con este modulo, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.
