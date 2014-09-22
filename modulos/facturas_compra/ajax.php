@@ -93,7 +93,7 @@ function cosultarItem($id) {
     $codigo .= HTML::campoOculto('id', $id);
 
     $codigo1  = HTML::parrafo($textos->id('PROVEEDOR') . ': ' . HTML::frase($objeto->proveedor->nombre, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_PROVEEDOR') . ': ' . HTML::frase($objeto->numeroFacturaProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
@@ -336,7 +336,7 @@ function modificarItem($id) {
 
     $codigo1  = HTML::parrafo($textos->id('NUMERO_FACTURA') . HTML::frase($objeto->idFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('PROVEEDOR') . ': ' . HTML::frase($objeto->proveedor->nombre, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_PROVEEDOR') . ': ' . HTML::frase($objeto->numeroFacturaProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
@@ -929,7 +929,7 @@ function buscarFactura() {
  * @param int $cantidad         = cantidad a ser eliminada
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
-function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
+/*function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     global $textos;
 
 
@@ -981,7 +981,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
 
     Servidor::enviarJSON($respuesta);
     
-}
+}*/
 
 /**
  * Funcion que muestra la información de una nota credito
