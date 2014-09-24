@@ -70,7 +70,7 @@ $textos = array(
     'TOTAL_RETENCIONES'                         => 'Total retenciones',
     'TOTAL_A_PAGAR'                             => 'Total a pagar',
     'ACTUALIZAR_RETENCIONES'                    => 'Actualizar valores de retenciones',
-    
+    'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total Articulos',
     
 
     

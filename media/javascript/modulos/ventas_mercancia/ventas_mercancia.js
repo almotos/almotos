@@ -1208,8 +1208,6 @@ $(document).ready(function(){
         var descuento   = padre.find(".descuentoGeneralArticuloVenta");
         
         var precio      = $(this).val();
-        
-        console.log(precio);
 
         if(precio == ''){precio = 0;}
         
@@ -1625,22 +1623,12 @@ function buscarFactura(modulo){
 // FINALIZAR LA FACTURA DE VENTA
 $("#botonFinalizarFactura").bind("click", function(e){
     e.preventDefault();
-    
-    /**
-     * Verificar que se haya escogido un medio de pago
-     **/
-//    var medioPago = $("#listaMedioPago").val();
-    
+    //bloquear el boton finalizar factura (para que solo se muestre la ventana modal una vez)
+    $boton = $(this);
+    $boton.attr("disabled", "disabled"); 
+
     var cantArticulosVenta = $(".filaArticuloVenta");
     
-//    if(medioPago == 'Seleccionar...'){
-//        Sexy.alert('Debes seleccionar un medio de pago', 
-//            {onComplete: function(){ 
-//                    $("#listaMedioPago").focus();
-//                    return;
-//            }});
-//    } else 
-
     var total = $("#totalFactura").val();
         
     if(cantArticulosVenta.length <= 0){
@@ -1648,12 +1636,15 @@ $("#botonFinalizarFactura").bind("click", function(e){
         * Verificar que hayan articulos en la factura
         **/
         Sexy.alert("Debes al menos ingresar un articulo para generar una venta");
+        $boton.removeAttr("disabled");
         return;        
     } else if (total <= 0) {
         /**
         * Verificar que la factura tenga vaores adecuados
         **/
-        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");        
+        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");     
+        $boton.removeAttr("disabled");
+        return;
         
     } else{
         /**
@@ -1671,6 +1662,11 @@ $("#botonFinalizarFactura").bind("click", function(e){
             dataType:"json",
             success:procesaRespuesta
         });
+        
+        setTimeout(function(){
+            $boton.removeAttr("disabled");
+        },2000);
+    
         return false;        
     }    
  
@@ -2115,7 +2111,13 @@ function resetFactura(){
 }
 
 
-
+/**
+ * Funcion encargada de crear el objeto "articulo" para ser agregado a la lista
+ * 
+ * @param object _obj   objeto que contiene toda la informacion del articulo, i.e=
+ *                      Object { id="9291", iva="17", label="14224 :: +ESPEJO AKT EVO II # 10 JUE (M)", value="1500"}
+ * @returns false para terminar la ejecucion
+ */
 function agregarItemListaArticulo(_obj) {
     $("#BoxOverlayTransparente").css("display","block");
         

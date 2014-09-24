@@ -41,6 +41,7 @@ $textos = array(
     'ACTUALIZAR_RETENCIONES'                    => 'Actualizar retenciones',
     'TOTAL_RETENCIONES'                         => 'Total retenciones',
     'TOTAL_A_PAGAR'                             => 'Total a pagar',
+    'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total Articulos',
     
     'MENSAJE_FACTURA_TEMPORAL_VENTA'            => 'Tienes una factura de <span class=negrilla>venta</span> sin finalizar realizada el <span class=negrilla>%1</span> al cliente <span class=negrilla>%2</span>', 
     

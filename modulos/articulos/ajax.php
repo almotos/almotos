@@ -543,7 +543,7 @@ function adicionarItem($datos = array()) {
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk') . $textoExitoso, 'margenSuperior');
 
 
-        $codigo_f = HTML::forma($destino, $codigo, 'P', true);
+        $codigo_f = HTML::forma($destino, $codigo, 'P', true, "formaAdicionarArticulos");
 
         $respuesta['generar']       = true;
         $respuesta['codigo']        = $codigo_f;
@@ -557,7 +557,6 @@ function adicionarItem($datos = array()) {
     } else {
 
         $respuesta['error'] = true;
-
         $existeNombre = $sql->existeItem('articulos', 'nombre', $datos['nombre']);
 
         if (isset($datos['marca'])) {
@@ -580,7 +579,7 @@ function adicionarItem($datos = array()) {
         if (empty($datos['nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
             
-        } elseif (empty($datos['subgrupo'])) {
+        } /*elseif (empty($datos['subgrupo'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_SUBGRUPO');
             
         } elseif (!empty($datos['subgrupo']) && !$existeSubgrupo) {
@@ -613,7 +612,7 @@ function adicionarItem($datos = array()) {
         } elseif ($validarFormato || $validarFormato2) {
             $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_IMAGEN');
             
-        } else {
+        }*/ else {
             $idItem = $objeto->adicionar($datos);
 
             if ($idItem) {
@@ -627,16 +626,26 @@ function adicionarItem($datos = array()) {
                     $objeto->nombre = $objeto->nombre.' :: ('.$objeto->referencia.')';
                 }                 
 
-
-                $celdas     = array((int) $objeto->$idPrincipalArticulo, $objeto->nombre, $objeto->linea, $objeto->subgrupo, $objeto->codigoPais, '$ '.$objeto->precio1, $objeto->iva, '$ 0', $objeto->completo);
-                $claseFila  = '';
-                $idFila     = $idItem;
-                $celdas_f   = HTML::crearNuevaFila($celdas, $claseFila, $idFila);
+                $campoCantidad = HTML::campoTexto("campo-cantidad-articulo", 5, 20, "1", "campo-cantidad-articulo", "campoCantidadArticulo");
+                
+                $idPrincipal = (int) $objeto->$idPrincipalArticulo;
+                
+                $arregloContenido   = array("id"                => $idPrincipal, 
+                                            "nombre"            => $objeto->nombre, 
+                                            "linea"             => $objeto->linea, 
+                                            "subgrupo"          => $objeto->subgrupo,
+                                            "codigoPais"        => $objeto->codigoPais, 
+                                            "precioVenta"       => $objeto->precio1, 
+                                            "precioCompra"      => '0', 
+                                            "completo"          => $objeto->completo, 
+                                            "campoCantidad"     => $campoCantidad,
+                                            "iva"               => $objeto->iva
+                                            );
 
                 $respuesta['error']             = false;
                 $respuesta['accion']            = 'insertar';
-                $respuesta['contenido']         = $celdas_f;
-                $respuesta['idContenedor']      = '#tr_' . $idItem;
+                $respuesta['contenido']         = $arregloContenido;
+                $respuesta['idContenedor']      = '#tr_' . $idPrincipal;
                 $respuesta['idDestino']         = '#tablaRegistros';
 
                 if ($datos['dialogo'] == '') {
@@ -948,7 +957,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $titulo     = HTML::frase($objeto->nombre, 'negrilla');
         $titulo_f   = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION'));
         $codigo     = HTML::campoOculto('procesar', 'true');
-        $codigo    .= HTML::campoOculto('id', $id);
+        $codigo    .= HTML::campoOculto('id', (int)$id);
         $codigo    .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
         $codigo    .= HTML::parrafo($titulo_f);
         $codigo    .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
