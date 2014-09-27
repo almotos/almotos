@@ -239,7 +239,7 @@ $(document).ready(function(){
                         
 //                        var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
                           var valPredIva = iva;
-                              valPredIva = parseInt(valPredIva);
+                              valPredIva = parseInt(valPredIva); 
                         
                         var subtotal = precio;
                         
@@ -253,8 +253,9 @@ $(document).ready(function(){
                         if(precio != '' && ganancia_venta != ''){
                             var cobroIva = precio * ( valPredIva / 100 ); 
                             var ganancia = precio * ( ganancia_venta / 100 ); 
-                            
-                            precioVenta = parseDouble(precio + cobroIva + ganancia);
+                            //hack
+                            //precioVenta = parseDouble(precio + cobroIva + ganancia);
+                            precioVenta = parseDouble(precio + ganancia);
                             
                         } else if(precio != '' && ganancia_venta == ''){
                             var cobroIva = precio * ( valPredIva / 100 ); 
@@ -1153,12 +1154,7 @@ $(document).ready(function(){
 
         }
         
-        precioVenta = precio + (precio* (valPredIva / 100));
-
-        if (porcenGanan !== '' || porcenGanan !== 0 || porcenGanan !== '0') {//si no hay porcentaje de ganancia               
-            precioVenta = precioVenta + ( (porcenGanan * precio) / 100);//se hace el calculo aplicando el porcentaje
-
-        }                
+        precioVenta = sumarPrecioVenta(precio, porcenGanan);
 
         campoSubtotal.val(parseDouble(subtotal)); //asigno el precio al subtotal
         
@@ -1633,6 +1629,7 @@ function calcularSubtotalCampoDescuento(obj, e, borrarCampoDesGen){
 
 /**
  * Funcion que se encarga de calcular el valor de la ganancia de un articulo de una fila cuando se coloca un porcentaje de ganancia
+ * borrarCampoGanGen = booleano que determina si hay que borrar el campo de ganancia general
  */
 function calcularGananciaArticulo(obj, e, borrarCampoGanGen){
     
@@ -1713,6 +1710,9 @@ function calcularGananciaArticuloPorcentaje(obj, e, borrarCampoGanGen){
     //var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
     var valPredIva = iva;
         valPredIva = parseInt(valPredIva); 
+        
+    //hack para quitar el iva de los calculos de precio de venta
+    var valPredIva2 = 0;
 
     precioVenta = obj.val();
 
@@ -1720,7 +1720,7 @@ function calcularGananciaArticuloPorcentaje(obj, e, borrarCampoGanGen){
 
     precioVenta = parseDouble(precioVenta);
     
-    precioVenta = precioVenta - (precio * (valPredIva / 100));
+    precioVenta = precioVenta - (precio * (valPredIva2 / 100));
 
     if(parseDouble(precioVenta) < 0){
         return;
@@ -1827,11 +1827,15 @@ function sumarIva(){
            //queda pendiente si se saca es el subtotal (ya con descuentos) o el precio
            var precio = parseDouble($(this).attr("precio"));
            
-           var _ivaArticulo = precio - (precio / (1 + (_iva/100)) );
+           var cantidad = parseDouble($(this).attr("cantidad"));
+           
+           //Cambio para no mostrar el iva incluido en el precio del arituclo
+             var _ivaArticulo = precio - (precio / (1 + (_iva/100)) );
+           //var _ivaArticulo =  precio * (_iva/100) ;
            
            valIva += _ivaArticulo;
            
-           valIva = parseDouble(valIva);
+           valIva = parseDouble(valIva) * cantidad;
            
         });
         
@@ -1841,6 +1845,17 @@ function sumarIva(){
     
 }
 
+
+function sumarPrecioVenta(precio, porcenGanan) {
+    var precioVenta = precio; //+ (precio* (valPredIva / 100));
+
+    if (porcenGanan !== '' || porcenGanan !== 0 || porcenGanan !== '0') {//si  hay porcentaje de ganancia               
+        precioVenta = precioVenta + ( (porcenGanan * precio) / 100);//se hace el calculo aplicando el porcentaje
+
+    }  
+    
+    return precioVenta;
+}
 
 ////funcion que se encarga de sumar el valor del iva al total de la factura
 //function sumarRetecree(retecree, total){
@@ -1888,7 +1903,13 @@ function armarCadenaDatosArticulos(){
     $("#cadenaArticulosPrecios").val(cadenaDatosArticulos);
 }
 
-
+/**
+ * Funcion encargada de armar el html para agregar una fila a la lista de articulos
+ * 
+ * @param array datos contiene toda la informacion del articulo
+ * @param boolean disabledPrecioVenta si TRUE agrega un identificador a la fila, que inhabilita los campos precio de venta y % ganancia
+ * @returns {String} codigo html que representa una fila de la tabla del listado de articulos
+ */
 function generarFilaArticulo(datos, disabledPrecioVenta){
     
             //funciones y validaciones que se dan si un articulo ya existe en el listado
@@ -1980,13 +2001,16 @@ function agregarItemListaArticulo(_obj) {
         //var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
         var valPredIva =  iva;
         
+        //hack para quitar el iva de los calculos de precio de venta
+        var valPredIva2 = 0;
+        
         if (precio != '' && precio != '0' && precio != 0 && ganancia_venta != '') {//si el articulo tiene precio, y se ha introducido un % de ganancia sobre el articulo
-            precioVenta = ( precio + ( (precio *  ganancia_venta) / 100)) + ( (precio *  valPredIva) / 100) ;//aplico ese porcentaje de ganancia sobre el precio de venta
+            precioVenta = ( precio + ( (precio *  ganancia_venta) / 100)) + ( (precio *  valPredIva2) / 100) ;//aplico ese porcentaje de ganancia sobre el precio de venta
             
         } else if (precio != '' && precio != '0' && precio != 0 && ganancia_venta == '') {//si no hay porcentaje de ganancia escrito, se toma el predeterminado
             var porcPredGanancia = $("#porcPredGanancia").val();
             porcPredGanancia     = parseDouble(porcPredGanancia);            
-            precioVenta          = (precio + ( (precio *  porcPredGanancia) / 100) ) + ( (precio *  valPredIva) / 100);
+            precioVenta          = (precio + ( (precio *  porcPredGanancia) / 100) ) + ( (precio *  valPredIva2) / 100);
             
         } else {
             precioVenta = '0';//sino este sigue siendo cero, esto para no modificar ese valor en la BD, pues antes de introducirlo, se verificará que no sea 0

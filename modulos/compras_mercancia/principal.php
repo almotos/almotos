@@ -449,7 +449,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     $clase = ($regimenProveedor == "1") ? "oculto" : "";
    
     $linea5 .= HTML::frase($textos->id('IVA'), 'margenIzquierda campoIva '.$clase);
-    $linea5 .= HTML::campoTexto('datos[iva]', 8, 10, $valorIva, 'campoDinero campoIva '.$clase, 'campoIva', array()+$tutorial["23"]);
+    $linea5 .= HTML::campoTexto('datos[iva]', 8, 10, $valorIva, 'campoDinero campoIva '.$clase, 'campoIva', array("disabled" => "disabled")+$tutorial["23"]);
     
     $linea5 .= HTML::frase($textos->id('TOTAL'), 'margenIzquierdaTriple margenSuperiorDoble margenInferiorDoble masGrande2');
 
