@@ -178,6 +178,7 @@ $textos = array(
     'OCHO'                              => 'Ocho',
     'NUEVE'                             => 'Nueve',
     'DIEZ'                              => 'Diez',
+    'ACCESO_DENEGADO'                   => 'Acceso denegado.',
     /**
      *
      * Módulos
@@ -257,6 +258,9 @@ $textos = array(
     'COMPLETO_1'                                => 'Si',
     'COMPLETO_0'                                => 'No',
     'MASIVO_CARGADO_CORRECTAMENTE'              => 'Información cargada correctamente!!!',
+    'ACTIVAR_INACTIVAR_ITEM'                    => 'Activar/Inactivar Item',
+    'CONFIRMAR_ACTIVACION'                      => 'Solo puede <b>Activar</b> este item. <u>Desea Activarlo?</u>',
+    'CONFIRMAR_INACTIVACION'                    => 'Solo puede <b>Inactivar</b> este item. <u>Desea Inactivarlo?</u>',
     'INDICACIONES_ARCHIVO_MASIVO_1'             => 'Por favor, asegurese que el archivo sea de extensión [xls]<br />',
     'INDICACIONES_ARCHIVO_MASIVO_2'             => 'Que contenga los encabezados en la primera fila [1] y los datos inicien desde la primera columna [A]<br />Evite filas completas en blanco entre los datos a cargar<br />',
     /**
