@@ -14,7 +14,7 @@
 $textos = array(
     /*Basicos*/
     'MODULO_ACTUAL'                             => 'Privilegios',
-    'ADICIONAR_ITEM'                            => 'Agregar Privilegio',
+    'ADICIONAR_ITEM'                            => 'Adicionar Privilegio',
     'MODIFICAR_ITEM'                            => 'Modificar Privilegio',
     'ELIMINAR_ITEM'                             => 'Eliminar Privilegio',
     'CONSULTAR_ITEM'                            => 'Consultar Privilegio',

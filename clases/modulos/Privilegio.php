@@ -15,7 +15,8 @@
 /**
  * 
  */
-class Privilegios {
+class Privilegio
+{
 
     /**
      * Código interno o identificador del usuario de los privilegios en la base de datos
@@ -85,7 +86,13 @@ class Privilegios {
      * Número de registros activos de la lista 
      * @var entero
      */
-    public $registrosConsulta = NULL;    
+    public $registrosConsulta = NULL; 
+    
+    /**
+     * Código interno o identificador del modulo
+     * @var entero
+     */
+    public $idModulo;
 
     /**
      *
@@ -98,6 +105,7 @@ class Privilegios {
         global $modulo, $sql;
         
         $this->urlBase              = "/".$modulo->url;
+        $this->idModulo             = $modulo->id;
         $this->url                  = $modulo->url;
         $this->ordenInicial         = 'u.usuario';
         $sql->depurar = true;
@@ -275,6 +283,7 @@ class Privilegios {
         }
         
         /*         * * Validar que la excepción sea un arreglo y contenga elementos ** */
+        $condicion = '';
         if (isset($excepcion) && is_array($excepcion)) {
             $excepcion = implode(',', $excepcion);
             $condicion .= 'u.id NOT IN (' . $excepcion . ') AND ';
