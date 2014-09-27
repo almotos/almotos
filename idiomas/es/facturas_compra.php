@@ -38,7 +38,6 @@ $textos = array(
     'FACTURA_DIGITAL_PROVEEDOR'                 => 'Factura digital N° ',
     'GENERAR_FACTURA_DESDE_ORDEN'               => 'Generar factura desde orden de compra',
     'NUM_FACT_PROVEEDOR'                        => '# Fact. Prov.',
-    'CONFIRMAR_INACTIVACION'                    => 'Solo puede inactivar esta factura. Desea inactivarla?',
     
     'ELIMINAR_FACTURA_DIGITAL'                  => 'Click aquí para eliminar<br> la factura digital',
     'FACTURA_DIGITAL_ELIMINADA'                 => 'Factura digital eliminada correctamente',
