@@ -12,14 +12,13 @@
  * */
 global $sesion_usuarioSesion, $modulo, $textos, $configuracion;
 
-$tituloBloque = $textos->id('MODULO_ACTUAL');
+$tituloBloque  = $textos->id('MODULO_ACTUAL');
 $tituloBloque .= HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/' . strtolower($modulo->url) . '.png', 'iconoModulo');
-$objeto = new FacturaVenta(); /* creacion del objeto */
-$excluidas = array('0'); //items excluidos en la consulta
-$item = '';
-$contenido = '';
-$contenido .= HTML::contenedor(HTML::contenedor($textos->id('AYUDA_MODULO'), 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
-
+$objeto        = new FacturaVenta(); /* creacion del objeto */
+$excluidas     = array('0'); //items excluidos en la consulta
+$item          = '';
+$contenido     = '';
+$contenido    .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');$
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
 
@@ -44,11 +43,11 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+/*$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
 $botonEliminar = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
-}
+}*/
 
 /* Checkbox que se encarga de marcar todas las filas de la tabla */
 $chkMarcarFilas = '';

@@ -65,6 +65,12 @@ class FacturaCompra {
      * @var entero
      */
     public $idProveedor;
+    
+    /**
+     * nit del objeto proveedor al cual se le realiza la compra
+     * @var entero
+     */
+    public $nitProveedor;
 
     /**
      * objeto proveedor al cual se le realiza la compra
@@ -318,6 +324,7 @@ class FacturaCompra {
                 'id'                        => 'fc.id',
                 'idFactura'                 => 'fc.id_factura',
                 'idProveedor'               => 'fc.id_proveedor',
+                'nitProveedor'              => 'p.id_proveedor',
                 //'proveedor'                 => 'p.nombre',
                 'numeroFacturaProveedor'    => 'fc.num_factura_proveedor',
                 'fechaFactura'              => 'fc.fecha_factura',

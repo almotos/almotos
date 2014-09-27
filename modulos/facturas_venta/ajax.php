@@ -89,7 +89,7 @@ function cosultarItem($id) {
     $codigo .= HTML::campoOculto('id', $id);
 
     $codigo1  = HTML::parrafo($textos->id('CLIENTE') . ': ' . HTML::frase($objeto->cliente, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idCliente, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitCliente, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo('', 'negrilla margenSuperior');
@@ -481,17 +481,17 @@ function modificarItem($id) {
         return NULL;
     }
 
-    $objeto = new FacturaVenta($id);
+    $objeto    = new FacturaVenta($id);
     $respuesta = array();
 
-    $codigo = HTML::campoOculto('id', $id);
+    $codigo  = HTML::campoOculto('id', $id);
     $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
 
-    $codigo1 = HTML::parrafo($textos->id('NUMERO_FACTURA') . HTML::frase($objeto->idFactura, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1  = HTML::parrafo($textos->id('NUMERO_FACTURA') . HTML::frase($objeto->idFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('CLIENTE') . ': ' . HTML::frase($objeto->cliente, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idCliente, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitCliente, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_CLIENTE') . ': ' . HTML::frase($objeto->numeroFacturaCliente, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_CLIENTE') . ': ' . HTML::frase($objeto->idFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
 
     $pestanas = array(
@@ -579,6 +579,67 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
         if ($objeto->inactivar()) {
 
+               /*                 * ************** Creo el nuevo item que se insertara via ajax *************** */
+                $objeto     = new FacturaVenta($id);
+
+                $estado     = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
+
+                $celdas     = array($objeto->id, $objeto->sede, $objeto->objCliente->id, $objeto->objCliente->nombre, $objeto->usuario, $objeto->fechaFactura, $estado);
+                $celdas1    = HTML::crearFilaAModificar($celdas);
+
+                $respuesta['error']         = false;
+                $respuesta['accion']        = 'insertar';
+                $respuesta['contenido']     = $celdas1;
+                $respuesta['idContenedor']  = '#tr_' . $id;
+                $respuesta['idDestino']     = '#tr_' . $id;
+
+                if ($dialogo == '') {
+                    $respuesta['modificarFilaTabla'] = true;
+                    
+                } else {
+                    $respuesta['modificarFilaDialogo']  = true;
+                    $respuesta['ventanaDialogo']        = $dialogo;
+                }
+            
+        } else {
+            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+            
+        }
+        
+    }
+
+    Servidor::enviarJSON($respuesta);
+    
+}
+  /* function eliminarItem($id, $confirmado, $dialogo) {
+    global $textos;
+
+    $objeto     = new FacturaVenta($id);
+    $destino    = '/ajax' . $objeto->urlBase . '/delete';
+    $respuesta  = array();
+
+    if (!$confirmado) {
+        $titulo  = HTML::frase($objeto->idFactura, 'negrilla');
+        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_INACTIVACION'));
+        $codigo  = HTML::campoOculto('procesar', 'true');
+        $codigo .= HTML::campoOculto('id', $id);
+        $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
+        $codigo .= HTML::parrafo($titulo1);
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
+        $codigo .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
+        $codigo1 = HTML::forma($destino, $codigo);
+
+        $respuesta['generar']   = true;
+        $respuesta['codigo']    = $codigo1;
+        $respuesta['destino']   = '#cuadroDialogo';
+        $respuesta['titulo']    = HTML::parrafo($textos->id('ELIMINAR_ITEM'), 'letraBlanca negrilla subtitulo');
+        $respuesta['ancho']     = 350;
+        $respuesta['alto']      = 150;
+        
+ } else {
+
+        if ($objeto->inactivar()) {
+
             $respuesta['error'] = false;
             $respuesta['accion'] = 'insertar';
             $respuesta['idDestino'] = '#tr_' . $id;
@@ -601,8 +662,8 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
     Servidor::enviarJSON($respuesta);
     
-}
-
+}*/
+   
 /**
  * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
  * le pasa. Es llamada cuando se ingresa un texto en el campo de busqueda en la pantalla principal del modulo.
@@ -864,7 +925,7 @@ function buscarFactura() {
  * @param int $cantidad         = cantidad a ser eliminada
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
-function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
+/*function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     global $textos;
 
     $destino    = '/ajax/facturas_venta/eliminarVarios';
@@ -914,7 +975,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     }
 
     Servidor::enviarJSON($respuesta);
-}
+}*/
 
 /**
  * Funcion que muestra la información de una nota credito

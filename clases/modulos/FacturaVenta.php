@@ -54,13 +54,19 @@ class FacturaVenta {
      * @var entero
      */
     public $idCliente;
+    
+    /**
+     * nit del cliente al cual se le realiza la venta
+     * @var objeto
+     */
+    public $nitCliente;
 
     /**
      * cliente al cual se le realiza la venta
      * @var objeto
      */
     public $cliente;
-    
+      
     /**
      * objeto cliente al cual se le realiza la venta
      * @var objeto
@@ -296,6 +302,7 @@ class FacturaVenta {
                 'id'                        => 'fv.id',
                 'idFactura'                 => 'fv.id_factura',
                 'idCliente'                 => 'fv.id_cliente',
+                'nitCliente'                => 'c.id_cliente',
                 'cliente'                   => 'c.nombre',
                 'fechaFactura'              => 'fv.fecha_factura',
                 'fechaVtoFactura'           => 'fv.fecha_vencimiento',
