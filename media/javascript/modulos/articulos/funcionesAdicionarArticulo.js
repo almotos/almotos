@@ -74,9 +74,9 @@ $("#formaAdicionarArticulos").find("button#botonOk").bind("click", function(e){
     $("#indicadorEspera").css("display","block");
     $("#BoxOverlay").css("display","block");
 
-    formulario  =   $(this).parents("form");
-    destino     =   $(formulario).attr("action");    
-    validar     =   $(this).attr("validar");
+    var formulario  =   $(this).parents("form");
+    var destino     =   $(formulario).attr("action");    
+    var validar     =   $(this).attr("validar");
 
     if(validar == "NoValidar"){//modificado
         validarFormularioArticulos(formulario); 
@@ -147,7 +147,9 @@ function enviarFormularioArticulos(formulario){
         $(formulario).ajaxSubmit({
             dataType:   "json",
             success:    procesaRespuestaArticulos
-        });     
+        });    
+        
+        return false;
 }
 
 
@@ -175,6 +177,8 @@ function procesaRespuestaArticulos(respuesta){
         }
         
     }
+    
+    return false;
 }
 
 function respuestaInsertarCompras(respuesta) {
@@ -202,10 +206,16 @@ function respuestaInsertarVentas(respuesta) {
 
 function respuestaInsertarArticulos(respuesta) {
     
-    var plantillaFila = "<tr class='oculto filasTabla' id='tr_<%= obj.id %>' ><td class='centrado'> <%= obj.id %> </td><td class='centrado'> <%= obj.nombre %> </td> <td class='centrado'> <%= obj.linea %> </td><td class='centrado'> <%= obj.subgrupo %> </td><td class='centrado'> <%= obj.codigoPais %></td><td class='centrado'> $<%= obj.precioVenta %> </td><td class='centrado'> $<%= obj.precioCompra %> </td><td class='centrado'> <%= obj.completo %> </td><td class='centrado'> <%= obj.campoCantidad %></td></tr>";
-    
+
     var obj = respuesta.contenido;
     
+    var columnaIva = '';
+    if ("iva" in obj){
+        columnaIva = "<td class='centrado'> <%= obj.iva %> </td>";
+    }
+    
+    var plantillaFila = "<tr class='oculto filasTabla' id='tr_<%= obj.id %>' ><td class='centrado'> <%= obj.id %> </td><td class='centrado'> <%= obj.nombre %> </td> <td class='centrado'> <%= obj.linea %> </td><td class='centrado'> <%= obj.subgrupo %> </td><td class='centrado'> <%= obj.codigoPais %></td><td class='centrado'> $<%= obj.precioVenta %> </td><td class='centrado'> $<%= obj.precioCompra %> </td><td class='centrado'> <%= obj.completo %> </td>"+columnaIva+"</tr>";
+        
     var contenido = _.template(plantillaFila, obj);
 
     mostrarNotificacionDinamica('Registro agregado exitosamente', 'exitoso');

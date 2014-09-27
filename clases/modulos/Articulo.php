@@ -903,14 +903,13 @@ class Articulo {
         //$sql->depurar = true;
         $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'a.id', $orden, $inicio, $cantidad);
         
-        
-        $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
+        //$idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
         
         if ($sql->filasDevueltas) {
             $lista = array();
 
             while ($objeto = $sql->filaEnObjeto($consulta)) {
-                $objeto->$idPrincipalArticulo = Recursos::completarCeros($objeto->$idPrincipalArticulo, 6);
+                //$objeto->$idPrincipalArticulo = Recursos::completarCeros($objeto->$idPrincipalArticulo, 6);
                 //$objeto->estado = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
                 if($objeto->referencia){
                     $objeto->nombre = $objeto->nombre.' :: ('.$objeto->referencia.')';
@@ -958,7 +957,6 @@ class Articulo {
             HTML::parrafo($textos->id('PRECIO_VENTA'), '')                      => 'precio1|a.precio1',            
             HTML::parrafo($textos->id('ULTIMO_PRECIO_COMPRA'), '')              => 'ultimoPrecioCompra|a.ultimo_precio_compra',
             HTML::parrafo($textos->id('COMPLETO'), '')                          => 'completo',
-            HTML::parrafo($textos->id('CANTIDAD'), '')                          => 'campoCantidad',
         );        
 
         //ruta del metodo paginador
@@ -974,14 +972,14 @@ class Articulo {
         }
 
         $botonesExtras      = array($moverMercancia);
-        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 pais', 'columna6', 'columna7 iva', 'columna8', ' columna9 completo', 'columna10 cantidad');   
+        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 pais', 'columna6', 'columna7 completo', 'columna8 iva', ' columna9');   
         
         //si el regimen es diferente al simplificado muestro el iva en los articulos
         if ($sesion_configuracionGlobal->empresa->regimen != "1"){
             $datosTabla[HTML::parrafo($textos->id('IVA'), '')] = 'iva|a.iva';             
 
         } else {//si es simplificado remuevo el estilo del iva del arreglo de estilos columnas
-            $estilosColumnas = array_diff($estilosColumnas, array('columna7 iva'));
+            $estilosColumnas = array_diff($estilosColumnas, array('columna8 iva'));
             
         }
         
@@ -994,6 +992,49 @@ class Articulo {
         return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion, $estilosColumnas, $tablaModal) . $botonDerecho;
         
     }
+    
+    /**
+     * Metodo que genera los datos que contendra la tabla principal del modulo
+     * 
+     * @global objeto $textos = objeto global de traduccion de textos
+     * @param array $arregloRegistros matriz con la info a ser mostrada en la tabla
+     * @param array $datosPaginacion arreglo con la información para la paginacion
+     * @return string cadena HTML con la tabla (<table>) generada 
+     */
+    public function generarTablaModal($arregloRegistros, $datosPaginacion = NULL, $tablaModal = false) {
+        global $textos, $sesion_configuracionGlobal;
+        
+        $idPrincipalArticulo    = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
+        $arrayIdArticulo        = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));
+        
+        $datosTabla = array(
+            HTML::parrafo($arrayIdArticulo[$idPrincipalArticulo], 'centrado')   => ''.$idPrincipalArticulo.'|a.'.$idPrincipalArticulo.'', //concateno el nombre del alias para usarlo al armar la tabla con el fila en objeto
+            HTML::parrafo($textos->id('NOMBRE'), 'centrado')                    => 'nombre|a.nombre',
+            HTML::parrafo($textos->id('LINEA'), '')                             => 'linea|l.nombre', //la busqueda, al armar la tabla dividira la cadena y usara el que necesite
+            HTML::parrafo($textos->id('PRECIO_VENTA'), '')                      => 'precio1|a.precio1',            
+            HTML::parrafo($textos->id('ULTIMO_PRECIO_COMPRA'), '')              => 'ultimoPrecioCompra|a.ultimo_precio_compra',
+            HTML::parrafo($textos->id('CANTIDAD'), '')                          => 'campoCantidad',
+        );        
+        
+        //si el regimen es diferente al simplificado muestro el iva en los articulos
+        if ($sesion_configuracionGlobal->empresa->regimen != "1"){
+            $datosTabla[HTML::parrafo($textos->id('IVA'), '')] = 'iva|a.iva';             
+
+        } else {//si es simplificado remuevo el estilo del iva del arreglo de estilos columnas
+            $estilosColumnas = array_diff($estilosColumnas, array('columna7 iva'));
+            
+        }        
+
+        //ruta del metodo paginador
+        $rutaPaginador = '/ajax' . $this->urlBase . '/moveModal';
+
+        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 ', 'columna6');   
+
+        return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion, $estilosColumnas, $tablaModal);
+        
+    }    
+    
+    
 
     /**
      * Metodo que genera los datos que contendra la tabla principal del modulo
@@ -1022,7 +1063,6 @@ class Articulo {
         return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion);
         
     }
-    
     
     /**
      * Metodo llamado por la clase factura de compra. Cada vez que se realiza una compra, por cada uno de los articulos de la compra, se deberá modificar
