@@ -205,8 +205,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la información a mostrar en el formulario
  */
 function adicionarMasivo($datos = array()) {
-    global $textos, $configuracion, $archivo_masivo;
+    global $textos, $configuracion, $archivo_masivo, $modulo;
 
+    /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoActividades_economicas', $modulo->id);
+    
+    if(!$puedeAdicionarMasivo) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new ActividadEconomica();
     $destino = '/ajax' . $objeto->urlBase . '/addMassive';

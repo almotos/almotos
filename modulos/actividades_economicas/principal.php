@@ -41,7 +41,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 /**
  * Verificar permisos para el boton de adicion de masivo 
  */
-$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivo', $modulo->id);
+$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoActividades_economicas', $modulo->id);
 $botonCargarMasivo = '';
 if ((isset($sesion_usuarioSesion) && $puedeAdicionarMasivo) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonCargarMasivo = HTML::contenedor(HTML::botonCargarMasivo($objeto->urlBase, $textos->id('ADICIONAR_MASIVO')), 'flotanteDerecha margenInferior', 'botonCargarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
