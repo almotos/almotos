@@ -651,7 +651,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
                 $estado     = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
 
-                $celdas     = array($objeto->id, $objeto->sede, $objeto->proveedor->nombre, $objeto->numeroFacturaProveedor, $objeto->usuario, $objeto->fechaFactura, $estado);
+                $celdas     = array($objeto->id, $objeto->sede, $objeto->proveedor->id_proveedor, $objeto->proveedor->nombre, $objeto->numeroFacturaProveedor, $objeto->usuario, $objeto->fechaFactura, $estado);
                 $celdas1    = HTML::crearFilaAModificar($celdas);
 
                 $respuesta['error']         = false;
