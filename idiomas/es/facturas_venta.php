@@ -37,7 +37,6 @@ $textos = array(
     'FALLO_EN_LA_CARGA'                         => 'Hubo una falla al cargar el archivo, actualiza el explorador e intenta de nuevo',
     'FACTURA_DIGITAL_CLIENTE'                   => 'Factura digital N° ',
     'GENERAR_FACTURA_DESDE_ORDEN'               => 'Generar factura desde orden de venta',
-    'CONFIRMAR_INACTIVACION'                    => 'Solo puede inactivar esta factura. Desea inactivarla?',
     
     'ELIMINAR_FACTURA_DIGITAL'                  => 'Click aquí para eliminar<br> la factura digital',
     'FACTURA_DIGITAL_ELIMINADA'                 => 'Factura digital eliminada correctamente',

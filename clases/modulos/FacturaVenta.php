@@ -328,6 +328,7 @@ class FacturaVenta {
                 'subtotal'                  => 'fv.subtotal',
                 'estadoFactura'             => 'fv.estado_factura',
                 'observaciones'             => 'fv.observaciones',
+                'activo'                    => 'fv.activo',
             );
 
             $condicion = 'fv.id_caja = c1.id AND c1.id_sede = s.id  AND fv.id_usuario = u.id AND fv.id_cliente = c.id AND fv.id = "' . $id . '"';
@@ -713,7 +714,11 @@ class FacturaVenta {
         
         $sql->iniciarTransaccion();
         
-        $datos = array('activo' => '0');
+        $activo = $sql->obtenerValor('facturas_venta', 'activo', 'id = "' . $this->id . '"');
+        
+        $valor = ($activo == "1") ? "0" : "1";
+        
+        $datos = array('activo' => $valor);
         
         $consulta = $sql->modificar('facturas_venta', $datos, 'id = "' . $this->id . '"');
 
@@ -790,6 +795,7 @@ class FacturaVenta {
             'total'                     => 'fv.total',
             'estadoFactura'             => 'fv.estado_factura',
             'observaciones'             => 'fv.observaciones',
+            'activo'                    => 'fv.activo',
         );
 
         $condicion .=   ' LEFT JOIN fom_cajas c1 ON fv.id_caja = c1.id'. 
@@ -823,7 +829,7 @@ class FacturaVenta {
 
             while ($objeto = $sql->filaEnObjeto($consulta)) {
 
-                $objeto->estadoFactura = ($objeto->estadoFactura) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
+                $objeto->activo = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
 
                 $lista[] = $objeto;
             }
@@ -849,7 +855,7 @@ class FacturaVenta {
             HTML::parrafo($textos->id('CLIENTE'), 'centrado')           => 'cliente|c.nombre',
             HTML::parrafo($textos->id('USUARIO_CREADOR'), 'centrado')   => 'usuario|u.usuario',
             HTML::parrafo($textos->id('FECHA_FACTURA'), 'centrado')     => 'fechaFactura|fv.fecha_factura',
-            HTML::parrafo($textos->id('ESTADO'), 'centrado')            => 'estadoFactura|fv.estado_factura',
+            HTML::parrafo($textos->id('ACTIVO'), 'centrado')            => 'activo|fv.activo',
         );
         //ruta del metodo paginador
         $rutaPaginador = '/ajax' . $this->urlBase . '/move';

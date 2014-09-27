@@ -551,15 +551,20 @@ function modificarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+    global $textos, $sql;
 
     $objeto     = new FacturaVenta($id);
     $destino    = '/ajax' . $objeto->urlBase . '/delete';
     $respuesta  = array();
 
     if (!$confirmado) {
+        //query para verificar si se activa o se inactiva la factura dependiendo del estado
+        $activo = $sql->obtenerValor('facturas_venta', 'activo', 'id = "' . $id . '"');
+        
+        $pregunta = ($activo == "1") ? 'CONFIRMAR_INACTIVACION' : 'CONFIRMAR_ACTIVACION';
+        
         $titulo  = HTML::frase($objeto->idFactura, 'negrilla');
-        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_INACTIVACION'));
+        $titulo1 = str_replace('%1', $titulo, $textos->id($pregunta));
         $codigo  = HTML::campoOculto('procesar', 'true');
         $codigo .= HTML::campoOculto('id', $id);
         $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
@@ -571,7 +576,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['generar']   = true;
         $respuesta['codigo']    = $codigo1;
         $respuesta['destino']   = '#cuadroDialogo';
-        $respuesta['titulo']    = HTML::parrafo($textos->id('ELIMINAR_ITEM'), 'letraBlanca negrilla subtitulo');
+        $respuesta['titulo']    = HTML::parrafo($textos->id('ACTIVAR_INACTIVAR_ITEM'), 'letraBlanca negrilla subtitulo');
         $respuesta['ancho']     = 350;
         $respuesta['alto']      = 150;
         

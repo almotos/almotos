@@ -973,7 +973,7 @@ class FacturaCompra {
             HTML::parrafo($textos->id('NUM_FACT_PROVEEDOR'), 'centrado')    => 'numeroFactura|fc.num_factura_proveedor',
             HTML::parrafo($textos->id('USUARIO_CREADOR'), 'centrado')       => 'usuario|u.usuario',
             HTML::parrafo($textos->id('FECHA_FACTURA'), 'centrado')         => 'fechaFactura|fc.fecha_factura',
-            HTML::parrafo($textos->id('ESTADO'), 'centrado')                => 'activo|fc.activo',
+            HTML::parrafo($textos->id('ACTIVO'), 'centrado')                => 'activo|fc.activo',
         );
         //ruta del metodo paginador
         $rutaPaginador = '/ajax' . $this->urlBase . '/move';
