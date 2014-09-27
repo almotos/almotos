@@ -33,9 +33,15 @@ if (isset($url_accion)) {
         
         case 'search'               :   buscarItem($forma_datos, $forma_cantidadRegistros);
                                         break;
+                                    
+        case 'searchModal'          :   buscarItemModal($forma_datos, $forma_cantidadRegistros);
+                                        break;                                    
         
         case 'move'                 :   paginador($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal, $forma_cantidadRegistros);
                                         break;
+                                    
+        case 'moveModal'            :   paginadorModal($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal, $forma_cantidadRegistros);
+                                        break;                                    
         
         case 'moveNew'              :   paginadorNuevo($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal);
                                         break;
@@ -574,12 +580,12 @@ function adicionarItem($datos = array()) {
 
         if (!empty($archivo_imagen2['tmp_name'])) {
             $validarFormato2 = Recursos::validarArchivo($archivo_imagen2, array('jpg', 'jpeg', 'png', 'gif', 'jpeg'));
-        }
+        }    
 
         if (empty($datos['nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
             
-        } /*elseif (empty($datos['subgrupo'])) {
+        } elseif (empty($datos['subgrupo'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_SUBGRUPO');
             
         } elseif (!empty($datos['subgrupo']) && !$existeSubgrupo) {
@@ -588,7 +594,7 @@ function adicionarItem($datos = array()) {
         } elseif (!empty($datos['linea']) && !$existeLinea) {
             $respuesta['mensaje'] = $textos->id('ERROR_LINEA_INEXISTENTE');
             
-        } elseif ($existeNombre) {
+        }  elseif ($existeNombre) {
             $respuesta['mensaje'] = $textos->id('ERROR_EXISTE_NOMBRE');
             
         } elseif (empty($datos['unidad'])) {
@@ -606,13 +612,13 @@ function adicionarItem($datos = array()) {
         } elseif (!empty($datos['marca']) && !$existeMarca) {
             $respuesta['mensaje'] = $textos->id('ERROR_MARCA_INEXISTENTE');
             
-        } elseif (empty($datos['precio1']) && empty($datos['precio2'])) {
+        } /*elseif (empty($datos['precio1']) && empty($datos['precio2'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_PRECIO_BASE');
             
-        } elseif ($validarFormato || $validarFormato2) {
+        }*/ elseif ($validarFormato || $validarFormato2) {
             $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_IMAGEN');
             
-        }*/ else {
+        } else {
             $idItem = $objeto->adicionar($datos);
 
             if ($idItem) {
@@ -625,8 +631,6 @@ function adicionarItem($datos = array()) {
                 if($objeto->referencia){
                     $objeto->nombre = $objeto->nombre.' :: ('.$objeto->referencia.')';
                 }                 
-
-                $campoCantidad = HTML::campoTexto("campo-cantidad-articulo", 5, 20, "1", "campo-cantidad-articulo", "campoCantidadArticulo");
                 
                 $idPrincipal = (int) $objeto->$idPrincipalArticulo;
                 
@@ -637,15 +641,19 @@ function adicionarItem($datos = array()) {
                                             "codigoPais"        => $objeto->codigoPais, 
                                             "precioVenta"       => $objeto->precio1, 
                                             "precioCompra"      => '0', 
-                                            "completo"          => $objeto->completo, 
-                                            "campoCantidad"     => $campoCantidad,
-                                            "iva"               => $objeto->iva
+                                            "completo"          => $objeto->completo,
                                             );
+                
+                //si el regimen es diferente al simplificado muestro el iva en los articulos
+                if ($sesion_configuracionGlobal->empresa->regimen != "1"){
+                    $arregloContenido['iva'] = $objeto->iva;            
+
+                } 
 
                 $respuesta['error']             = false;
                 $respuesta['accion']            = 'insertar';
                 $respuesta['contenido']         = $arregloContenido;
-                $respuesta['idContenedor']      = '#tr_' . $idPrincipal;
+                $respuesta['idContenedor']      = '#tr_' . $idItem;
                 $respuesta['idDestino']         = '#tablaRegistros';
 
                 if ($datos['dialogo'] == '') {
@@ -973,8 +981,8 @@ function eliminarItem($id, $confirmado, $dialogo) {
         
  } else {
                 
-            $respuesta['error']     = true;
-            $respuestaEliminar = $objeto->eliminar();
+        $respuesta['error']     = true;
+        $respuestaEliminar = $objeto->eliminar();
         
         if ($respuestaEliminar['respuesta']) {
 
@@ -1075,6 +1083,97 @@ function buscarItem($data, $cantidadRegistros = NULL) {
         } else {
             $datosPaginacion = 0;
             $item .= $objeto->generarTabla($textos->id('NO_HAY_REGISTROS'), $datosPaginacion);
+            $info = HTML::parrafo($textos->id('BUSQUEDA_SIN_RESULTADOS'), 'textoErrorNotificaciones');
+            
+        }
+
+        $respuesta['error']             = false;
+        $respuesta['accion']            = 'insertar';
+        $respuesta['contenido']         = $item;
+        $respuesta['idContenedor']      = '#tablaRegistros';
+        $respuesta['idDestino']         = '#contenedorTablaRegistros';
+        $respuesta['paginarTabla']      = true;
+        $respuesta['info']              = $info;
+    }
+
+    Servidor::enviarJSON($respuesta);
+    
+}
+
+/**
+ * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
+ * le pasa. Es llamada cuando se ingresa un texto en el campo de busqueda en la pantalla principal del modulo.
+ * Una vez es llamada esta función, se encarga de recargar la tabla de registros con los datos coincidientes 
+ * en el patrón de busqueda.
+ *
+ * @global objeto $textos             = objeto global que gestiona los textos a traducir
+ * @global arreglo $configuracion      = arreglo global de configuracion
+ * @param arreglo $data                = arreglo con los parametros de busqueda
+ * @param int $cantidadRegistros   = cantidad de registros aincluir por busqueda
+ */
+function buscarItemModal($data, $cantidadRegistros = NULL) {
+    global $textos, $configuracion;
+
+    $data   = explode('[', $data);
+    $datos  = $data[0];
+
+    if (empty($datos)) {
+        $respuesta['error']     = true;
+        $respuesta['mensaje']   = $textos->id('ERROR_FALTA_CADENA_BUSQUEDA');
+        
+    } else if (!empty($datos) && strlen($datos) < 2) {
+        $respuesta['error']     = true;
+        $respuesta['mensaje']   = str_replace('%1', '2', $textos->id('ERROR_TAMAÑO_CADENA_BUSQUEDA'));
+        
+    } else {
+        $item               = '';
+        $respuesta          = array();
+        $objeto             = new Articulo();
+        $registros          = $configuracion['GENERAL']['registrosPorPagina'];
+        
+        if (!empty($cantidadRegistros)) {
+            $registros = (int) $cantidadRegistros;
+        }
+        
+        $pagina             = 1;
+        $registroInicial    = 0;
+
+        $palabras = explode(' ', $datos);
+
+        $condicionales = $data[1];
+
+        if ($condicionales == '') {
+            $condicion = '(a.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            
+        } else {
+            $condicionales = explode('|', $condicionales);
+
+            $condicion      = '(';
+            $tam            = sizeof($condicionales) - 1;
+            
+            for ($i = 0; $i < $tam; $i++) {
+                $condicion .= $condicionales[$i] . ' REGEXP "(' . implode('|', $palabras) . ')" ';
+                if ($i != $tam - 1) {
+                    $condicion .= ' OR ';
+                    
+                }
+                
+            }
+            
+            $condicion .= ')';
+            
+        }
+
+        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'a.nombre');
+
+        if ($objeto->registrosConsulta) {//si la consulta trajo registros
+            $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina, $objeto->registrosConsulta);
+            $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion);
+            $info = HTML::parrafo(str_replace('%1', $objeto->registrosConsulta, $textos->id('RESULTADOS_BUSQUEDA')), 'textoExitosoNotificaciones');
+            
+        } else {
+            $datosPaginacion = 0;
+            $item .= $objeto->generarTablaModal($textos->id('NO_HAY_REGISTROS'), $datosPaginacion);
             $info = HTML::parrafo($textos->id('BUSQUEDA_SIN_RESULTADOS'), 'textoErrorNotificaciones');
             
         }
@@ -1196,6 +1295,110 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
     Servidor::enviarJSON($respuesta);
 }
 
+
+/**
+ * Funcion que se encarga de realizar la paginacion del listado de registros.
+ * Una vez llamada recarga la tabla de registros con la info de acuerdo a los
+ * parametros de paginacion, es decir de acuerdo a la pagina, al total de registros.
+ * esto realiza una nueva consulta modificando los valores SQL (LIMIT X, Y)
+ *
+ * @global array $configuracion     = arreglo global de configuracion
+ * @param int $pagina               = pagina en la cual inicia la paginacion
+ * @param string $orden             = orden ascendente o descendente
+ * @param string $nombreOrden       = nombre de la columna por la cual se va a ordenar
+ * @param string $consultaGlobal    = la consulta que debe mantenerse (al realizar el filtro de registros) mientras se pagina
+ * @param int $cantidadRegistros    = cantidad de registros a incluir en la paginacion
+ */
+function paginadorModal($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal = NULL, $cantidadRegistros = NULL) {
+    global $configuracion;
+
+    $item           = '';
+    $respuesta      = array();
+    $objeto         = new Articulo();
+
+
+    $registros = $configuracion['GENERAL']['registrosPorPagina'];
+
+    if (!empty($cantidadRegistros)) {
+        $registros = (int) $cantidadRegistros;
+    }
+
+
+    if (isset($pagina) && !empty($pagina)) {
+        $pagina = $pagina;
+    } else {
+        $pagina = 1;
+    }
+
+
+    if (isset($consultaGlobal) && $consultaGlobal != '') {
+        $data       = explode('[', $consultaGlobal);
+        $datos      = $data[0];
+        $palabras   = explode(' ', $datos);
+
+        if ($data[1] != '') {
+            $condicionales = explode('|', $data[1]);
+
+            $condicion  = '(';
+            $tam        = sizeof($condicionales) - 1;
+            
+            for ($i = 0; $i < $tam; $i++) {
+                $condicion .= $condicionales[$i] . ' REGEXP "(' . implode('|', $palabras) . ')" ';
+                
+                if ($i != $tam - 1) {
+                    $condicion .= ' OR ';
+                }
+                
+            }
+            $condicion .= ')';
+
+            $consultaGlobal = $condicion;
+            
+        } else {
+            $consultaGlobal = '(a.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            
+        }
+        
+    } else {
+        $consultaGlobal = '';
+    }
+
+    if (!isset($nombreOrden)) {
+        $nombreOrden = $objeto->ordenInicial;
+    }
+
+
+    if (isset($orden) && $orden == 'descendente') {//ordenamiento
+        $objeto->listaAscendente = false;
+        
+    } else {
+        $objeto->listaAscendente = true;
+        
+    }
+
+    if (isset($nombreOrden) && $nombreOrden == 'estado') {//ordenamiento
+        $nombreOrden = 'activo';
+    }
+
+    $registroInicial = ($pagina - 1) * $registros;
+
+
+    $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $consultaGlobal, $nombreOrden);
+
+    if ($objeto->registrosConsulta) {//si la consulta trajo registros
+        $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina);
+        $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion, true, false);
+    }
+
+    $respuesta['error']                 = false;
+    $respuesta['accion']                = 'insertar';
+    $respuesta['contenido']             = $item;
+    $respuesta['idContenedor']          = '.ui-dialog #tablaRegistros';
+    $respuesta['idDestino']             = '.ui-dialog #contenedorTablaRegistros';
+    $respuesta['paginarTabla']          = true;
+
+    Servidor::enviarJSON($respuesta);
+}
 /**
  * Funcion que se encarga de realizar la paginacion del listado de registros.
  * Una vez llamada recarga la tabla de registros con la info de acuerdo a los
@@ -1631,7 +1834,7 @@ function cosultarTodos() {
     /* campo de texto para seleccionar cuantos registros traer en la consulta */
     $campoNumRegistros  = '';
     $campoNumRegistros .= HTML::frase($textos->id('NUMERO_FILAS'), 'margenIzquierdaDoble medioMargenDerecha');
-    $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/articulos/move'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
+    $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/articulos/moveModal'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
 
     $rutaImagen = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . 'adicionar.png';
     $botonAgregarArticulos = HTML::imagen($rutaImagen, 'imagenAdicionarVariosArticulos', 'imagenAdicionarVariosArticulos', array('ayuda' => $textos->id('ADICIONAR_ARTICULOS_FACTURA')));
@@ -1645,8 +1848,8 @@ function cosultarTodos() {
     
     /* Boton que carga la ventana modal para realizar la busqueda */
     $destino            = HTML::urlInterna($modulo->nombre, 0, true, 'search');
-    $botonRestaurar     = HTML::contenedor('', 'botonRestaurarConsulta', 'botonRestaurarConsulta', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'move'), 'ayuda' => $textos->id('RESTAURAR_CONSULTA')));
-    $botonBuscador      = HTML::contenedor('', 'botonBuscador', 'botonBuscador', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'search'), 'title' => $textos->id('BUSCAR_ITEM')));
+    $botonRestaurar     = HTML::contenedor('', 'botonRestaurarConsulta', 'botonRestaurarConsulta', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'moveModal'), 'ayuda' => $textos->id('RESTAURAR_CONSULTA')));
+    $botonBuscador      = HTML::contenedor('', 'botonBuscador', 'botonBuscador', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'searchModal'), 'title' => $textos->id('BUSCAR_ITEM')));
     $buscador           = HTML::campoTexto('datos[patron]', 22, '', '', 'campoBuscador margenIzquierdaDoble', 'campoBuscador') . $botonRestaurar . $botonBuscador;
     $buscador           = HTML::forma($destino, $buscador);
     $buscador           = HTML::contenedor($buscador, 'flotanteDerecha', 'botonBuscar' . ucwords(strtolower($modulo->nombre)) . '');
@@ -1655,7 +1858,7 @@ function cosultarTodos() {
     $arregloItems = $objeto->listar($registroInicial, $registros, $excluidas, '');
 
     $datosPaginacion = array($objeto->registros, $registroInicial, $registros, $pagina);
-    $item .= $objeto->generarTabla($arregloItems, $datosPaginacion, true, false);
+    $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion, true, false);
 
 
     $codigo = HTML::contenedor($botonesSuperiores. '<br><br>' . $item, 'listaItem', 'listaItem');

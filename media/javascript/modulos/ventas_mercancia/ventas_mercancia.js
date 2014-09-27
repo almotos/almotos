@@ -237,7 +237,8 @@ $(document).ready(function(){
                     } else {
                         descuento = '0';
                     } 
-                
+                    
+                    subtotal *= cantidad;
                         
                     var noExisteEnListado   = true;
                     var idFila              = '';

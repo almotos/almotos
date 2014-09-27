@@ -225,7 +225,7 @@ $(document).ready(function(){
                             
                         var cantidad = $(this).find(".campo-cantidad-articulo").val();
                         
-                        var precio   = $(this).attr("atributo_6");
+                        var precio   = $(this).attr("atributo_4");
                         
                         precio  = (precio != '') ? parseDouble(precio) : precio  = 0;
                         
@@ -246,7 +246,9 @@ $(document).ready(function(){
                         if(descuento != ''){
                             subtotal =  precio * ( descuento / 100 );
                             subtotal =  parseDouble(precio - subtotal);
-                        }     
+                        }    
+                        
+                        subtotal = subtotal * cantidad;
                         
                         var precioVenta = 0;                        
                             
