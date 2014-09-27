@@ -3,7 +3,7 @@
 /**
  *
  * @package     FOM
- * @subpackage  Privilegios
+ * @subpackage  Privilegio
  * @author      Pablo Andrés Vélez Vidal. <pavelez@genesyscorp.com.co>
  * @license     http://www.gnu.org/licenses/gpl.txt
  * @copyright   Copyright (c) 2013 Genesys corporation
@@ -14,7 +14,7 @@ global $sesion_usuarioSesion, $modulo, $textos, $configuracion;
 
 $tituloBloque   = $textos->id('MODULO_ACTUAL');
 $tituloBloque  .= HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/' . strtolower($modulo->url) . '.png', 'iconoModulo');
-$objeto         = new Privilegios(); /* creacion del objeto */
+$objeto         = new Privilegio(); /* creacion del objeto */
 $excluidas      = array('0'); //items excluidos en la consulta
 $item           = '';
 $contenido      = '';

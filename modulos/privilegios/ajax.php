@@ -3,7 +3,7 @@
 /**
  *
  * @package     FOLCS
- * @subpackage  Privilegios
+ * @subpackage  Privilegio
  * @author      Pablo Andrés Vélez Vidal <pavelez@genesyscorporation.com.co>
  * @license     http://www.gnu.org/licenses/gpl.txt
  * @copyright   Copyright (c) 2014 Genesys corporation.
@@ -55,7 +55,7 @@ if (isset($url_accion)) {
 function adicionarItem($datos = array()) {
     global $textos, $sql, $configuracion;
 
-    $objeto    = new Privilegios();
+    $objeto    = new Privilegio();
     $destino        = "/ajax".$objeto->urlBase."/add";   
 
     if (empty($datos)) {
@@ -130,7 +130,7 @@ function adicionarItem($datos = array()) {
 function consultarItem($id, $sede) {
     global $textos, $configuracion;
     
-    $objeto    = new Privilegios($id);
+    $objeto    = new Privilegio($id);
 
     $codigo  = HTML::campoOculto("procesar", "true");
     $codigo .= HTML::parrafo($textos->id("USUARIO"), "negrilla margenSuperior");
@@ -169,7 +169,7 @@ function consultarItem($id, $sede) {
 function modificarItem($id, $sede, $datos = array()) {
     global $textos, $configuracion;
 
-    $objeto    = new Privilegios($id);
+    $objeto    = new Privilegio($id);
     $destino        = "/ajax".$objeto->urlBase."/edit";
     $respuesta      = array();
 
@@ -234,7 +234,7 @@ function modificarItem($id, $sede, $datos = array()) {
 function eliminarItem($id, $confirmado) {
     global $textos;
 
-    $objeto    = new Privilegios($id);
+    $objeto    = new Privilegio($id);
     $destino = "/ajax".$objeto->urlBase."/delete";
 
     if (!$confirmado) {
@@ -301,7 +301,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
     } else {
         $item           = '';
         $respuesta      = array();
-        $objeto         = new Privilegios();
+        $objeto         = new Privilegio();
         $registros      = $configuracion['GENERAL']['registrosPorPagina'];
         
         if (!empty($cantidadRegistros)) {
@@ -382,7 +382,7 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
 
     $item           = '';
     $respuesta      = array();
-    $objeto         = new Privilegios();
+    $objeto         = new Privilegio();
 
     $registros = $configuracion['GENERAL']['registrosPorPagina'];
     
