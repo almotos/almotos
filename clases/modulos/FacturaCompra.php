@@ -349,6 +349,7 @@ class FacturaCompra {
                 'estadoFactura'             => 'fc.estado_factura',
                 'observaciones'             => 'fc.observaciones',
                 'facturaDigital'            => 'fc.archivo',
+                'activo'                    => 'fc.activo',
             );
 
             $condicion = 'fc.id_caja = c1.id AND c1.id_sede = s.id  AND fc.id_usuario = u.id AND fc.id_proveedor = p.id AND fc.id = "' . $id . '"';
@@ -754,7 +755,11 @@ class FacturaCompra {
         
         $sql->iniciarTransaccion();
         
-        $datos = array('activo' => '0');
+        $activo = $sql->obtenerValor('facturas_compras', 'activo', 'id = "' . $this->id . '"');
+        
+        $valor = ($activo == "1") ? "0" : "1";
+        
+        $datos = array('activo' => $valor);
         
         $consulta = $sql->modificar('facturas_compras', $datos, 'id = "' . $this->id . '"');
 
