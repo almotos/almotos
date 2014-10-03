@@ -754,11 +754,13 @@ function imprimirFacturaVentaPdf($datos) {
         $subtotalFactura -= $objeto->iva;
     }
     
-    $pdf->Ln(4);
-    $pdf->SetFont('times', 'B', 8);
-    $pdf->Cell(170, 7, $textos->id("DCTO_TOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
-    $pdf->SetFont('times', 'B', 8);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$'), 0, 0, 'R');
+    if ($dctoTotalSobreArticulos > 0) {
+        $pdf->Ln(4);
+        $pdf->SetFont('times', 'B', 8);
+        $pdf->Cell(170, 7, $textos->id("DCTO_TOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
+        $pdf->SetFont('times', 'B', 8);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$'), 0, 0, 'R');
+    }
     
     $pdf->Ln(4);
     $pdf->SetFont('times', 'B', 10);
@@ -1065,7 +1067,9 @@ function imprimirFacturaVentaPos($datos) {
         $pieTirilla    .= $textos->id("IVA") . ": " . '$'.Recursos::formatearNumero($objeto->iva, '$') . "\n";
     }
     
-    $pieTirilla    .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': ' . '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";
+    if ($dctoTotalSobreArticulos > 0) {
+        $pieTirilla    .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': ' . '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";
+    }
     
     $pieTirilla    .= $textos->id("SUBTOTAL") . ': ' . '$'.Recursos::formatearNumero($subtotalFactura, '$') . "\n";
 
