@@ -1244,42 +1244,45 @@ $(document).ready(function(){
         
     });  
     
-    
-    $("#campoIva").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
-
-        var total       = 0;
-        var subtotal    = 0;
-
-        subtotal = parseDouble($("#oculto_iva").val());
-
-        total = subtotal;
-
-        if (total > 0) {
-            var iva = $(this).val();
-            if (iva === '') { iva = 0; }
-
-            total = total + parseDouble(iva); 
- 
-        } else {
-            total = "0";
-        }
-        
-        total = parseDouble(total);
-        
-        $("#campoTotal").html("<span class='prefijo_numero'>$</span>"+total);
-        
-        $("#totalFactura").val(total);
-        
-        guardarFacturaTemporal();
-         
-    }).live("blur", function(e) {
-        var valor = $(this).val();
-        
-        if (isNaN(valor) && !isFinite(valor)) {
-            mostrarErrorCampo($(this));
-        }
-        
-    });      
+    /**
+     * documentado porque el campo esta como readonly, entonces no es necesaria esta funcionalidad, si los
+     * requerimientos cambias, se desdocumenta
+     */
+//    $("#campoIva").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
+//
+//        var total       = 0;
+//        var subtotal    = 0;
+//
+//        subtotal = parseDouble($("#oculto_iva").val());
+//
+//        total = subtotal;
+//
+//        if (total > 0) {
+//            var iva = $(this).val();
+//            if (iva === '') { iva = 0; }
+//
+//            total = total + parseDouble(iva); 
+// 
+//        } else {
+//            total = "0";
+//        }
+//        
+//        total = parseDouble(total);
+//        
+//        $("#campoTotal").html("<span class='prefijo_numero'>$</span>"+total);
+//        
+//        $("#totalFactura").val(total);
+//        
+//        guardarFacturaTemporal();
+//         
+//    }).live("blur", function(e) {
+//        var valor = $(this).val();
+//        
+//        if (isNaN(valor) && !isFinite(valor)) {
+//            mostrarErrorCampo($(this));
+//        }
+//        
+//    });      
     
     
     // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento1
