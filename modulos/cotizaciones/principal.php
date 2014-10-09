@@ -44,8 +44,8 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
     $destino = $configuracion['SERVIDOR']['principal'] . 'ventas_mercancia';
     $conte = HTML::campoOculto('crearCotizacion', true, 'ocultoCrearCotizacion');
     $conte .= HTML::boton('lapiz', $textos->id('ADICIONAR_ITEM'), 'botonOk directo', 'botonOk', 'botonOk');
-    $botonAdicionar = HTML::forma($destino, $conte, 'P', '', '', array('target' => '_blank'));
-    $botonAdicionar = HTML::contenedor($botonAdicionar, 'flotanteDerecha');
+    $botonAdicionar  = HTML::forma($destino, $conte, 'P', '', '', array('target' => '_blank'));
+    $botonAdicionar  = HTML::contenedor($botonAdicionar, 'flotanteDerecha');
 }
 
 /* Formulario para eliminar un masivo de elementos */
