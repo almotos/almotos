@@ -44,14 +44,14 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 $puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoActividades_economicas', $modulo->id);
 $botonCargarMasivo = '';
 if ((isset($sesion_usuarioSesion) && $puedeAdicionarMasivo) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
-    $botonCargarMasivo = HTML::contenedor(HTML::botonCargarMasivo($objeto->urlBase, $textos->id('ADICIONAR_MASIVO')), 'flotanteDerecha margenInferior', 'botonCargarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
+    $botonCargarMasivo = HTML::contenedor(HTML::botonCargarMasivo($objeto->urlBase, $textos->id('ADICIONAR_MASIVO')), 'flotanteDerecha margenInferior', 'botonCargarMasivoActividades_economicas' . ucwords(strtolower($modulo->nombre)) . '');
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
-$botonEliminar = '';
+$puedeEliminarMasivo = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$botonEliminarMasivo = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
-    $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
+    $botonEliminarMasivo .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonBorrarMasivo oculto', 'botonBorrarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
 }
 
 /* Checkbox que se encarga de marcar todas las filas de la tabla */
@@ -73,7 +73,7 @@ $buscador                   = HTML::campoTexto('datos[patron]', 22, '', '', 'cam
 $buscador                   = HTML::forma($destino, $buscador);
 $buscador                   = HTML::contenedor($buscador, 'flotanteDerecha', 'botonBuscar' . ucwords(strtolower($modulo->nombre)) . '');
 $contenedorNotificaciones   = HTML::contenedor('', 'contenedorNotificaciones', 'contenedorNotificaciones');
-$botonesSuperiores          = HTML::contenedor($buscador . $botonAdicionar . $botonCargarMasivo . $botonEliminar . $chkMarcarFilas . $campoNumRegistros . $contenedorNotificaciones, '', 'botonesSuperioresModulo');
+$botonesSuperiores          = HTML::contenedor($buscador . $botonAdicionar . $botonCargarMasivo . $botonEliminarMasivo . $chkMarcarFilas . $campoNumRegistros . $contenedorNotificaciones, '', 'botonesSuperioresModulo');
 
 
 /* Verifico que se haya iniciado una sesion y que tenga permisos para ver el modulo */

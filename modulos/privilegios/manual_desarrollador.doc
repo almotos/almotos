@@ -1,0 +1,53 @@
+﻿﻿Modulo: Privilegios.
+
+Descripción: Modulo encargado de gestionar la información de los privilegios registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los privilegios asignados a cada usuario del sistema.  En el formulario de “Adicionar privilegio”, debe suministrar el nombre del usuario al que se le quiere asignar los privilegios. Este modulo será utilizado mayormente por el modulo usuario( Asignar privilegios de los componentes que aplican para el usuario registrado).
+
+Clases: Privilegio.
+
+Tablas: 
+fom_permisos_componentes_perfiles: almacena la información de los permisos sobre los componentes registrados en el sistema para cada perfil.
+fom_permisos_componentes_usuarios: almacena la información de los permisos sobre los componentes registrados en el sistema para cada usuario.
+fom_permisos_modulos_perfiles: almacena la información de los permisos asignados a los modulos que aplican para cada perfil.
+fom_permisos_modulos_usuarios: almacena la información de los permisos asignados a los modulos que aplican para cada usuario. 
+
+
+Estructura relacional:
+
+Un usuario tiene 1..* privilegios(a cada usuario se le asignan permisos para el uso de componentes y modulos que aplican a su labor).
+Un perfil  tiene 1..* privilegios(a cada perfil se le asignan permisos para el uso de componentes y modulos que aplican a su labor)..
+
+
+Ayuda:
+
+Agregar privilegios: Haga click en el boton “Agregar privilegio” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los campos y el menu desplegable donde podrà elegir a que privilegios aplica el usuario. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de los privilegios sera almacenada en el sistema.
+
+
+Modificar privilegios: Haga click derecho sobre la fila de la tabla correspondiente al usuario que desea modificarle los privilegios, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos y los privilegios pertenecientes al usuario a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del usuario sera modificada y almacenada en el sistema.
+
+
+Eliminar privilegios:  Haga click derecho sobre la fila de la tabla correspondiente al usuario que se le aplican los privilegios que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion de los privilegios asignados al usuario. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de los privilegios aplicados al usuario.
+
+
+Consultar privilegios: Haga click derecho sobre la fila de la tabla correspondiente al usuario que tiene asignado los privilegios a consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al usuario.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+
+1) Ingresar privilegios: click en el boton “agregar privilegio”, se despliega la ventana modal. Se ingresa el usuario y la sede al que se le desea registrar los privilegios, se le asignan los privilegios y se hace click en aceptar. (Funcionando perfecto, se ingresan los privilegios al sistema con los datos adecuados)
+
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que muestre en el selector de la sede las que no tengan asigandos ya privilegios de usuarios registrados con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar perfil: click derecho sobre la fila del usuario con los privilegios asignados que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos y los privilegios asignados al usuario a ser modificado. Se modifican algunos datos del formulario y se hace click en aceptar. (Funcionando perfecto)
+
+
+3.0) Eliminar: click derecho sobre la fila del usuario con los privilegios asignados que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente)
+
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de los privlegios asignados al usuario en la BD.

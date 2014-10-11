@@ -107,8 +107,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql, $archivo_imagen;
+    global $textos, $sql, $archivo_imagen, $modulo, $sesion_usuarioSesion;
 
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto         = new Linea();
     $destino        = '/ajax' . $objeto->urlBase . '/add';
@@ -209,8 +223,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la información a mostrar en el formulario
  */
 function adicionarMasivo($datos = array()) {
-    global $textos, $configuracion, $archivo_masivo;
-
+    global $textos, $configuracion, $archivo_masivo, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeAgregar = Perfil::verificarPermisosBoton('botonCargarMasivoLineas', $modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new Linea();
     $destino    = '/ajax' . $objeto->urlBase . '/addMassive';
@@ -336,7 +364,22 @@ function adicionarMasivo($datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql, $archivo_imagen;
+    global $textos, $sql, $archivo_imagen, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if ( (!empty($id) && !$sql->existeItem('lineas', 'id', $id)) || empty($id) ) {
         $respuesta = array();
@@ -443,7 +486,22 @@ function modificarItem($id, $datos = array()) {
  * @param type $confirmado 
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if ( (!empty($id) && !$sql->existeItem('lineas', 'id', $id)) || empty($id) ) {
         $respuesta              = array();
@@ -717,9 +775,23 @@ function listarItems($cadena) {
  * @param type $confirmado 
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
+ 
     $destino   = '/ajax/lineas/eliminarVarios';
     $respuesta = array();
 

@@ -107,7 +107,22 @@ function cosultarItem($id) {
  * @param type $datos 
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $archivo_imagen, $configuracion;
+    global $textos, $archivo_imagen, $configuracion, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new Empresa($id);
     $destino    = "/ajax" . $objeto->urlBase . "/edit";

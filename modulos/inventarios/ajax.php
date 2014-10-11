@@ -91,7 +91,22 @@ function consultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array(), $procesar = false) {
-    global $textos, $sql, $configuracion, $sesion_configuracionGlobal;
+    global $textos, $sql, $configuracion, $sesion_configuracionGlobal, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
     
     if ( (empty($id) && !$procesar) || (!empty($id) && !$sql->existeItem('inventarios', 'id', $id) && !$procesar)) {
         $respuesta              = array();
