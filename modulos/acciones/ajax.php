@@ -374,12 +374,12 @@ function eliminarItem($id, $confirmado, $dialogo) {
         return NULL;
     }        
 
-    $accion     = new Accion($id);
-    $destino    = '/ajax' . $accion->urlBase . '/delete';
+    $objeto     = new Accion($id);
+    $destino    = '/ajax' . $objeto->urlBase . '/delete';
     $respuesta  = array();
 
     if (!$confirmado) {
-        $nombre = HTML::frase($accion->nombre, 'negrilla');
+        $nombre = HTML::frase($objeto->nombre, 'negrilla');
         $nombre = str_replace('%1', $nombre, $textos->id('CONFIRMAR_ELIMINACION'));
         $codigo = HTML::campoOculto('procesar', 'true');
         $codigo .= HTML::campoOculto('id', $id);
@@ -403,15 +403,16 @@ function eliminarItem($id, $confirmado, $dialogo) {
         if ($respuestaEliminar['respuesta']) {
 
                 $respuesta['error']     = false;
-                $respuesta['accion']    = 'insertar';
-                $respuesta['idDestino'] = '#tr_' . $id;            
+                $respuesta['accion']    = 'insertar';           
 
             if ($dialogo == '') {
                 $respuesta['eliminarFilaTabla'] = true;
+                $respuesta['idDestino']         = '#tr_' . $id; 
 
             } else {
-                $respuesta['eliminarFilaDialogo'] = true;
-                $respuesta['ventanaDialogo'] = $dialogo;
+                $respuesta['eliminarFilaDialogo']   = true;
+                $respuesta['ventanaDialogo']        = $dialogo;
+                $respuesta['idDestino']             = '#tablaEditarAccionesTr_' . $id; 
 
             }
         } else {
