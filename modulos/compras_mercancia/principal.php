@@ -88,6 +88,8 @@ if ($objeto->idProveedor) {
 
 }
 
+$regimenProveedor = (empty($regimenProveedor)) ? "1" : $regimenProveedor;
+
 $cantidadDecimales = $sesion_configuracionGlobal->cantidadDecimales;
 
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
@@ -315,8 +317,15 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
             } else {//si no, calculo el porcentaje de ganancia
                 $porcPredGanancia = (($precioVenta - $article->precio) * 100) / $article->precio; 
                 
-                if ($objeto->iva > 0){
-                    $porcPredGanancia  -= $article->iva;
+                if ($regimenProveedor != "1" && $article->iva > 0) { //se compra con iva
+                    //$pv1 = precio de venta 1, variable temporal que almacena el precio unitario mas el iva
+                    $pv1 = $article->precio + ($article->precio * ($article->iva / 100));
+                    $diffPv_Pv1 = $precioVenta - $pv1;
+                    $porcPredGanancia = ($diffPv_Pv1 / $pv1) * 100;
+                    
+                } else {
+                    $diffPv_Pv1 = $precioVenta - $article->precio;
+                    $porcPredGanancia = ($diffPv_Pv1 / $article->precio) * 100;  
                 }
                                 
             }
@@ -337,6 +346,10 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
                 'class'         => "filaArticuloCompra",
                 'id'            => 'fila_'.$counter,
             );
+            
+            if ($article->descuento > 0 && $article->precio > 0) {
+                $opciones['subtotal_con_descuento'] =  ($article->precio - ($article->precio * ($article->descuento/100)));
+            }
 
             $cod = array();
             //Armo el parrafo con los campos del listado de articulos de compra
@@ -436,6 +449,8 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
         $claseCampoNumFac = 'oculto';
         
     }
+    
+    //var_dump($objeto);
 
     $linea4 .= HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . 'eliminar.png', 'imagenEliminarTodosArticulos flotanteDerecha', 'imagenEliminarTodosArticulos', array('ayuda' => 'Eliminar todos los <br>articulos de la lista')+$tutorial["16"]);
 

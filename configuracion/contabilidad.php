@@ -31,7 +31,7 @@ $configuracion["RETENCIONES"]["es"] = array(
                                                             'nombre'        => 'Reteica',
                                                             'nombre_clave'  => 'reteica',
                                                             'porcentaje'    => '5',
-                                                            'monto_minimo'  => '27',
+                                                            'monto_minimo'  => '27',//UVT
                                                             'id_cuenta'     => '236801',
                                                             ),
     
