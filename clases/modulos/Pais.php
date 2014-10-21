@@ -218,9 +218,9 @@ class Pais {
          
         //hago la validacion de la integridad referencial
         $arreglo1 = array('estados',       'id_pais  = "'.$this->id.'"', $textos->id('ESTADOS'));//arreglo del que sale la info a consultar
-        $arreglo2 = array('articulos',     'id_pais  = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
+        //$arreglo2 = array('articulos',     'id_pais  = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
        
-        $arregloIntegridad  = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $arregloIntegridad  = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
         $integridad         = Recursos::verificarIntegridad($textos->id('PAIS'), $arregloIntegridad);
 
         /**

@@ -462,6 +462,36 @@ class Resolucion {
      *
      */
     public function eliminar() {
+        global $sql, $configuracion, $textos;
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('resoluciones', 'id = "'.$this->id.'"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+            
+        }//fin del si funciono eliminar
+        
+    }//Fin del metodo eliminar objeto
+    
+   /* public function eliminar() {
         global $sql;
 
         if (!isset($this->id)) {
@@ -479,7 +509,7 @@ class Resolucion {
 
         return true;
 
-    }
+    }*/
 
     /**
      *
