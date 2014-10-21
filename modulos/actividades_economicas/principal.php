@@ -48,7 +48,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAdicionarMasivo) || isset($sesion_usu
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminarMasivo = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonBorrarMasivo', $modulo->nombre);
 $botonEliminarMasivo = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminarMasivo .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonBorrarMasivo oculto', 'botonBorrarMasivo' . ucwords(strtolower($modulo->nombre)) . '');

@@ -75,8 +75,22 @@ function cosultarItem($id) {
  * Metodo adicionar 
  * */
 function adicionarItem($datos = array()) {
-    global $textos, $sql;
-
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new TipoDocumento();
     $destino = '/ajax' . $objeto->urlBase . '/add';
@@ -158,7 +172,22 @@ function adicionarItem($datos = array()) {
  * @param type $datos 
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new TipoDocumento($id);
     $destino = '/ajax' . $objeto->urlBase . '/edit';
@@ -238,8 +267,23 @@ function modificarItem($id, $datos = array()) {
  * @param type $confirmado 
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
+    
     $objeto = new TipoDocumento($id);
     $destino = '/ajax' . $objeto->urlBase . '/delete';
     $respuesta = array();
@@ -478,7 +522,22 @@ function listarItems($cadena) {
  * @param type $confirmado 
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoTipos_documento', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino   = '/ajax/tipos_documento/eliminarVarios';
     $respuesta = array();

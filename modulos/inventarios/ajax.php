@@ -96,7 +96,7 @@ function modificarItem($id, $datos = array(), $procesar = false) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
     
     if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();

@@ -708,7 +708,7 @@ function modificarItem($id, $datos = array()) {
      /**
      * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
      */
-        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
     
     if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -989,9 +989,9 @@ function eliminarItem($id, $confirmado, $dialogo) {
      /**
      * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
      */
-        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
     
-     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -1764,9 +1764,9 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
      /**
      * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
      */
-        $puedeEliminarMasivo = Perfil::verificarPermisosEliminacion($modulo->nombre);
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoArticulos', $modulo->nombre);
     
-     if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -1949,9 +1949,9 @@ function moverMercancia($id) {
      /**
      * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
      */
-        $puedeMoverMercancia = Perfil::verificarPermisosBoton('botonMoverMercanciaBodega', $modulo->nombre);
+    $puedeMoverMercancia = Perfil::verificarPermisosBoton('botonMoverMercanciaBodega', $modulo->nombre);
     
-     if(!$puedeMoverMercancia && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeMoverMercancia && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -2241,9 +2241,9 @@ function imprimirVariosBarcode($confirmado, $cantidad, $cadenaItems) {
      /**
      * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
      */
-        $puedeImprimirBarcodePdf = Perfil::verificarPermisosBoton('botonImprimirVariosBarcodeArticulos', $modulo->id);
+    $puedeImprimirBarcodePdf = Perfil::verificarPermisosBoton('botonImprimirVariosBarcodeArticulos', $modulo->id);
     
-     if(!$puedeImprimirBarcodePdf && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeImprimirBarcodePdf && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');

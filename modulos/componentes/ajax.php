@@ -229,7 +229,7 @@ function adicionarItem($datos = array()) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
     
     if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -595,9 +595,9 @@ function eliminarItem($id, $confirmado, $dialogo) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
     
-     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -848,74 +848,3 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
     
 }
 
-/**
- * Funcion Eliminar
- * @global type $textos
- * @param type $id
- * @param type $confirmado 
- */
-function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos, $modulo, $sesion_usuarioSesion;
-         
-    /**
-    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
-    */
-        $puedeEliminarMasivo = Perfil::verificarPermisosEliminacion($modulo->nombre);
-    
-     if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
-        $respuesta            = array();
-        $respuesta['error']   = true;
-        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
-        
-        Servidor::enviarJSON($respuesta);
-        return FALSE;
-        
-    }
-
-    $destino = '/ajax/componentes/eliminarVarios';
-    $respuesta = array();
-
-    if (!$confirmado) {
-        $titulo  = HTML::frase($cantidad, 'negrilla');
-        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
-        $codigo  = HTML::campoOculto('procesar', 'true');
-        $codigo .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
-        $codigo .= HTML::parrafo($titulo1);
-        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
-        $codigo .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
-        $codigo1 = HTML::forma($destino, $codigo);
-
-        $respuesta['generar']           = true;
-        $respuesta['codigo']            = $codigo1;
-        $respuesta['destino']           = '#cuadroDialogo';
-        $respuesta['titulo']            = HTML::parrafo($textos->id('ELIMINAR_VARIOS_REGISTROS'), 'letraBlanca negrilla subtitulo');
-        $respuesta['ancho']             = 350;
-        $respuesta['alto']              = 150;
-        
-    } else {
-
-        $cadenaIds  = substr($cadenaItems, 0, -1);
-        $arregloIds = explode(',', $cadenaIds);
-
-        $eliminarVarios = true;
-        foreach ($arregloIds as $val) {
-            $objeto = new Componentes($val);
-            $eliminarVarios = $objeto->eliminar();
-            
-        }
-
-        if ($eliminarVarios) {
-            $respuesta['error']         = false;
-            $respuesta['textoExito']    = true;
-            $respuesta['mensaje']       = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
-            $respuesta['accion']        = 'recargar';
-            
-        } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
-            
-        }
-        
-    }
-
-    Servidor::enviarJSON($respuesta);
-}

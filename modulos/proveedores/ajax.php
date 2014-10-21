@@ -339,7 +339,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new Proveedor();
     $destino    = '/ajax' . $objeto->urlBase . '/add';
@@ -592,7 +607,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (empty($id) || (!$sql->existeItem('proveedores', 'id', $id))) {
         $respuesta              = array();
@@ -931,9 +961,23 @@ function modificarItem($id, $datos = array()) {
  * @param int $id           = id del registro a modificar
  * @param array $datos      = arreglo con la informacion a adicionar
  */
-function eliminarItem($id, $confirmado, $dialogo)
-{
-    global $textos, $sql;
+function eliminarItem($id, $confirmado, $dialogo) {
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('proveedores', 'id', $id))) {
         $respuesta              = array();
@@ -1300,8 +1344,22 @@ function verificarPersona($cadena) {
  * @param  array $datos    = arreglo con los datos provenientes del formulario
  */
 function adicionarSede($id, $datos = array(), $tablaEditarVisible = NULL) {
-    global $textos, $sql;
-      
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+   
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarSede = Perfil::verificarPermisosBoton('botonAdicionarSedeProveedor', $modulo->nombre);
+    
+    if(!$puedeAgregarSede && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino = '/ajax/proveedores/adicionarSede';
     $respuesta = array();
@@ -1605,7 +1663,22 @@ function eliminarSede($id, $confirmado, $dialogo) {
  * @param array $datos    = arreglo con los datos provenientes del formulario
  */
 function adicionarContacto($id, $datos = array(), $tablaEditarVisible = NULL) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+   
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarContacto = Perfil::verificarPermisosBoton('botonAdicionarContactoProveedor', $modulo->nombre);
+    
+    if(!$puedeAgregarContacto && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
      
     $destino    = '/ajax/proveedores/adicionarContacto';
     $respuesta  = array();
@@ -2029,8 +2102,22 @@ function eliminarContacto($id, $confirmado, $dialogo) {
  * @param array $datos    = arreglo con los datos provenientes del formulario
  */
 function adicionarCuenta($id, $datos = array(), $tablaEditarVisible = NULL) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarCuenta = Perfil::verificarPermisosBoton('botonAdicionarCuentaProveedor', $modulo->nombre);
+    
+    if(!$puedeAgregarCuenta && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino = '/ajax/proveedores/adicionarCuenta';
     $respuesta = array();
@@ -2345,8 +2432,22 @@ function listarItems($cadena) {
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoProveedores', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }    
 
     $destino    = '/ajax/proveedores/eliminarVarios';
     $respuesta  = array();

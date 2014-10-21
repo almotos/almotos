@@ -320,7 +320,7 @@ function modificarItem($id) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
     
     if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -638,9 +638,9 @@ function eliminarItem($id, $confirmado, $dialogo) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
     
-     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -1251,7 +1251,7 @@ function adicionarNotaCredito($id, $datos = array()) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeAgregarNotaCredito = Perfil::verificarPermisosBoton('botonAdicionarNotaCreditoCompra',$modulo->nombre);
+    $puedeAgregarNotaCredito = Perfil::verificarPermisosBoton('botonAdicionarNotaCreditoCompra',$modulo->nombre);
     
     if(!$puedeAgregarNotaCredito && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -1424,9 +1424,9 @@ function adicionarNotaDebito($id, $datos) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeAgregarNotaCredito = Perfil::verificarPermisosBoton('botonAdicionarNotaDebitoCompra',$modulo->nombre);
+    $puedeAgregarNotaDebito = Perfil::verificarPermisosBoton('botonAdicionarNotaDebitoCompra',$modulo->nombre);
     
-    if(!$puedeAgregarNotaCredito && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeAgregarNotaDebito && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
