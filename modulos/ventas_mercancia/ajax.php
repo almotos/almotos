@@ -744,11 +744,13 @@ function imprimirFacturaVentaPdf($datos) {
     $subtotalFactura   += $objeto->valorFlete;
     
     $pdf->Ln(7);
-
-    $pdf->SetFont('times', 'B', 7);
-    $pdf->Cell(170, 7, $textos->id('VALOR_FLETE'), 0, 0, 'R');
-    $pdf->SetFont('times', '', 7);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->valorFlete, '$'), 0, 0, 'R');
+    if ($objeto->valorFlete > 0){
+        $pdf->SetFont('times', 'B', 7);
+        $pdf->Cell(170, 7, $textos->id('VALOR_FLETE'), 0, 0, 'R');
+        $pdf->SetFont('times', '', 7);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->valorFlete, '$'), 0, 0, 'R');
+        
+    }
     
     if ($objeto->iva > 0) {
         $subtotalFactura -= $objeto->iva;
