@@ -50,8 +50,8 @@ $textos = array(
     'FECHA_FACTURA'                             => 'Fecha de Factura',
     'USUARIO_QUE_FACTURA'                       => 'Usuario que Factura',
     'FECHA_VENCIMIENTO'                         => 'Fecha de Vencimiento',
-    'DESCUENTOS'                                => 'Descuentos',
-    'TOTAL_DESCUENTOS'                          => 'Total descuentos',
+    'DESCUENTOS'                                => 'Dctos adicionales',
+    'TOTAL_DESCUENTOS'                          => 'Total dctos adicionales',
     'PAGINA'                                    => 'Página',
     'EMAIL'                                     => 'E-mail',
     'NOTA'                                      => 'Nota',
@@ -70,7 +70,7 @@ $textos = array(
     'TOTAL_RETENCIONES'                         => 'Total retenciones',
     'TOTAL_A_PAGAR'                             => 'Total a pagar',
     'ACTUALIZAR_RETENCIONES'                    => 'Actualizar valores de retenciones',
-    'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total Articulos',
+    'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total articulos',
     
 
     
