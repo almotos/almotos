@@ -80,13 +80,13 @@ if ($objeto->idProveedor) {
 //obtener el regimen de la empresa
 $regimenEmpresa = $sesion_configuracionGlobal->empresa->regimen;
 
-//capturar el regimen del proveedor
-$regimenProveedor = '';
+//si no es una edicion, o una factura a partir de una orden de compra, o una factura a partir de una factura temporal
+//la variable ($objeto->idProveedor) va a estar vacia, y el id de proveedor por defecto será "1"
+$proveedorPorDefecto = "1";
 
-if ($objeto->idProveedor) {
-    $regimenProveedor = $sql->obtenerValor("proveedores", 'regimen', 'id = "'.$objeto->idProveedor.'"');
-
-}
+$idProv = ($objeto->idProveedor) ? $objeto->idProveedor : $proveedorPorDefecto;
+        
+$regimenProveedor = $sql->obtenerValor("proveedores", 'regimen', 'id = "'.$idProv.'"');
 
 $regimenProveedor = (empty($regimenProveedor)) ? "1" : $regimenProveedor;
 
@@ -138,7 +138,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las cajas existentes en el sistema
     $listaProveedores = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
 
-    $idDelProveedor = '1'; //determinar si no viene ningun dato para el cliente que sea el base
+    $idDelProveedor = $proveedorPorDefecto; //determinar si no viene ningun dato para el cliente que sea el base
     
     if (!empty($objeto->idProveedor)) {
         $idDelProveedor = $objeto->idProveedor;
