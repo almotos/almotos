@@ -668,7 +668,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeEliminarMasivo = Perfil::verificarPermisosEliminacion($modulo->nombre);
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoAcciones', $modulo->nombre);
     
     if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();

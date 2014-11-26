@@ -227,7 +227,7 @@ function adicionarItem($datos) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
     
     if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -563,7 +563,7 @@ function modificarItem($id) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
     
     if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
@@ -634,9 +634,9 @@ function eliminarItem($id, $confirmado, $dialogo) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
     
-     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
@@ -911,9 +911,9 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
     */
-        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoCotizaciones', $modulo->nombre);
     
-     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
         $respuesta            = array();
         $respuesta['error']   = true;
         $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');

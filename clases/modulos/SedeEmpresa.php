@@ -311,10 +311,10 @@ class SedeEmpresa {
         $arreglo1 = array('permisos_componentes_usuarios',   'id_sede     = "'.$this->id.'"', $textos->id('PERMISOS_COMPONENTES_USUARIOS'));//arreglo del que sale la info a consultar
         $arreglo2 = array('permisos_modulos_usuarios',       'id_sede     = "'.$this->id.'"', $textos->id('PERMISOS_MODULOS_USUARIOS'));//arreglo del que sale la info a consultar
         $arreglo3 = array('resoluciones',                    'id_sede     = "'.$this->id.'"', $textos->id('RESOLUCIONES'));//arreglo del que sale la info a consultar
-        $arreglo4 = array('cajas',                           'id_sede     = "'.$this->id.'"', $textos->id('CAJAS'));//arreglo del que sale la info a consultar
-        $arreglo5 = array('bodegas',                         'id_sede     = "'.$this->id.'"', $textos->id('BODEGAS'));//arreglo del que sale la info a consultar
-        $arreglo6 = array('empleados',                       'id_sede     = "'.$this->id.'"', $textos->id('EMPLEADOS'));//arreglo del que sale la info a consultar
-        
+        $arreglo4 = array('bodegas',                         'id_sede     = "'.$this->id.'"', $textos->id('BODEGAS'));//arreglo del que sale la info a consultar
+        $arreglo5 = array('empleados',                       'id_sede     = "'.$this->id.'"', $textos->id('EMPLEADOS'));//arreglo del que sale la info a consultar
+        $arreglo6 = array('cajas',                           'id_sede     = "'.$this->id.'"', $textos->id('CAJAS'));//arreglo del que sale la info a consultar
+
         $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
         $integridad         = Recursos::verificarIntegridad($textos->id('SEDES_EMPRESA'), $arregloIntegridad);
 

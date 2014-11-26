@@ -22,6 +22,7 @@ $textos = array(
     
     /*Campos y labels*/
     'NOMBRE'                                    => 'Nombre',
+    'ESTADO_DPTO'                               => 'Departamento',
     'ACTIVO'                                    => 'Activo',
     'INACTIVO'                                  => 'Inactivo',
     'CODIGO'                                    => 'Codigo',

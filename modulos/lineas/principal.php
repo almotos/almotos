@@ -47,14 +47,14 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 /**
  * Verificar permisos para el boton de adicion de masivo 
  */
-$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivo', $modulo->id);
+$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoLineas', $modulo->id);
 $botonCargarMasivo = '';
 if ((isset($sesion_usuarioSesion) && $puedeAdicionarMasivo) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonCargarMasivo = HTML::contenedor(HTML::botonCargarMasivo($objeto->urlBase, $textos->id('ADICIONAR_MASIVO')), 'flotanteDerecha margenInferior', 'botonCargarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoLineas', $modulo->nombre);
 $botonEliminar = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');

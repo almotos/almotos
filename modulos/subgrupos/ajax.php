@@ -61,10 +61,9 @@ function cosultarItem($id) {
 
     $objeto     = new Subgrupo($id);
     $respuesta  = array();
-
-    $codigo  = HTML::campoOculto('id', $id);
-    $codigo .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
-    $codigo .= HTML::parrafo($objeto->codigo, '', '');
+    
+    $codigo  = HTML::campoOculto('procesar', 'true');
+    $codigo .= HTML::campoOculto('id', $id);
     $codigo .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
     $codigo .= HTML::parrafo($objeto->nombre, '', '');
     $codigo .= HTML::parrafo($textos->id('GRUPO'), 'negrilla margenSuperior');
@@ -96,7 +95,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto         = new Subgrupo();
     $destino        = '/ajax' . $objeto->urlBase . '/add';
@@ -197,8 +211,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la información a mostrar en el formulario
  */
 function adicionarMasivo($datos = array()) {
-    global $textos, $configuracion, $archivo_masivo;
-
+    global $textos, $configuracion, $archivo_masivo, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoSubgrupos', $modulo->nombre);
+    
+    if(!$puedeAgregarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo();
     $destino = '/ajax' . $objeto->urlBase . '/addMassive';
@@ -322,7 +350,22 @@ function adicionarMasivo($datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo($id);
     $destino = '/ajax' . $objeto->urlBase . '/edit';
@@ -410,7 +453,22 @@ function modificarItem($id, $datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo($id);
     $destino = '/ajax' . $objeto->urlBase . '/delete';
@@ -660,8 +718,22 @@ function listarItems($cadena) {
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoSubgrupos', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino = '/ajax/subgrupos/eliminarVarios';
     $respuesta = array();

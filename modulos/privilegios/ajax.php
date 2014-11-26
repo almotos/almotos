@@ -53,7 +53,22 @@ if (isset($url_accion)) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+     
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto    = new Privilegio();
     $destino        = "/ajax".$objeto->urlBase."/add";   
@@ -167,7 +182,22 @@ function consultarItem($id, $sede) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $sede, $datos = array()) {
-    global $textos, $configuracion;
+    global $textos, $configuracion, $modulo, $sesion_usuarioSesion;
+  
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto    = new Privilegio($id);
     $destino        = "/ajax".$objeto->urlBase."/edit";
@@ -232,7 +262,22 @@ function modificarItem($id, $sede, $datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+        $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+     if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto    = new Privilegio($id);
     $destino = "/ajax".$objeto->urlBase."/delete";

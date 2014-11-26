@@ -131,7 +131,7 @@ if (isset($url_ruta)) {
     }
     
     /* Formulario para eliminar un masivo de elementos */
-    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoUsuarios', $modulo->nombre);
     
     $botonEliminar = '';
     
