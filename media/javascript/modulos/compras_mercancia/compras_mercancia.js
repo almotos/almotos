@@ -190,7 +190,7 @@ $(document).ready(function(){
          **/
          $("#imagenAdicionarVariosArticulos").live("click", function(){
                 $("#BoxOverlayTransparente").css("display","block");
-                
+
                 var bodega = $("#idBodegaGeneral").val();
                 
                 var descuento = $("#campoDescuentoListadoArticulos").val();
@@ -224,7 +224,7 @@ $(document).ready(function(){
                             articulo = articulo[0];
                             
                         var cantidad = $(this).find(".campo-cantidad-articulo").val();
-                        
+                              
                         var precio   = $(this).attr("atributo_4");
                         
                         precio  = (precio != '') ? parseDouble(precio) : precio  = 0;
@@ -238,26 +238,34 @@ $(document).ready(function(){
                         var iva = $(this).attr("atributo_5");
                         
 //                        var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
-                          var valPredIva = iva;
-                              valPredIva = parseInt(valPredIva); 
-                        
+                        var valPredIva = iva;
+                            valPredIva = parseInt(valPredIva); 
+   
                         var subtotal = precio;
-                        
+                       
                         if(descuento != ''){
                             subtotal =  precio * ( descuento / 100 );
                             subtotal =  parseDouble(precio - subtotal);
                         }    
+                                              
+                        //validar si el proveedor va a vender con iva
+                        if ($("#regimenProveedor").val() != 1) {
+                            subtotal += (subtotal * (valPredIva / 100));
+            
+                        }
                         
                         subtotal = subtotal * cantidad;
-                        
+                     
                         var precioVenta = 0;                        
                             
                         if(precio != '' && ganancia_venta != ''){
-                            var cobroIva = precio * ( valPredIva / 100 ); 
-                            var ganancia = precio * ( ganancia_venta / 100 ); 
+                            var cobroIva  = precio * ( valPredIva / 100 ); 
+                            var precioIva = parseDouble (precio + cobroIva);
+                            var ganancia  = precioIva * ( ganancia_venta / 100 ); 
+                            
                             //hack
-                            //precioVenta = parseDouble(precio + cobroIva + ganancia);
-                            precioVenta = parseDouble(precio + ganancia);
+                            precioVenta = parseDouble(precioIva + ganancia);
+                            //precioVenta = parseDouble(precio + ganancia);
                             
                         } else if(precio != '' && ganancia_venta == ''){
                             var cobroIva = precio * ( valPredIva / 100 ); 
@@ -267,8 +275,8 @@ $(document).ready(function(){
                         } else {
                             precioVenta = 0;
                             
-                        }                      
-                        
+                        } 
+
                         //se verifica que el articulo que se quiere ingresar no se
                         //encuentra ya en el listado  //creo que se puede remplazar por el largo de $(".filaArticuloCompra").has('[cod=id]')
                         var existeEnListado = false;
@@ -320,8 +328,8 @@ $(document).ready(function(){
                     $("#BoxOverlayTransparente").css("display","none");
                     return false;            
 
+            });  
 
-            });    
      
     //Codigo que se encarga de verificar que se escriban las letras correctas en el cmpo selector del patron
     //de busqueda, y a su vez, determina a que modulo se debe ir para listar
@@ -1154,9 +1162,6 @@ $(document).ready(function(){
         precio = parseDouble(precio);
 
         padre.attr("precio", parseDouble(precio));
-             
-        
-        //Revisar por se acomodo el subtotal, pero el precio de venta no es correcto.
 
         if(descuento === '' || descuento === 0 || descuento === '0'){//si no hay valores en el campo porcentaje de descuento
             subtotal = cantidad * precio;
@@ -1356,7 +1361,7 @@ $(document).ready(function(){
     });  
     
         
-    // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento1
+    // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento2
     $("#campoDescuento2").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
         
         var total = 0;
@@ -1585,9 +1590,6 @@ function guardarFacturaTemporal(){
     
     
 }
-
-
-
 
 /**
  * Funcion que se encarga de calcular el subtotal de una fila cuando se coloca un descuento
@@ -1848,9 +1850,10 @@ function sumarIva(){
            var precio = parseDouble(precioTemp);
            
            var cantidad = parseDouble($(this).attr("cantidad"));
-           
+     
            //Cambio para no mostrar el iva incluido en el precio del arituclo
            //var _ivaArticulo = precio - (precio / (1 + (_iva/100)) );
+         
            var _ivaArticulo = cantidad * (precio * (_iva/100));
                       
            valIva += _ivaArticulo;

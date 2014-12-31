@@ -200,6 +200,12 @@ class FacturaVenta {
     public $retenciones;  
     
     /**
+     * Valor total de las retenciones en la factura
+     * @var entero
+     */
+    public $totalRetenciones = 0;     
+    
+    /**
      * arreglo (llave ->valor) con la informacion para las retenciones que llevara a cabo la clase Contabilidad
      * @var entero
      */
@@ -384,6 +390,7 @@ class FacturaVenta {
                     $nombreRetencion    = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
                     
                     $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
+                    $this->totalRetenciones += $retencion[1];
                     
                 }                
                 

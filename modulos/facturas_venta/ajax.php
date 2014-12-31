@@ -102,6 +102,15 @@ function cosultarItem($id) {
     
     $codigo2 .= HTML::parrafo($textos->id('SEDE') . ': ' . HTML::frase($objeto->sede, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('VALOR_FLETE') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->valorFlete, '$'), 'sinNegrilla'), 'negrilla margenSuperior');
+    
+    if (count($objeto->arregloRetenciones) > 0 ) {
+        $codigo2 .= HTML::parrafo($textos->id('RETENCIONES'), 'negrilla margenSuperior');
+        foreach ($objeto->arregloRetenciones as $id => $valor) {
+            $codigo2 .= HTML::parrafo($id . ': ' . HTML::frase($valor, 'sinNegrilla'), 'margenIzquierda');
+        }
+    
+    }
+    
     $codigo2 .= HTML::parrafo($textos->id('CAJA') . ': ' . HTML::frase($objeto->caja, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
 
@@ -182,7 +191,7 @@ function cosultarItem($id) {
         
     $codigo4 .= HTML::parrafo($textos->id('DESCUENTOS') . ': ', 'negrilla margenSuperior letraVerde');
 
-    $totalFactura = $objeto->subtotal;
+    $totalFactura = $objeto->subtotal - $objeto->totalRetenciones;
 
     if (!empty($objeto->concepto1) && !empty($objeto->descuento1)) {
 

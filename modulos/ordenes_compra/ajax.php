@@ -111,16 +111,18 @@ function cosultarItem($id) {
         
         
         if ($object->descuento == 0 || $object->descuento == '0') {
-            $object->subtotal = $object->cantidad * $object->precio;
+           $object->subtotal = $object->cantidad * $object->precio;
+           
         } else {
             $object->subtotal = ($object->cantidad * $object->precio) - ( ( ($object->cantidad * $object->precio) * $object->descuento) / 100 );
-        }
+       
+            }
         $object->descuento  = Recursos::formatearNumero($object->descuento, '%', '0');
         $object->precio     = '$' . Recursos::formatearNumero($object->precio, '$');
         
 //        $subtotalFactura += $object->subtotal;
 
-        $object->subtotal = '$' . Recursos::formatearNumero($object->subtotal, '$');
+        $object->subtotal = '$' . Recursos::formatearNumero($object->subtotal + $objeto->iva, '$');
 
         $listaArticulos[] = $object;
     }

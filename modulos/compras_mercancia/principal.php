@@ -320,12 +320,13 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
                 if ($regimenProveedor != "1" && $article->iva > 0) { //se compra con iva
                     //$pv1 = precio de venta 1, variable temporal que almacena el precio unitario mas el iva
                     $pv1 = $article->precio + ($article->precio * ($article->iva / 100));
-                    $diffPv_Pv1 = $precioVenta - $pv1;
-                    $porcPredGanancia = ($diffPv_Pv1 / $pv1) * 100;
+                    $article->subtotal = $pv1;
+                    $diffPv_Pv1        = $precioVenta - $pv1;
+                    $porcPredGanancia  = ($diffPv_Pv1 / $pv1) * 100;
                     
                 } else {
-                    $diffPv_Pv1 = $precioVenta - $article->precio;
-                    $porcPredGanancia = ($diffPv_Pv1 / $article->precio) * 100;  
+                    $diffPv_Pv1       = $precioVenta - $article->precio;
+                    $porcPredGanancia = ($diffPv_Pv1 / $article->precio) * 100;
                 }
                                 
             }

@@ -78,6 +78,7 @@ function adicionarItem($datos) {
             'datos[concepto2]'                  => $datos['concepto2'],
             'datos[descuento2]'                 => $datos['descuento2'],
             'datos[valor_flete]'                => $datos['valor_flete'],
+            'datos[retenciones]'                => $datos['retenciones'],
             'datos[subtotal]'                   => $datos['subtotal'],
             'datos[total]'                      => $datos['total'],
             'datos[observaciones]'              => $datos['observaciones'],
@@ -823,7 +824,6 @@ function imprimirFacturaCompraPdf($datos) {
     }
 
     //Agregar las retenciones realizadas en la compra a la factura de compra
-    $totalRetenciones = 0;
     
     if (count($objeto->arregloRetenciones) > 0) {
         $pdf->Ln(1);
@@ -836,8 +836,7 @@ function imprimirFacturaCompraPdf($datos) {
                 $pdf->Cell(170, 7, $key . ': ', 0, 0, 'R');
                 $pdf->SetFont('times', '', 7);
                 $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($value, '$'), 0, 0, 'R');
-
-                $totalRetenciones += $value;    
+ 
             }
         }
         
@@ -845,7 +844,7 @@ function imprimirFacturaCompraPdf($datos) {
         $pdf->SetFont('times', 'B', 10);
         $pdf->Cell(170, 7, $textos->id("TOTAL_RETENCIONES") . ':   ', 0, 0, 'R');
         $pdf->SetFont('times', 'B', 10);
-        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($totalRetenciones, '$'), 0, 0, 'R');           
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->totalRetenciones, '$'), 0, 0, 'R');           
         
     }
    
@@ -854,7 +853,7 @@ function imprimirFacturaCompraPdf($datos) {
     $pdf->SetFont('times', 'B', 14);
     $pdf->Cell(170, 7, $textos->id("TOTAL") . ':  ', 0, 0, 'R');
     $pdf->SetFont('times', 'B', 13);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero( ($totalFactura - $totalRetenciones), '$'), 0, 0, 'R');
+    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero( ($totalFactura - $objeto->totalRetenciones), '$'), 0, 0, 'R');
 
     $pdf->Output($nombrePdf, 'F');
     chmod($nombrePdf, 0777);
@@ -1131,9 +1130,12 @@ function imprimirFacturaCompraPos($datos) {
 
     $pieTirilla = '';
     
-    $totalFactura = $subtotalFactura;
+    $totalFactura = $subtotalFactura + $impuestoIva;
     
+    if($objeto->valorFlete > 0){
     $pieTirilla .= $textos->id("VALOR_FLETE") . ": $" . $objeto->valorFlete . "\n\n";    
+    
+    }
     
     if ($dctoTotalSobreArticulos > 0){
         $pieTirilla .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': $' . Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";

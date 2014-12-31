@@ -76,10 +76,10 @@ $textos = array(
     
     /*Errores*/
     "ERROR_FALTA_CODIGO"                        => "Error falta codigo",
-    "ERROR_EXISTE_CODIGO"                       => "Error existe un pais con este codigo iso",
+    "ERROR_EXISTE_CODIGO"                       => "Error existe un plan de cuenta con este codigo",
     "ERROR_EXISTE_CODIGO_COMERCIAL"             => "Error existe un pais con este codigo comercial",
     "ERROR_FALTA_NOMBRE"                        => "Error falta nombre", 
-    "ERROR_EXISTE_NOMBRE"                       => "Error existe un pais registrado con ese nombre",
+    "ERROR_EXISTE_NOMBRE"                       => "Error existe un plan de cuenta registrado con ese nombre",
     "ERROR_FORMATO_CODIGO"                      => "Error formato codigo iso, solo deben ser dos letras mayusculas",
     "ERROR_FORMATO_NOMBRE"                      => "Error formto nombre, deben ser solo letras",
     

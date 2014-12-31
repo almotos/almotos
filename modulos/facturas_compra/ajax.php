@@ -108,6 +108,14 @@ function cosultarItem($id) {
     
     $codigo2 .= HTML::parrafo($textos->id('SEDE') . ': ' . HTML::frase($objeto->sede, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('VALOR_FLETE') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->valorFlete, '$'), 'sinNegrilla'), 'negrilla margenSuperior');
+    
+    if (count($objeto->arregloRetenciones) > 0 ) {
+        $codigo2 .= HTML::parrafo($textos->id('RETENCIONES'), 'negrilla margenSuperior');
+        foreach ($objeto->arregloRetenciones as $id => $valor) {
+            $codigo2 .= HTML::parrafo($id . ': ' . HTML::frase($valor, 'sinNegrilla'), 'margenIzquierda');
+        }
+    
+    }
     $codigo2 .= HTML::parrafo($textos->id('CAJA') . ': ' . HTML::frase($objeto->caja, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
 
@@ -178,7 +186,7 @@ function cosultarItem($id) {
     $codigo4  = HTML::parrafo($textos->id('IVA') . '$ '.HTML::frase($objeto->iva . '$ ', 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo4 .= HTML::parrafo($textos->id('DESCUENTOS') . ': ', 'negrilla margenSuperior letraVerde');
 
-    $totalFactura = $objeto->subtotal;
+    $totalFactura = $objeto->subtotal - $objeto->totalRetenciones;
 
     if (!empty($objeto->concepto1) && !empty($objeto->descuento1)) {
 
@@ -200,7 +208,7 @@ function cosultarItem($id) {
     $codigo5  = HTML::parrafo($textos->id('SUBTOTAL') . ': $' . HTML::frase(Recursos::formatearNumero($objeto->subtotal, '$'), 'sinNegrilla titulo'), 'negrilla margenSuperior');
     $codigo5 .= HTML::parrafo('', 'negrilla margenSuperior');
     $codigo5 .= HTML::parrafo('', 'negrilla margenSuperior');
-    $codigo5 .= HTML::parrafo($textos->id('TOTAL') . '$' . HTML::frase(Recursos::formatearNumero($objeto->total, '$'), 'sinNegrilla letraAzul grande'), 'negrilla margenSuperior titulo');
+    $codigo5 .= HTML::parrafo($textos->id('TOTAL') . '$' . HTML::frase(Recursos::formatearNumero($totalFactura, '$'), 'sinNegrilla letraAzul grande'), 'negrilla margenSuperior titulo');
     $codigo5 .= HTML::parrafo($objeto->facturaDigital, 'negrilla margenSuperior');
 
     $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo');
@@ -1240,7 +1248,7 @@ function consultarNotaDebito($id) {
 }
 
 /**
- * Funcion que genera el formulario para introducir una  una nota credito enviada por un proveedor sobre una factura de venta realizada
+ * Funcion que genera el formulario para introducir una nota credito enviada por un proveedor sobre una factura de compra realizada.
  * 
  * @global type $textos
  * @param type $id 
@@ -1291,7 +1299,7 @@ function adicionarNotaCredito($id, $datos = array()) {
         $codigo1 .= HTML::parrafo($textos->id('AFECTAR_CANTIDADES_INVENTARIO') . HTML::campoChequeo('datos[inventario_modificado]', false, 'chkModInventario margenIzquierda', 'chkModInventario'), 'negrilla margenSuperior');
 
 
-        $codigo2 = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
+        $codigo2  = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
         $codigo2 .= HTML::areaTexto('datos[concepto_nota]', 4, 50, '', 'txtAreaConceptoNotaC campoObligatorio', 'txtAreaConceptoNotaC');
         $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, '', 'fechaAntigua campoCalendario', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
         $codigo2 .= HTML::parrafo($textos->id('CARGAR_NOTA_DIGITAL'), 'negrilla margenSuperiorDoble');
