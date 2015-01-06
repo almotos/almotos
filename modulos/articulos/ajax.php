@@ -560,7 +560,7 @@ function adicionarItem($datos = array()) {
         
         $textoExitoso = HTML::frase($textos->id('REGISTRO_AGREGADO'), 'textoExitoso margenIzquierda', 'textoExitoso');
         
-        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk') . $textoExitoso, 'margenSuperior');
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk directo', 'botonOk', 'botonOk') . $textoExitoso, 'margenSuperior');
 
 
         $codigo_f = HTML::forma($destino, $codigo, 'P', true, "formaAdicionarArticulos");
