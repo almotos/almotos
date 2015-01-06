@@ -82,7 +82,7 @@ $textos = array(
     'VALIDAR_DESCUENTO'                         => 'Validar descuento',
     'MAXIMO_DESCUENTO_PERMITIDO'                => 'Ingrese el descuento para<br> todos los articulos. <br>Maximo descuento permitido %1 %',
     'EXPLICACION_AUTORIZACION_DCTO'             => '* El descuento que intenta aplicar (<span id="txtValDcto" class="negrilla"></span>) supera su autorizado. Solicite a su supervisor el ingreso de usuario y contraseña para validar la autorizacion del descuento',
-    
+    'SUBTOTAL_ARTICULOS'                        => 'Subtotal articulos',
 
     
     /*Campos y labels*/

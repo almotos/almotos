@@ -765,9 +765,9 @@ function imprimirFacturaVentaPdf($datos) {
     }
     
     $pdf->Ln(4);
-    $pdf->SetFont('times', 'B', 10);
-    $pdf->Cell(170, 7, $textos->id("SUBTOTAL") . ':   ', 0, 0, 'R');
-    $pdf->SetFont('times', 'B', 10);
+    $pdf->SetFont('times', 'B', 8);
+    $pdf->Cell(170, 7, $textos->id("SUBTOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
+    $pdf->SetFont('times', '', 8);
     $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($subtotalFactura, '$'), 0, 0, 'R');    
     
 //    $pdf->SetFont('times', 'B', 7);
@@ -778,14 +778,22 @@ function imprimirFacturaVentaPdf($datos) {
 //    $pdf->Cell(18, 7, '$ '.Recursos::formatearNumero( ($objeto->valorFlete * ($sesion_configuracionGlobal-> ivaGeneral / 100) ), '$'), 0, 0, 'L');    
 
     if ($objeto->iva > 0) {
-        $pdf->Ln(6);
+        $pdf->Ln(4);
 
         $pdf->SetFont('times', 'B', 7);
         $pdf->Cell(170, 7, $textos->id('TOTAL_IVA'), 0, 0, 'R');
         $pdf->SetFont('times', '', 7);
         $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->iva, '$'), 0, 0, 'R');
         
-        //$subtotalFactura += $objeto->iva;
+        $subtotalFactura += $objeto->iva;
+        
+        $pdf->Ln(5);
+        $pdf->SetFont('times', 'B', 9);
+        $pdf->Cell(170, 7, $textos->id("SUBTOTAL") . ':   ', 0, 0, 'R');
+        $pdf->SetFont('times', 'b', 9);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($subtotalFactura, '$'), 0, 0, 'R');         
+        
+        
     }
 
     $totalFactura = $subtotalFactura;
@@ -834,14 +842,37 @@ function imprimirFacturaVentaPdf($datos) {
         $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($totalDescuentos, '$'), 0, 0, 'R');        
 
     }
+    
+    //Agregar las retenciones realizadas en la venta a la factura de venta
+    
+    if (count($objeto->arregloRetenciones) > 0) {
+        $pdf->Ln(1);
+        foreach ($objeto->arregloRetenciones as $key => $value) {
+            //si la retencion es diferente al iva teorico
+            if ($key != "Iva Teorico") {
+                $pdf->Ln(4);
 
-    $totalFactura += ($objeto->iva) ? $objeto->iva : 0;
+                $pdf->SetFont('times', 'B', 7);
+                $pdf->Cell(170, 7, $key . ': ', 0, 0, 'R');
+                $pdf->SetFont('times', '', 7);
+                $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($value, '$'), 0, 0, 'R');
+  
+            }
+        }
+        
+        $pdf->Ln(4);
+        $pdf->SetFont('times', 'B', 10);
+        $pdf->Cell(170, 7, $textos->id("TOTAL_RETENCIONES") . ':   ', 0, 0, 'R');
+        $pdf->SetFont('times', 'B', 10);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->totalRetenciones, '$'), 0, 0, 'R');           
+        
+    }  
 
     $pdf->Ln(7);
     $pdf->SetFont('times', 'B', 14);
     $pdf->Cell(170, 7, $textos->id("TOTAL") . ':  ', 0, 0, 'R');
     $pdf->SetFont('times', 'B', 14);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($totalFactura, '$'), 0, 0, 'R');
+    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($totalFactura - $objeto->totalRetenciones, '$'), 0, 0, 'R');
     
     if (!empty($objeto->fechaLimiteDcto1) && !empty($objeto->porcentajeDcto1)) {
 
@@ -1061,10 +1092,12 @@ function imprimirFacturaVentaPos($datos) {
 
     $pieTirilla     = '';
     
+    if ($objeto->valorFlete > 0){
     $pieTirilla    .= $textos->id("VALOR_FLETE") . ": " . '$'.Recursos::formatearNumero($objeto->valorFlete, '$') . "\n";
-    
     $pieTirilla    .= $textos->id("IVA_FLETE") . ": " . '$'.Recursos::formatearNumero( ($objeto->valorFlete * ($sesion_configuracionGlobal->ivaGeneral / 100) ), '$') . "\n";
-    
+
+    }
+        
     if ($objeto->iva){
         $pieTirilla    .= $textos->id("IVA") . ": " . '$'.Recursos::formatearNumero($objeto->iva, '$') . "\n";
     }

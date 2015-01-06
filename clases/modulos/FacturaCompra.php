@@ -194,13 +194,19 @@ class FacturaCompra {
     
     /**
      * Cadena con la informacion para las retenciones que llevara a cabo la clase Contabilidad
-     * @var entero
+     * @var string
      */
     public $retenciones;  
     
     /**
-     * arreglo (llave ->valor) con la informacion para las retenciones que llevara a cabo la clase Contabilidad
+     * Valor total de las retenciones en la factura
      * @var entero
+     */
+    public $totalRetenciones = 0;     
+    
+    /**
+     * arreglo (llave ->valor) con la informacion para las retenciones que llevara a cabo la clase Contabilidad
+     * @var array
      */
     public $arregloRetenciones = array();      
 
@@ -228,7 +234,7 @@ class FacturaCompra {
     public $rutaFacturaDigital;
 
     /**
-     * listado de articulos que contiene la factura (arreglño con todo el listado de articulos)
+     * listado de articulos que contiene la factura (arreglo con todo el listado de articulos)
      * @var array
      */
     public $listaArticulos;
@@ -416,7 +422,7 @@ class FacturaCompra {
                 }
                 
                 /**
-                 * generar arreglo de retenciones llave -> valor, donde llave es el valor de la retencion y valor, el valor :)
+                 * generar arreglo de retenciones llave -> valor, donde llave es el nombre de la retencion y valor, el valor :)
                  */
                 $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
                 
@@ -425,6 +431,7 @@ class FacturaCompra {
                     $nombreRetencion    = $configuracion["RETENCIONES"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
                     
                     $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
+                    $this->totalRetenciones += $retencion[1];
                     
                 }
                 
