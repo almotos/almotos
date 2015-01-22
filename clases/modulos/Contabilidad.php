@@ -105,7 +105,7 @@ class Contabilidad {
         $retenciones["1"]["3"]  = array();
         $retenciones["1"]["4"]  = array("4");
         $retenciones["2"]["1"]  = array("1", "2", "5");
-        $retenciones["2"]["2"]  = array("1");
+        $retenciones["2"]["2"]  = array("1", "2");
         $retenciones["2"]["3"]  = array("1");
         $retenciones["2"]["4"]  = array();
         $retenciones["3"]["1"]  = array("1", "3", "5");

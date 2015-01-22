@@ -72,17 +72,20 @@ class ContabilidadVentas extends Contabilidad
         //crear el arreglo con las retenciones a partir de la cadena guardada en la BD
         //del tipo idRetencion;valor|idRetencion;valor|
         $arregloRetenciones = array();
-        //el ultimo pipe es retirado del string y se crea un arreglo dividiendo la cadena por pipe
-        $arreglo = explode('|', substr($factura->retenciones, 0, -1));
+        $totalRetenciones   = 0;
         
-        $totalRetenciones = 0;
-        //recorrer el arreglo para generar los valores
-        foreach ($arreglo as $id => $valor) {
-            $retencion              = explode(';', $valor);
-            $arregloRetenciones[]   = array("id" => $retencion[0], "valor" => $retencion[1]);
-            //aqui hay que tener cuidado con el iva teorico
-            $totalRetenciones += $retencion[1];
-            
+        if (!empty($factura->retenciones)) {
+            //el ultimo pipe es retirado del string y se crea un arreglo dividiendo la cadena por pipe
+            $arreglo = explode('|', substr($factura->retenciones, 0, -1));
+
+            //recorrer el arreglo para generar los valores
+            foreach ($arreglo as $id => $valor) {
+                $retencion              = explode(';', $valor);
+                $arregloRetenciones[]   = array("id" => $retencion[0], "valor" => $retencion[1]);
+                //aqui hay que tener cuidado con el iva teorico
+                $totalRetenciones += $retencion[1];
+
+            }
         }
         
         //armar el arreglo de arreglos para guardar los asientos contables
@@ -169,7 +172,7 @@ class ContabilidadVentas extends Contabilidad
             //si el impuesto no es el iva teorico
             if ($value["id"] != "5") {
                 $retencion = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$value["id"]];
-                //aqui llega solo los impuestos que re retuvieron segun los regimenes del proveedor y ventador
+                //aqui llega solo los impuestos que se retuvieron segun los regimenes del proveedor y vendedor
                 $datosRetencion = array();
                 $datosRetencion['id_cuenta']         = $retencion["id_cuenta"];
                 $datosRetencion['comprobante']       = $comprobante;

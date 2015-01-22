@@ -288,7 +288,6 @@ class Resolucion {
              * de una factura de configuracion
              */
             if (!empty($datos['numero_retoma_facturacion'])) {
-                
                 /**
                  *ya que la sede se relaciona con la caja, capturamos la caja principal 
                  * haciendo uso de la sede 
@@ -303,6 +302,7 @@ class Resolucion {
                     'id_usuario'        => $sesion_usuarioSesion->id,
                     'id_caja'           => $idCaja,
                     'estado_factura'    => '2',
+                    'activo'            => '0',
                     'observaciones'     => str_replace('%1', $datos['numero'], $textos->id('FACTURA_PARAMETRIZACION_RETOMA_FACTURACION_RESOLUCION')),
                 );
 

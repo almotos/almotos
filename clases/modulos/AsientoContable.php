@@ -436,7 +436,7 @@ class AsientoContable {
     
     
     public function generarTablaRegistroContable($tipoComprobante, $numComprobante){
-        global $sql, $textos;
+        global $textos;
         
         $listaAsientos = $this->cargarRegistroContable($tipoComprobante, $numComprobante);  
 

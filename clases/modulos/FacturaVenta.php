@@ -383,16 +383,18 @@ class FacturaVenta {
                 /**
                  * generar arreglo de retenciones llave -> valor, donde llave es el valor de la retencion y valor, el valor :)
                  */
-                $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
-                
-                foreach ($arrRetenciones as $id => $valor) {
-                    $retencion          = explode(';', $valor);
-                    $nombreRetencion    = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
-                    
-                    $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
-                    $this->totalRetenciones += $retencion[1];
-                    
-                }                
+                if (!empty($this->retenciones)){
+                    $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
+
+                    foreach ($arrRetenciones as $id => $valor) {
+                        $retencion          = explode(';', $valor);
+                        $nombreRetencion    = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
+
+                        $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
+                        $this->totalRetenciones += $retencion[1];
+
+                    }   
+                }             
                 
             }
         }

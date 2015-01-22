@@ -76,7 +76,7 @@ function realizarMovimiento(event, obj){
     var bodegaOrigen        = padre.find("#idBodegaOrigen").val();
     var bodegaDestino       = padre.find("#selectorBodegas").val();
     var nombreBodegaDestino = padre.find("#selectorSedes option:selected").html()+" :: "+padre.find("#selectorBodegas option:selected").html();
-    var nombreBodegaOrigen  = padre.find("#bodegaOrigen").html();
+    var nombreBodegaOrigen  = padre.find("input.checkBodegaOrigen:checked").attr("bodega");
     var cantidadMercancia   = padre.find("#campoCantidadAMover").val();
     var idArticulo          = padre.find("#idArticulo").val();
     var dialogo             = padre.find("#idDialogo").val();

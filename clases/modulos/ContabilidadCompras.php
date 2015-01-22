@@ -66,6 +66,8 @@ class ContabilidadCompras extends Contabilidad
         //armar el arreglo de arreglos para guardar los asientos contables
         $asientosContables = array();
         
+        //iva de la compra
+        $_iva = (!empty($factura->iva) && $factura->iva > 0) ? $factura->iva : "0";
         //afectar cuenta "mercancias no fabricadas por la empresa"
         $datosTotal = array();
         $datosTotal['id_cuenta']         = '143501';
@@ -74,7 +76,7 @@ class ContabilidadCompras extends Contabilidad
         $datosTotal['fecha']             = $factura->fechaFactura;
         $datosTotal['concepto']          = $concepto;
         $datosTotal['credito']           = '';
-        $datosTotal['debito']            = $factura->total;
+        $datosTotal['debito']            = ($factura->total - $_iva);
         $asientosContables[]             = $datosTotal;   
                 
         //afectar cuentas contables dependiendo de los medios de pago

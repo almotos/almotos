@@ -75,7 +75,7 @@ if (isset($url_accion)) {
  */
 function cosultarItem($id) {
     global $textos, $sql, $sesion_configuracionGlobal;
-
+    
     if (!isset($id) || (isset($id) && !$sql->existeItem('facturas_compras', 'id', $id))) {
         $respuesta              = array();
         $respuesta['error']     = true;
@@ -84,10 +84,10 @@ function cosultarItem($id) {
         Servidor::enviarJSON($respuesta);
         return NULL;
     }
-
+    
     $objeto     = new FacturaCompra($id);
     $respuesta  = array();
-    
+
     $codigo = '';
 
     $codigo .= HTML::campoOculto('id', $id);
@@ -111,11 +111,12 @@ function cosultarItem($id) {
     
     if (count($objeto->arregloRetenciones) > 0 ) {
         $codigo2 .= HTML::parrafo($textos->id('RETENCIONES'), 'negrilla margenSuperior');
-        foreach ($objeto->arregloRetenciones as $id => $valor) {
-            $codigo2 .= HTML::parrafo($id . ': ' . HTML::frase($valor, 'sinNegrilla'), 'margenIzquierda');
+        foreach ($objeto->arregloRetenciones as $key => $valor) {
+            $codigo2 .= HTML::parrafo($key . ': ' . HTML::frase($valor, 'sinNegrilla'), 'margenIzquierda');
         }
     
     }
+    
     $codigo2 .= HTML::parrafo($textos->id('CAJA') . ': ' . HTML::frase($objeto->caja, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
 
@@ -126,7 +127,7 @@ function cosultarItem($id) {
 
 
     $datosTabla = array(
-        HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
+        //HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
         HTML::frase($textos->id('ARTICULO'),    'negrilla margenIzquierda'),
         HTML::frase($textos->id('CANTIDAD'),    'negrilla margenIzquierda'),
         HTML::frase($textos->id('DESCUENTO'),   'negrilla margenIzquierda'),
@@ -142,7 +143,7 @@ function cosultarItem($id) {
 
         $object = new stdClass();
 
-        $object->plu            = $article->$idPrincipalArticulo;
+        //$object->plu            = $article->$idPrincipalArticulo;
         $object->articulo       = $article->articulo;
         $object->cantidad       = $article->cantidad;  
         $object->descuento      = $article->descuento; 
@@ -218,8 +219,7 @@ function cosultarItem($id) {
     $contenedor5 = HTML::contenedor($codigo5, 'contenedorDerecho');
 
     $pestana1 = $contenedor1 . $contenedor2 . $contenedor3 . $contenedor4 . $contenedor5;
-    
-    
+
     /**
      * NOTAS CREDITO DE LA FACTURA
      */
@@ -1301,7 +1301,7 @@ function adicionarNotaCredito($id, $datos = array()) {
 
         $codigo2  = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
         $codigo2 .= HTML::areaTexto('datos[concepto_nota]', 4, 50, '', 'txtAreaConceptoNotaC campoObligatorio', 'txtAreaConceptoNotaC');
-        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, '', 'fechaAntigua campoCalendario', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
+        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, '', 'fechaAntigua campoCalendario campoObligatorio', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
         $codigo2 .= HTML::parrafo($textos->id('CARGAR_NOTA_DIGITAL'), 'negrilla margenSuperiorDoble');
         $codigo2 .= HTML::campoArchivo('nota_digital', 50, 255, '', $textos->id('AYUDA_CARGAR_NOTA_CREDITO'));
 
@@ -1314,7 +1314,7 @@ function adicionarNotaCredito($id, $datos = array()) {
             HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
             HTML::frase($textos->id('ARTICULO'), 'negrilla margenIzquierda'),
             HTML::frase($textos->id('CANTIDAD'), 'negrilla margenIzquierda'),
-            HTML::frase($textos->id('CANTIDAD_A_MODIFICAR'), 'negrilla margenIzquierdaDoble'),
+            HTML::frase($textos->id('CANTIDAD_NUEVA'), 'negrilla margenIzquierdaDoble'),
         );
 
 
@@ -1324,16 +1324,18 @@ function adicionarNotaCredito($id, $datos = array()) {
          * para ver el listado exacto de los articulos que se cargan ver la clase FacturaCompra 
          */
         foreach ($objeto->listaArticulos as $article) {
+            $idReg = (int) $article->id ;
+            
+            $cantidadReal = NotaCreditoProveedor::verificarNotaPrevia($idReg);
+            $cantidadReal = ($cantidadReal) ? $cantidadReal : $article->cantidad;   
+            
             //declaro un nuevo objeto vacio para poder armar la tabla
             $object = new stdClass();
             
             $object->plu        = $article->$idPrincipalArticulo;
             $object->articulo   = $article->articulo;
-            $object->cantidad   = $article->cantidad;
+            $object->cantidad   = $cantidadReal;
             
-            
-            $idReg = (int) $article->id ;
-
             if (strlen($object->articulo) > 60) {
                 $object->articulo = substr($object->articulo, 0, 60) . '.';
             }
@@ -1342,8 +1344,9 @@ function adicionarNotaCredito($id, $datos = array()) {
              * notese que en "valor" se concatena la cantidad del articulo, estos datos son usados 
              * en el metodo encargado de hacer el registro
              */
-            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega;
-            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $object->cantidad, 'margenIzquierdaDoble rangoNumeros', $idReg, array("rango" => "1-".$object->cantidad.""));
+            
+            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega . '_' .$idReg;
+            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $cantidadReal, 'margenIzquierdaDoble rangoNumeros', $idReg, array("rango" => "1-".$object->cantidad."", "ayuda" => "AYUDA_CANTIDAD_NUEVA"));
             $listaArticulos[] = $object;
         }
 
