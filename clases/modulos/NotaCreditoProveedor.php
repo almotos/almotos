@@ -269,13 +269,7 @@ class NotaCreditoProveedor {
                 if ($cantidadActual == $nuevaCantidad) {
                     continue;
                 }
-                
-                /**
-                 * verificar cambios en cantidades para asi mismo modificar el inventario
-                 * solo se modificarian datos en una nota credito cuando la nueva cantidad ingresada 
-                 * sea menor a la cantidad existente en la factura, ya que una nota credito se puede 
-                 * generar solo por exceso en la facturacion de parte del proveedor al cliente
-                 */
+
                 $queryInv = FALSE;
                 
                  if ($nuevaCantidad < $cantidadActual){

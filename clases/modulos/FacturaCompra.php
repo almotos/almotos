@@ -922,6 +922,7 @@ class FacturaCompra {
         if (!isset($orden)) {
             $orden = 'fc.fecha_factura';
         }
+        
         if ($this->listaAscendente) {
             $orden = $orden . ' ASC';
             
@@ -976,7 +977,6 @@ class FacturaCompra {
             $this->registrosConsulta = $sql->filasDevueltas;
         }
 
-        $sql->depurar = true;
         $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad, FALSE);
 
         if ($sql->filasDevueltas) {
@@ -992,7 +992,6 @@ class FacturaCompra {
 
         return $lista;
     }
-
 
     /**
      * Metodo que genera los datos que contendra la tabla principal del modulo
@@ -1068,6 +1067,5 @@ class FacturaCompra {
             
         }
     }
-    
-    
+  
 }

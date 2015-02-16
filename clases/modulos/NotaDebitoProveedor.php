@@ -265,13 +265,7 @@ class NotaDebitoProveedor {
                 $idBodega           = $arr_1[2];
                 $idArticuloFactura  = $arr_1[3];
                 $nuevaCantidad      = $value;
-                
-                /**
-                 * verificar cambios en cantidades para asi mismo modificar el inventario
-                 * solo se modificarian datos en una nota debito cuando la nueva cantidad ingresada 
-                 * sea menor a la cantidad existente en la factura, ya que una nota debito se puede 
-                 * generar solo por exceso en la facturacion de parte del proveedor al cliente
-                 */
+
                 $queryInv = FALSE;
                 
                  if ($nuevaCantidad < $cantidadActual){
@@ -343,7 +337,7 @@ class NotaDebitoProveedor {
         $consulta = $sql->eliminar('notas_debito_proveedores', 'id = "' . $this->id . '"');
 
         if ($consulta) {            
-            $consulta = $sql->eliminar('articulos_modificados_ndp', 'id_factura = "' . $this->id . '"');
+            $consulta = $sql->eliminar('articulos_modificados_ndp', 'id_nota_debito_proveedor = "' . $this->id . '"');
             
             if ($this->facturaDigital) {
                 $configuracionRuta = $configuracion['RUTAS']['media'] . '/' . $configuracion['RUTAS']['archivos'] . '/facturas_compra/' . $this->id;

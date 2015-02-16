@@ -227,7 +227,7 @@ class FacturaVenta {
      * Indicador del orden cronológio de la lista de registros
      * @var lógico
      */
-    public $listaAscendente = TRUE;
+    public $listaAscendente = FALSE;
     
     /**
      * Se pone en true si al tratar de generar una factura, el id de dicha factura esta fuera del rango de la resolucion de la DIAN vigente
@@ -772,6 +772,7 @@ class FacturaVenta {
         if (!isset($orden)) {
             $orden = 'fv.fecha_factura';
         }
+        
         if ($this->listaAscendente) {
             $orden = $orden . ' ASC';
         } else {

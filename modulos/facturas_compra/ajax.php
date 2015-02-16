@@ -123,12 +123,10 @@ function cosultarItem($id) {
         $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
     }
     
-
     //verificar el identificador escogido para los articulos en la configuracion global y usarlo para mostrar los datos
     $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
     
     $arrayIdArticulo     = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));        
-
 
     $datosTabla = array(
         //HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
@@ -156,8 +154,7 @@ function cosultarItem($id) {
         
         if (strlen($object->articulo) > 80) {
             $object->articulo = substr($object->articulo, 0, 80) . '.';
-        }        
-        
+        }          
         
         if ($object->descuento == 0 || $object->descuento == '0') {
             $object->subtotal = $object->cantidad * $object->precio;
@@ -167,18 +164,10 @@ function cosultarItem($id) {
         $object->descuento  = Recursos::formatearNumero($object->descuento, '%', '0');
         $object->precio     = '$' . Recursos::formatearNumero($object->precio, '$');
         
-//        $subtotalFactura += $object->subtotal;
-
         $object->subtotal = '$' . Recursos::formatearNumero($object->subtotal, '$');
 
         $listaArticulos[] = $object;
     }
-
-//    $subtotalFactura += $objeto->valorFlete;
-    
-//    $impuestoIva = ($subtotalFactura * $objeto->iva) / 100;
-
-//    $subtotalFactura += $impuestoIva;
 
     $idTabla                    = 'tablaListaArticulosConsulta';
     $clasesColumnas             = array('', '', '', '', '');

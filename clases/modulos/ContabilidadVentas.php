@@ -16,7 +16,7 @@ class ContabilidadVentas extends Contabilidad
     
     public function __construct()
     {
-        
+        parent::__construct();
     }
     
     /**
@@ -217,7 +217,131 @@ class ContabilidadVentas extends Contabilidad
         
         return true;   
     }
-    
+
+   
+    /**
+     * Organizar los asientos contables para las notas de credito de un cliente
+     * e insertarlos en la base de datos
+     * @param type $montoNota
+     * @param type $ivaNota
+     */
+    public function contabilizarNCC($idNota)
+    {
+        $nota               = new NotaCreditoCliente($idNota);
+        $asientoContable    = new AsientoContable();        
+        
+        //asientos xontables
+        $asientosContables = array();
+        //valores de variables
+        $comprobante        = '5';//tipo de comprobante 3-> NC cliente,
+        $concepto           = 'Descuentos o menores valores en precios - ventas';
+        
+//        $contabilidad = new Contabilidad();
+//        $retenciones = $contabilidad->generarCamposRetenciones($nota->factura->idProveedor, $nota->montoNota, $nota->ivaNota);
+
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '143501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = $nota->montoNota;
+        $datosTotal['debito']            = '';
+        $asientosContables[]             = $datosTotal; 
+        
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '220501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = '';
+        $datosTotal['debito']            = $nota->totalNota;
+        $asientosContables[]             = $datosTotal;  
+        
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '240801';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = $nota->ivaNota;
+        $datosTotal['debito']            = '';
+        $asientosContables[]             = $datosTotal;    
+        
+        //agregar cada uno de los asientos contables
+        foreach ($asientosContables as $asiento) {
+            $asientoContable->adicionar($asiento);
+        }        
+
+        return true;        
+        
+    }
+
+    /**
+     * Organizar los asientos contables para las notas de debito de un proveedor
+     * e insertarlos en la base de datos
+     * @param type $montoNota
+     * @param type $ivaNota
+     */
+    public function contabilizarNDC($idNota)
+    {
+        $nota               = new NotaDebitoCliente($idNota);
+        $asientoContable    = new AsientoContable();        
+        
+        //asientos xontables
+        $asientosContables = array();
+        //valores de variables
+        $comprobante        = '6';//tipo de comprobante 6-> NC cliente,
+        $concepto           = 'Mayores valores en precios - ventas';
+        
+//        $contabilidad = new Contabilidad();
+//        $retenciones = $contabilidad->generarCamposRetenciones($nota->factura->idProveedor, $nota->montoNota, $nota->ivaNota);
+
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '143501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = '';
+        $datosTotal['debito']            = $nota->montoNota;
+        $asientosContables[]             = $datosTotal; 
+        
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '220501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = $nota->totalNota;
+        $datosTotal['debito']            = '';
+        $asientosContables[]             = $datosTotal;  
+        
+        //afectar cuenta "mercancias no fabricadas por la empresa"
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '240801';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $idNota;
+        $datosTotal['fecha']             = date("Y-m-d H:i:s");
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = '';
+        $datosTotal['debito']            = $nota->ivaNota;
+        $asientosContables[]             = $datosTotal;    
+        
+        //agregar cada uno de los asientos contables
+        foreach ($asientosContables as $asiento) {
+            $asientoContable->adicionar($asiento);
+        }        
+
+        return true;        
+        
+    }      
     
 }
 
