@@ -146,7 +146,6 @@ class NotaCreditoProveedor {
 
             $condicion = 'ncp.id = "' . $id . '"';
 
-
             $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
 
             if ($sql->filasDevueltas) {
@@ -201,6 +200,8 @@ class NotaCreditoProveedor {
                     
                 }
                 
+                $this->factura = new FacturaCompra($this->idFactura);
+                
             }
             
         }
@@ -218,8 +219,6 @@ class NotaCreditoProveedor {
      */
     public function adicionar($datos){
         global $sql, $archivo_nota_digital;
-
-
         //almaceno en nuevas variables los datos que serán eliminados del arreglo
         $nuevasCantidades       = $datos['nueva_cantidad'];
         $datos['archivo']       = '';
@@ -281,12 +280,12 @@ class NotaCreditoProveedor {
                 
                  if ($nuevaCantidad < $cantidadActual){
                      $cantidadAModificar = $cantidadActual - $nuevaCantidad;
-                    $queryInv = $inventario->descontar($idArticulo, $cantidadAModificar, $idBodega);
+                     $queryInv = $inventario->descontar($idArticulo, $cantidadAModificar, $idBodega);
 
                 } else {
                     //Revisar si en una nota credito hay la posibilidad que la cantidad del articulo sea mayor a la existente
                     $cantidadAModificar = $nuevaCantidad - $cantidadActual;
-                    $queryInv = $inventario->adicionar($idArticulo, $nuevaCantidad, $idBodega);    
+                    $queryInv = $inventario->adicionar($idArticulo, $cantidadAModificar, $idBodega);    
                     
                 }
                 
@@ -313,6 +312,15 @@ class NotaCreditoProveedor {
                 }              
                 
             }
+        }
+        
+        $contabilidadCompras = new ContabilidadCompras();
+        
+        $contabilizarNCP = $contabilidadCompras->contabilizarNCP($idNotaCredito);
+        
+        if (!$contabilizarNCP) {
+            $sql->cancelarTransaccion();
+            return false;
         }
         
         $sql->finalizarTransaccion();

@@ -365,6 +365,7 @@ class FacturaVenta {
                     'cantidad'      => 'af.cantidad',
                     'descuento'     => 'af.descuento',
                     'precio'        => 'af.precio',
+                    'precioCompra'  => 'a.ultimo_precio_compra',
                     'iva'           => 'af.iva',
                     'idCliente'     => 'af.id_cliente',
                     'idBodega'      => 'af.id_bodega'
@@ -919,6 +920,23 @@ class FacturaVenta {
             return FALSE;
             
         }//fin del si funciono eliminar
+    }
+    
+    
+    /**
+     * Metodo que retorna la sumatoria del total de la compra del listado de
+     * articulos vendidos en una factura
+     */
+    public function getCostoDeVenta(){
+        $costoDeVenta = 0;
+        
+        if (!empty($this->listaArticulos) && is_array($this->listaArticulos)) {
+            foreach ($this->listaArticulos as $articulo) {
+                $costoDeVenta += $articulo->precioCompra;
+            }
+        }
+        
+        return (int)$costoDeVenta;
     }
 
 }

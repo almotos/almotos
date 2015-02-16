@@ -166,6 +166,30 @@ class ContabilidadVentas extends Contabilidad
         }
         
         /**
+         * Contabilidad del costo de venta
+         */
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '613501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $factura->id;
+        $datosTotal['fecha']             = $factura->fechaFactura;
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = '';
+        $datosTotal['debito']            = $factura->getCostoDeVenta();
+        $asientosContables[]             = $datosTotal;  
+        
+        $datosTotal = array();
+        $datosTotal['id_cuenta']         = '140501';
+        $datosTotal['comprobante']       = $comprobante;
+        $datosTotal['num_comprobante']   = $factura->id;
+        $datosTotal['fecha']             = $factura->fechaFactura;
+        $datosTotal['concepto']          = $concepto;
+        $datosTotal['credito']           = '';
+        $datosTotal['debito']            = $factura->getCostoDeVenta();
+        $asientosContables[]             = $datosTotal;        
+        
+        
+        /**
          * generar los registros contables para cada una de las retenciones
          */
         foreach ($arregloRetenciones as $value) {            

@@ -190,6 +190,8 @@ $textos = array(
     'ERROR_FALTA_TOTAL_NOTA'                    => 'Error, falta el total de la nota',
     'ERROR_FALTA_CONCEPTO_NOTA'                 => 'Error, falta el concepto de la nota',
     
+    'AYUDA_CANTIDAD_NUEVA'                      => 'Ayuda cantidad nueva',
+    'NOTA_DEBITO_ADICIONADA_A_FACTURA'          => 'Nota debito adicionada correctamente',
     
     /*Errores*/
     'ERROR_FALTA_CODIGO'                        => 'Error falta codigo',

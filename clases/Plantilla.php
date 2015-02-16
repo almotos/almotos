@@ -164,13 +164,6 @@ class Plantilla {
             }
         }
 
-
-        $ruta = $configuracion['RUTAS']['media'] . "/" . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
-        if (file_exists($ruta)) {
-            $ruta = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
-            $JavaScript .= "  <script type=\"text/javascript\" src=\"$ruta\"></script>\n";
-        }
-
         //cargar los javascript del modulo actual
         if (isset($configuracion['JAVASCRIPT'][$modulo->nombre])) {
             foreach ($configuracion['JAVASCRIPT'][$modulo->nombre] as $archivo) {
@@ -183,6 +176,12 @@ class Plantilla {
                 }
             }
         }
+        
+        $ruta = $configuracion['RUTAS']['media'] . "/" . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
+        if (file_exists($ruta)) {
+            $ruta = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
+            $JavaScript .= "  <script type=\"text/javascript\" src=\"$ruta\"></script>\n";
+        }        
 
 
         self::$etiquetas['JAVASCRIPT'] = $JavaScript;

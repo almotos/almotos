@@ -221,6 +221,30 @@ class FacturaCompra {
      * @var entero
      */
     public $observaciones;
+    
+    /**
+     * campo medio de pago "efectivo". Almacena la cantidad pagada en la factura por medio de "efectivo"
+     * @var entero
+     */
+    public $campoEfectivo;    
+    
+    /**
+     * campo medio de pago "tarjeta". Almacena la cantidad pagada en la factura por medio de "tarjeta"
+     * @var entero
+     */
+    public $campoTarjeta;
+    
+    /**
+     * campo medio de pago "cheque". Almacena la cantidad pagada en la factura por medio de "cheque"
+     * @var entero
+     */
+    public $campoCheque;
+    
+    /**
+     * campo medio de pago "credito". Almacena la cantidad pagada en la factura por medio de "credito"
+     * @var entero
+     */
+    public $campoCredito;    
 
     /**
      * archivo digital que representa la factura de venta del proveedor (ya sea porque el proveedor la envio digital, o se escaneo el medio fisico)
@@ -354,6 +378,10 @@ class FacturaCompra {
                 'retenciones'               => 'fc.retenciones',
                 'estadoFactura'             => 'fc.estado_factura',
                 'observaciones'             => 'fc.observaciones',
+                'campoEfectivo'             => 'fc.campo_efectivo',
+                'campoTarjeta'              => 'fc.campo_tarjeta',
+                'campoCheque'               => 'fc.campo_cheque',
+                'campoCredito'              => 'fc.campo_credito',
                 'facturaDigital'            => 'fc.archivo',
                 'activo'                    => 'fc.activo',
             );
