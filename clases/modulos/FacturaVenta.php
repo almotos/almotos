@@ -227,7 +227,7 @@ class FacturaVenta {
      * Indicador del orden cronológio de la lista de registros
      * @var lógico
      */
-    public $listaAscendente = TRUE;
+    public $listaAscendente = FALSE;
     
     /**
      * Se pone en true si al tratar de generar una factura, el id de dicha factura esta fuera del rango de la resolucion de la DIAN vigente
@@ -365,6 +365,7 @@ class FacturaVenta {
                     'cantidad'      => 'af.cantidad',
                     'descuento'     => 'af.descuento',
                     'precio'        => 'af.precio',
+                    'precioCompra'  => 'a.ultimo_precio_compra',
                     'iva'           => 'af.iva',
                     'idCliente'     => 'af.id_cliente',
                     'idBodega'      => 'af.id_bodega'
@@ -383,16 +384,18 @@ class FacturaVenta {
                 /**
                  * generar arreglo de retenciones llave -> valor, donde llave es el valor de la retencion y valor, el valor :)
                  */
-                $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
-                
-                foreach ($arrRetenciones as $id => $valor) {
-                    $retencion          = explode(';', $valor);
-                    $nombreRetencion    = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
-                    
-                    $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
-                    $this->totalRetenciones += $retencion[1];
-                    
-                }                
+                if (!empty($this->retenciones)){
+                    $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
+
+                    foreach ($arrRetenciones as $id => $valor) {
+                        $retencion          = explode(';', $valor);
+                        $nombreRetencion    = $configuracion["RETENCIONES"]["VENTAS"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
+
+                        $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
+                        $this->totalRetenciones += $retencion[1];
+
+                    }   
+                }             
                 
             }
         }
@@ -769,6 +772,7 @@ class FacturaVenta {
         if (!isset($orden)) {
             $orden = 'fv.fecha_factura';
         }
+        
         if ($this->listaAscendente) {
             $orden = $orden . ' ASC';
         } else {
@@ -917,6 +921,23 @@ class FacturaVenta {
             return FALSE;
             
         }//fin del si funciono eliminar
+    }
+    
+    
+    /**
+     * Metodo que retorna la sumatoria del total de la compra del listado de
+     * articulos vendidos en una factura
+     */
+    public function getCostoDeVenta(){
+        $costoDeVenta = 0;
+        
+        if (!empty($this->listaArticulos) && is_array($this->listaArticulos)) {
+            foreach ($this->listaArticulos as $articulo) {
+                $costoDeVenta += $articulo->precioCompra;
+            }
+        }
+        
+        return (int)$costoDeVenta;
     }
 
 }

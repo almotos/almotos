@@ -80,6 +80,9 @@ a:hover{
 
 }
 
+.overflowAuto{
+    overflow: auto;
+}
 
 #indicadorEspera div {
     background: #eee url('imagenes/indicador-espera.gif') no-repeat scroll 10px 50%;

@@ -22,7 +22,7 @@ $contenido    .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-c
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
 
-$item .= HTML::campoOculto('orden' . ucwords(strtolower($modulo->nombre)), 'ascendente|' . $objeto->ordenInicial, 'ordenGlobal');
+$item .= HTML::campoOculto('orden' . ucwords(strtolower($modulo->nombre)), 'descendente|' . $objeto->ordenInicial, 'ordenGlobal');
 $item .= HTML::campoOculto('condicion' . ucwords(strtolower($modulo->nombre)), '', 'condicionGlobal');
 
 /**

@@ -34,13 +34,105 @@ function consultarCuadreCaja(obj){
         success:procesaRespuesta
     });
 }
+    
+var Router = Backbone.Router.extend({
+    routes: {
+        "": "cuadre_caja"
+    }
+});
 
+var router = new Router();
+
+router.on('route:cuadre_caja', function(){
+    $("#idSelectorTiempos").chosen();
+    console.log("que maricada, en serio que necesito aprender rapido la mecanografia");
+});
+    
+    
+var Consulta = Backbone.Model.extend({
+    defaults: {
+        ultimos: '',
+        rango_personalizado: false,
+        fecha_inicial: '',
+        fecha_final: '',
+        todas_cajas: true,
+        caja: ''
+        
+    },
+});
+
+
+var ParametrosConsulta = Backbone.View.extend({
+    el: "#wrapper",
+    events: {
+        "click #rangoPersonalizado" : "mostrarContenedorRangoFechas",
+        "click #filtrarTodasCajas"  : "filtrarTodasCajas",
+        "change #selectorSedes"     : "actualizarSelectorCaja"
+    },
+    
+    initialize: function(){
+        this.model = new Consulta();
+        this.model.on('change', this.prepararCargaAjax);
+    },
+            
+    render: function() {
+        return this;
+    },
+            
+    prepararCargaAjax: function(){
+        console.log("prepararCargaAjax");
+    },
+            
+    /**
+     * función que muestra los campos para seleccionar la bodega para que el 
+     * kardex sea filtrado por bodega tambien
+     */
+    mostrarContenedorRangoFechas: function(event){
+        var obj = $(event.target);
+        
+        if(obj.is(":checked")){
+            $("#contenedorRangoFechas").fadeIn("fast");
+            
+        } else {
+            $("#contenedorRangoFechas").fadeOut("fast");
+            
+        }     
+        
+    },
+            
+    /**
+     * función que muestra los campos para seleccionar la bodega para que el 
+     * kardex sea filtrado por bodega tambien
+     */
+     filtrarTodasCajas: function(event){
+        var obj = $(event.target);
+        
+        var contenedorSelectorCajas = $("#contenedorSelectorCajas");
+        
+        if(obj.is(":checked")){
+            contenedorSelectorCajas.fadeIn("fast");
+            
+        } else {
+            contenedorSelectorCajas.fadeOut("fast");
+            
+        }
+        
+        /**
+         * Función que agrega el plugin chosen ver 
+         **/
+        contenedorSelectorCajas.find("select").chosen({no_results_text: "Oops, sin resultados!"});      
+        
+    },
+            
     /*
      *Codigos que agregan via ajax los options con las cajas
      *segun la sede que se seleccione
      **/
-    function seleccionarCajas(obj){
-        var sede = obj.val();        
+     actualizarSelectorCaja: function(event){
+        var obj = $(event.target);
+        
+        var sede = obj.val();  
+        
         if(sede != ''){
             $.ajax({
                 type:"POST",
@@ -50,52 +142,43 @@ function consultarCuadreCaja(obj){
                 },
                 dataType:"json",
                 success:function (respuesta){
-                    obj.parents("#contenedorSelectorCajas").find("#selectorCajas").html(respuesta.contenido);
+                    var selector = obj.parents("#contenedorSelectorCajas").find("#selectorCajas");
+                        selector.html(respuesta.contenido);
+                        selector.trigger("chosen:updated");
                 }
 
             });          
            
         }   
     }
-    
-    /**
-     * función que muestra los campos para seleccionar la bodega para que el 
-     * kardex sea filtrado por bodega tambien
-     */
-    function filtrarTodasCajas(obj){
-        if(obj.is(":checked")){
-            $("#contenedorSelectorCajas").fadeIn("fast");
             
-        } else {
-            $("#contenedorSelectorCajas").fadeOut("fast");
-            
-        }
+});
+
+
+var Reporte = Backbone.View.extend({
+    el: "#contenedorRespuesta",
+    events: {
         
-        /**
-         * Función que agrega el plugin chosen ver 
-         **/
-        $(".selectChosen").chosen({no_results_text: "Oops, sin resultados!"});      
+    },
+    
+    initialize: function() {
+        
+        this.render();
+    },
+            
+    render: function(){
+        var plantilla = "Esto debe ir dentro del div contenedor Respuesta";
+        
+        $(this.el).html(plantilla);
+        
+        return this;
         
     }
-    
-    
-    /**
-     * función que muestra los campos para seleccionar la bodega para que el 
-     * kardex sea filtrado por bodega tambien
-     */
-    function mostrarContenedorRangoFechas(obj){
-        if(obj.is(":checked")){
-            $("#contenedorRangoFechas").fadeIn("fast");
-            
-        } else {
-            $("#contenedorRangoFechas").fadeOut("fast");
-            
-        }
-        
-        /**
-         * Función que agrega el plugin chosen ver 
-         **/
-        $("#contenedorRangoFechas .selectChosen").chosen({no_results_text: "Oops, sin resultados!"});      
-        
-    }    
+});
 
+
+var formulario = new ParametrosConsulta();
+
+var vista = new Reporte();
+
+Backbone.history.start();

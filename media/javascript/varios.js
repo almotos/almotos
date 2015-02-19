@@ -506,11 +506,16 @@ $(document).ready(function(){
             if(tecla != 8){
                 e.preventDefault();    
                 var rango = $(this).attr("rango");
-            
-                rango = rango.split("-");
-            
+                
                 var cantidad = String.fromCharCode(e.which);
-                cantidad = $(this).val()+cantidad;
+                cantidad = $(this).val()+cantidad;                
+                
+                if (typeof rango == "undefined") {
+                    $(this).val(cantidad);
+                    return;
+                }
+                
+                rango = rango.split("-");
 
                 if(cantidad < parseInt(rango[0]) || cantidad > parseInt(rango[1])){
                     return;

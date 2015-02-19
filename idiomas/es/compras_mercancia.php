@@ -71,6 +71,7 @@ $textos = array(
     'TOTAL_A_PAGAR'                             => 'Total a pagar',
     'ACTUALIZAR_RETENCIONES'                    => 'Actualizar valores de retenciones',
     'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total articulos',
+    'COPIA_FACTURA_COMPRA'                      => 'Copia de factura de compra',
     
 
     

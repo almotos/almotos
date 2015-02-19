@@ -177,7 +177,7 @@ class NotaDebitoProveedor {
 
                     $columnas1 = array(
                         'id'                => 'af.id',
-                        'idNotaDebito'     => 'af.id_nota_debito_proveedor',
+                        'idNotaDebito'      => 'af.id_nota_debito_proveedor',
                         'idArticulo'        => 'af.id_articulo',
                         'cantidadAnterior'  => 'af.cantidad_anterior',
                         'cantidadNueva'     => 'af.cantidad_nueva',
@@ -218,7 +218,6 @@ class NotaDebitoProveedor {
      */
     public function adicionar($datos){
         global $sql, $archivo_nota_digital;
-
 
         //almaceno en nuevas variables los datos que serán eliminados del arreglo
         $nuevasCantidades       = $datos['nueva_cantidad'];
@@ -261,75 +260,57 @@ class NotaDebitoProveedor {
             foreach($nuevasCantidades as $key => $value){
                 
                 $arr_1 = explode('_', $key);
-                //$idArticuloFactura  = $arr_1[0];//identificador del registro en la tabla articulo factura compra
                 $cantidadActual     = $arr_1[0];
                 $idArticulo         = $arr_1[1];
                 $idBodega           = $arr_1[2];
+                $idArticuloFactura  = $arr_1[3];
                 $nuevaCantidad      = $value;
-                
 
-                /**
-                 * verificar cambios en cantidades para asi mismo modificar el inventario
-                 * solo se modificarian datos en una nota debito cuando la nueva cantidad ingresada 
-                 * sea menor a la cantidad existente en la factura, ya que una nota debito se puede 
-                 * generar solo por exceso en la facturacion de parte del proveedor al cliente
-                 */
+                $queryInv = FALSE;
+                
                  if ($nuevaCantidad < $cantidadActual){
-                     
-                    $descontar = $inventario->descontar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($descontar){
-   
-                        $datos_amndp = array(
-                                            "id_nota_debito_proveedor" => $idNotaDebito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ndp", $datos_amndp);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
-                        $sql->cancelarTransaccion();
-                        return false;
-                        
-                    }
+                    $cantidadAModificar = $cantidadActual - $nuevaCantidad;
+                    $queryInv = $inventario->descontar($idArticulo, $cantidadAModificar, $idBodega);
                     
                 } else {
-                    $aumentar = $inventario->adicionar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($aumentar){
-                           
-                        $datos_amndp = array(
-                                            "id_nota_debito_proveedor" => $idNotaDebito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ndp", $datos_amndp);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
+                    $cantidadAModificar = $nuevaCantidad - $cantidadActual;                    
+                    $queryInv = $inventario->adicionar($idArticulo, $cantidadAModificar, $idBodega);
+                }
+                
+                if($queryInv){
+                    $datos_amndp = array(
+                                        "id_nota_debito_proveedor"   => $idNotaDebito,
+                                        "id_articulo_factura_compra" => $idArticuloFactura,
+                                        "id_articulo"                => $idArticulo,
+                                        "cantidad_anterior"          => $cantidadActual,
+                                        "cantidad_nueva"             => $nuevaCantidad
+                                        );
+
+                    $query = $sql->insertar("articulos_modificados_ndp", $datos_amndp);
+
+                    if(!$query){
                         $sql->cancelarTransaccion();
                         return false;
-                        
-                    }                    
-                    
+                    }
+
+                } else {
+                    $sql->cancelarTransaccion();
+                    return false;
+
                 }
                 
             }
         }
         
+        $contabilidadCompras = new ContabilidadCompras();
+        
+        $contabilizarNDP = $contabilidadCompras->contabilizarNDP($idNotaDebito);
+        
+        if (!$contabilizarNDP) {
+            $sql->cancelarTransaccion();
+            return false;
+        }      
+
         $sql->finalizarTransaccion();
         return true;
         
@@ -356,7 +337,7 @@ class NotaDebitoProveedor {
         $consulta = $sql->eliminar('notas_debito_proveedores', 'id = "' . $this->id . '"');
 
         if ($consulta) {            
-            $consulta = $sql->eliminar('articulos_modificados_ndp', 'id_factura = "' . $this->id . '"');
+            $consulta = $sql->eliminar('articulos_modificados_ndp', 'id_nota_debito_proveedor = "' . $this->id . '"');
             
             if ($this->facturaDigital) {
                 $configuracionRuta = $configuracion['RUTAS']['media'] . '/' . $configuracion['RUTAS']['archivos'] . '/facturas_compra/' . $this->id;
@@ -489,6 +470,36 @@ class NotaDebitoProveedor {
         }
         
     }
+    
+    /**
+     * Verifica si un articulo fue modificado en una nota debito previa y devuelve la cantidad
+     * real del articulo despues de aplicar dicha nota.
+     * 
+     * @global type $sql
+     * @param type $idArticuloFactura = id del registro en la tabla articulos_factura_compra
+     * @return int|boolean devuelve la cantidad actual del articulo o FALSE si no hay una nota debito previa
+     */
+    public static function verificarNotaPrevia($idArticuloFactura) {
+        global $sql;
+        
+        $tabla          = "articulos_modificados_ndp";
+        $columna        = "cantidad_nueva";
+        $condicion      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden          = "id DESC";
+        
+        $consulta = $sql->seleccionar($tabla, $columna , $condicion, "", $orden, 0, 1);
+        
+        if ($sql->filasDevueltas == 1) {
+            $datos = $sql->filaEnObjeto($consulta);
+            $valor = $datos->$columna;
+            return $valor;
+            
+        } else {
+            return FALSE;
+            
+        }        
+     
+    }    
     
     
 }  

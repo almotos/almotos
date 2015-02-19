@@ -36,7 +36,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
         }
     }   
 
-    $selectorSedes = HTML::listaDesplegable('datos[sede]', $listaSedes, $sesion_usuarioSesion->sede->id, 'selectChosen', 'selectorSedes', '', array("onchange" => "seleccionarCajas($(this))"), '');    
+    $selectorSedes = HTML::listaDesplegable('datos[sede]', $listaSedes, $sesion_usuarioSesion->sede->id, 'selectChosen', 'selectorSedes', '', array(), '');    
 
     $listaCajas = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
     $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id !="0"', '', 'nombre ASC');//consulto las cajas de la sede actual del usuario
@@ -51,7 +51,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $selectorCajas = HTML::listaDesplegable('datos[caja]', $listaCajas, $idCajaPrincipal, 'margenIzquierdaDoble ', 'selectorCajas', '', array(), '');
 
-    $checkFiltroCaja = HTML::campoChequeo("datos[filtrar_todas_cajas]", false, '', 'filtrarTodasCajas', array('onclick' => 'filtrarTodasCajas($(this))'));
+    $checkFiltroCaja = HTML::campoChequeo("datos[filtrar_todas_cajas]", false, '', 'filtrarTodasCajas', array());
     
     $parrafo1  = HTML::frase($textos->id("USAR_TODAS_LAS_CAJAS"), "claseTextoReporte");
     $parrafo2  = HTML::frase($textos->id("USAR_CAJA_PARTICULAR").$checkFiltroCaja, "claseTextoReporte");
@@ -73,7 +73,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     
     $selectorUltimos .= HTML::listaDesplegable("selectorTiempos", $arregloTiempos, "", "claseSelectorTiempos", "idSelectorTiempos");
     
-    $check = HTML::campoChequeo("rango_personalizado", false, "rangoPersonalizado", 'rangoPersonalizado', array('onclick' => 'mostrarContenedorRangoFechas($(this))'));
+    $check = HTML::campoChequeo("rango_personalizado", false, "rangoPersonalizado", 'rangoPersonalizado', array());
     
     $selectorUltimos .= HTML::parrafo($textos->id("RANGO_FECHA_PERSONALIZADO").$check, "textoRangoPersonalizado negrita claseTextoReporte", "textoRangoPersonalizado");
     
@@ -96,8 +96,9 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     
     $codigo .= HTML::contenedor($boton1, 'wrapperBotonGenerar');
 
-    
     $codigo = HTML::contenedor($codigo, "wrapper", "wrapper");
+
+    $codigo .= HTML::contenedor("", "contenedorRespuesta", "contenedorRespuesta");
     
     $contenido .= HTML::bloque('bloqueContenidoPrincipal', $tituloBloque, $codigo, '', 'overflowVisible');
 

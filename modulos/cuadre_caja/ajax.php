@@ -14,10 +14,10 @@ if (isset($url_accion)) {
     
     switch ($url_accion) {
         
-        case 'imprimirFacturaCompraPdf' :   imprimirFacturaCompraPdf($forma_datos);
+        case 'imprimirCuadreCajaPdf' :   imprimirFacturaCompraPdf($forma_datos);
                                             break;
         
-        case 'imprimirFacturaCompraPos' :   imprimirFacturaCompraPos($forma_datos);
+        case 'imprimirCuadreCajaPos' :   imprimirFacturaCompraPos($forma_datos);
                                             break;
                                         
         case 'consultarCuadreCaja'      :   consultarCuadreCaja($forma_fechaInicio, $forma_fechaFin, $forma_idCaja);

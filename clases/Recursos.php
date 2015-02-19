@@ -601,8 +601,7 @@ class Recursos {
             }
             
         } else {
-
-            if (empty($cantidadDecimales) && $cantidadDecimales !== '0') {
+            if (empty($cantidadDecimales) || $cantidadDecimales == '0') {
                 $cantidadDecimales = $sesion_configuracionGlobal->cantidadDecimales;
             }
             $numero = ($numero == '') ? '0,00' : number_format($numero, $cantidadDecimales, '.', '') . ' '.$cola;

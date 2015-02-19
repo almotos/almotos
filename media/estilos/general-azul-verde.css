@@ -3029,6 +3029,7 @@ no realizan ninguna accion */
 .tablaListaArticulosConsulta{
     padding: 5px;
     border: 1px !important;
+    width: 100%;
 }
 
 .tablaListaArticulosConsulta tr{
