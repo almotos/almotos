@@ -289,7 +289,8 @@ class NotaCreditoProveedor {
                                         "id_articulo_factura_compra" => $idArticuloFactura,
                                         "id_articulo"                => $idArticulo,
                                         "cantidad_anterior"          => $cantidadActual,
-                                        "cantidad_nueva"             => $nuevaCantidad
+                                        "cantidad_nueva"             => $nuevaCantidad,
+                                        "fecha"                      => date("Y-m-d H:i:s"),
                                         );
 
                     $query = $sql->insertar("articulos_modificados_ncp", $datos_amncp);
@@ -489,25 +490,50 @@ class NotaCreditoProveedor {
      */
     public static function verificarNotaPrevia($idArticuloFactura) {
         global $sql;
-        
-        $tabla          = "articulos_modificados_ncp";
-        $columna        = "cantidad_nueva";
+
+        $datos = array();
+
+        $tabla          = "articulos_modificados_ndp";
+        $columna        = array("cantidad_nueva", "fecha");
         $condicion      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
         $orden          = "id DESC";
-        
+
         $consulta = $sql->seleccionar($tabla, $columna , $condicion, "", $orden, 0, 1);
-        
+
         if ($sql->filasDevueltas == 1) {
-            $datos = $sql->filaEnObjeto($consulta);
-            $valor = $datos->$columna;
-            return $valor;
+            $datos[] = $sql->filaEnObjeto($consulta);
+
+        }      
+
+        $tabla1          = "articulos_modificados_ncp";
+        $columna1        = array("cantidad_nueva", "fecha");
+        $condicion1      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden1          = "id DESC";
+
+        $consulta1 = $sql->seleccionar($tabla1, $columna1 , $condicion1, "", $orden1, 0, 1);    
+
+        if ($sql->filasDevueltas == 1) {
+            $datos[] = $sql->filaEnObjeto($consulta1);
+
+        }        
+        
+        if (empty($datos[0]) && empty($datos[1])) {
+            return false;
+            
+        } else if (!empty($datos[0]) && empty($datos[1])) {
+            return $datos[0]->cantidad_nueva;
+            
+        } else if (empty($datos[0]) && !empty($datos[1])) {
+            return $datos[1]->cantidad_nueva;
             
         } else {
-            return FALSE;
-            
-        }        
-     
-    }
+            if (strtotime($datos[0]->fecha) > strtotime($datos[1]->fecha)) {
+                return $datos[0]->cantidad_nueva;
+            } else {
+                return $datos[1]->cantidad_nueva;
+            }
+        }
 
-    
+    } 
+
 }  

@@ -95,7 +95,7 @@ $textos = array(
     'MI_PERFIL'                         => 'My perfil',
     'NOTIFICACIONES'                    => 'Notificaciones',
     'MENSAJES'                          => 'Mensajes',
-    'RESTAURAR_CONSULTA'                => '<span class=margenDerechaTriple>Click para restaurar la consulta global</span>',
+    'RESTAURAR_CONSULTA'                => '<span class=margenDerechaTriple>Refrescar consulta.</span>',
     'BUSCAR_ITEM'                       => '<span class=margenDerechaTriple>Click para buscar</span>',
     'ESCRIBA_NOMBRE_MODULO'             => 'Escriba el nombre del modulo al cual desea ir',
     'BUSCAR_MODULOS'                    => 'Buscar Modulos',

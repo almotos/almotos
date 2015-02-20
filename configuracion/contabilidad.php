@@ -3,7 +3,6 @@
 /**
  * Regimenes de las empresas
  */
-
 $configuracion["REGIMENES"]["es"] = array(
                                         '1'     => 'Regimen simplificado',
                                         '2'     => 'Regimen Común',
@@ -12,7 +11,7 @@ $configuracion["REGIMENES"]["es"] = array(
                                         '5'     => 'Simplificado no residente',
                                         '6'     => 'No residente',
                                         '7'     => 'Empresa del estado',
-                                        '8'     => 'No responsable'
+                                        '8'     => 'No responsable',
                                     ); 
 
 /**
@@ -57,11 +56,9 @@ $configuracion["RETENCIONES"]["es"] = array(
                                                             'porcentaje'    => '15',
                                                             'monto_minimo'  => '27',
                                                             'id_cuenta2'    => '240802',
-                                                            'id_cuenta'     => '236701'
+                                                            'id_cuenta'     => '236701',
                                                             ),
                                             );
-
-
 
 /**
  * Retenciones para ventas 
@@ -75,7 +72,7 @@ $configuracion["RETENCIONES"]["VENTAS"]["es"] = array(
                                                             'porcentaje'    => '3.5',//si no tiene porcentaje, el % esta ligado a actividad economica
                                                             'monto_minimo'  => '100%',
                                                             'id_cuenta'     => '135515',
-                                                            'id_cuenta_no_declarante' => '111111'//cuenta de gastos
+                                                            'id_cuenta_no_declarante' => '111111',//cuenta de gastos
                                                             ),
     
                                             '2'     => array(
@@ -84,7 +81,7 @@ $configuracion["RETENCIONES"]["VENTAS"]["es"] = array(
                                                             'porcentaje'    => '5',
                                                             'monto_minimo'  => '27',
                                                             'id_cuenta'     => '135518',
-                                                            'id_cuenta_no_declarante' => '111111'
+                                                            'id_cuenta_no_declarante' => '111111',
                                                             ),
     
                                             '3'     => array(
@@ -93,7 +90,7 @@ $configuracion["RETENCIONES"]["VENTAS"]["es"] = array(
                                                             'porcentaje'    => '50',
                                                             'monto_minimo'  => '27',
                                                             'id_cuenta'     => '135517',
-                                                            'id_cuenta_no_declarante' => ''
+                                                            'id_cuenta_no_declarante' => '',
                                                             ),
     
                                             '4'     => array(
@@ -102,7 +99,7 @@ $configuracion["RETENCIONES"]["VENTAS"]["es"] = array(
                                                             'campo_consulta' => 'porcentaje_retecree',
                                                             'monto_minimo'   => '100%',
                                                             'id_cuenta'      => '135519',
-                                                            'id_cuenta_no_declarante' => '111111'
+                                                            'id_cuenta_no_declarante' => '111111',
                                                             ),
     
                                             '5'     => array(
@@ -112,6 +109,6 @@ $configuracion["RETENCIONES"]["VENTAS"]["es"] = array(
                                                             'monto_minimo'  => '27',
                                                             'id_cuenta2'    => '',
                                                             'id_cuenta'     => '',
-                                                            'id_cuenta_no_declarante' => ''
+                                                            'id_cuenta_no_declarante' => '',
                                                             ),
                                             );
