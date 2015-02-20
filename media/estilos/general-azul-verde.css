@@ -102,10 +102,7 @@ img{
     display: none;
     background-color: #fff;
     margin-top: 0px;
-    width: 99%;
     overflow: visible;
-    margin: 1px auto 1px auto;
-    border: 1px solid #DDDDDD;
 }
 
 
@@ -269,12 +266,8 @@ img{
 
 
 #barraPieDePagina {
-    position: relative;
-    display: block;
-    height: 40px;
-    padding-top: 5px;
+    height: 20px;
     text-align: center;
-    /*background-image: url(imagenes/fondopie.jpg); */
     background: -moz-linear-gradient(top, white, #013ADF);
     background: -webkit-linear-gradient(top, white, #013ADF);
 }
