@@ -21,24 +21,26 @@ $codigo         = '';
  * */
 if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id)) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
 
-    $fechaInicial  = HTML::parrafo($textos->id('FECHA_INICIAL'), 'margenSuperior negrilla');
-    $fechaInicial .= HTML::campoTexto("datos[fecha_inicial]", 12, 12, '', "fechaAntigua", "fechaInicioCuadre", array("alt" => $textos->id("SELECCIONE_FECHA_INICIAL")));
-    $fechaFinal    = HTML::parrafo($textos->id('FECHA_FINAL'), 'margenSuperior negrilla');
-    $fechaFinal   .= HTML::campoTexto("datos[fecha_final]", 12, 12, '', "fechaAntigua", "fechaFinCuadre", array("alt" => $textos->id("SELECCIONE_FECHA_FINAL")));
+    $loader = new Twig_Loader_Filesystem(__DIR__.'/plantillas/');
 
+    $twig = new Twig_Environment($loader, array(
+        //'cache' => __DIR__.'/plantillas_c/',
+    ));
+    
+    //listar las sedes
     $listaSedes = array();
-
+    
     $consulta = $sql->seleccionar(array('sedes_empresa'), array('id', 'nombre'), 'id !="0"', '', 'nombre ASC');
 
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {
             $listaSedes[$dato->id] = $dato->nombre;
         }
-    }   
-
-    $selectorSedes = HTML::listaDesplegable('datos[sede]', $listaSedes, $sesion_usuarioSesion->sede->id, 'selectChosen', 'selectorSedes', '', array(), '');    
-
+    }    
+    
+    //listar las cajas
     $listaCajas = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
+    
     $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id !="0"', '', 'nombre ASC');//consulto las cajas de la sede actual del usuario
 
     if ($sql->filasDevueltas) {
@@ -48,59 +50,13 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     }
 
     $idCajaPrincipal = $sql->obtenerValor('cajas', 'id', 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" ANd principal = "1"');    
-
-    $selectorCajas = HTML::listaDesplegable('datos[caja]', $listaCajas, $idCajaPrincipal, 'margenIzquierdaDoble ', 'selectorCajas', '', array(), '');
-
-    $checkFiltroCaja = HTML::campoChequeo("datos[filtrar_todas_cajas]", false, '', 'filtrarTodasCajas', array());
     
-    $parrafo1  = HTML::frase($textos->id("USAR_TODAS_LAS_CAJAS"), "claseTextoReporte");
-    $parrafo2  = HTML::frase($textos->id("USAR_CAJA_PARTICULAR").$checkFiltroCaja, "claseTextoReporte");
+    $opciones   = array('cajas'         => $listaCajas,
+                        'sedes'         => $listaSedes,
+                        'cajaPrincipal' => $idCajaPrincipal
+                        );
     
-    $filtrarPorCaja .= HTML::contenedor($parrafo1.$parrafo2, 'checkFiltroCaja');
-
-    //filtros predeterminados: se agrega el texto y un selector para "últimos X Tiempo"
-    $selectorUltimos = HTML::frase($textos->id("SELECCIONE_ULTIMOS"), "claseTextoReporte", "idTextoUltimos");
-    
-    $arregloTiempos = array(
-                        ""               => $textos->id("SELECCIONAR"),
-                        "dia"            => $textos->id("DIA"),
-                        "semana"         => $textos->id("SEMANA"),
-                        "mes"            => $textos->id("MES"),
-                        "tres_meses"     => $textos->id("TRES_MESES"),
-                        "seis_meses"     => $textos->id("SEIS_MESES"),
-                        "año"            => $textos->id("ANYO")
-                    );
-    
-    $selectorUltimos .= HTML::listaDesplegable("selectorTiempos", $arregloTiempos, "", "claseSelectorTiempos", "idSelectorTiempos");
-    
-    $check = HTML::campoChequeo("rango_personalizado", false, "rangoPersonalizado", 'rangoPersonalizado', array());
-    
-    $selectorUltimos .= HTML::parrafo($textos->id("RANGO_FECHA_PERSONALIZADO").$check, "textoRangoPersonalizado negrita claseTextoReporte", "textoRangoPersonalizado");
-    
-    
-    $codigo .= HTML::contenedor($selectorUltimos, "claseContenedorUltimos", "idContenedorUltimos");
-    
-    //formulario para generar el reporte en un rango de fechas parametrizado, por defecto esta oculto
-    $codigo .= HTML::contenedorCampos($fechaInicial, $fechaFinal, 'contenedorCuadreCaja oculto', 'contenedorRangoFechas');
-    
-    //check para usar todas las cajas en la consulta
-    
-    $codigo .= $filtrarPorCaja;
-    
-    //codigo que muestra los selectores de sedes y cajas
-    $sedesAndCajas = HTML::contenedorCampos($selectorSedes, $selectorCajas, 'contenedorSelectorCajas oculto', 'contenedorSelectorCajas');
-    
-    $codigo .= $sedesAndCajas;
-    
-    $boton1 = HTML::boton('chequeo', $textos->id('GENERAR_CONSULTA'), 'directo margenSuperiorDoble', '', 'botonConsultarCuadreCaja', '', array('validar' => 'NoValidar', 'onclick' => 'consultarCuadreCaja($(this))'));
-    
-    $codigo .= HTML::contenedor($boton1, 'wrapperBotonGenerar');
-
-    $codigo = HTML::contenedor($codigo, "wrapper", "wrapper");
-
-    $codigo .= HTML::contenedor("", "contenedorRespuesta", "contenedorRespuesta");
-    
-    $contenido .= HTML::bloque('bloqueContenidoPrincipal', $tituloBloque, $codigo, '', 'overflowVisible');
+    $contenido = $twig->render('principal.html', $opciones);    
 
 } else {
     $contenido .= HTML::contenedor($textos->id('SIN_PERMISOS_ACCESO_MODULO'), 'textoError');

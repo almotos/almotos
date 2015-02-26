@@ -1,0 +1,55 @@
+<div class="contenidoBloque overflowVisible">
+   <div class="wrapper" id="wrapper">
+      <div class="claseContenedorUltimos" id="idContenedorUltimos">
+          <p>
+              <span class="negrita claseTextoReporte">Compras</span><input type="radio" name="tipo" value="compras" class="medioMargenIzquierda selectorTipo" checked />
+              <span class="margenIzquierda negrita claseTextoReporte">Ventas</span><input type="radio" name="tipo" value="ventas" class="medioMargenIzquierda selectorTipo" />
+          </p>
+          <br/>
+         <span id="idTextoUltimos" class="claseTextoReporte">Para generar el reporte seleccione los Ultimo(s)</span>     
+         <select class="claseSelectorTiempos" id="idSelectorTiempos" name="selectorTiempos">
+            <option value="">Seleccionar</option>
+            <option value="dia" selected="">Día</option>
+            <option value="semana">Semana</option>
+            <option value="mes">Mes</option>
+            <option value="tres_meses">Tres Meses</option>
+            <option value="seis_meses">Seis Meses</option>
+            <option value="anyo">Año</option>
+         </select>
+         <p id="textoRangoPersonalizado" class="textoRangoPersonalizado negrita claseTextoReporte">Ó seleccione un rango de fechas personalizado     <input type="checkbox" class="rangoPersonalizado" id="rangoPersonalizado" name="rango_personalizado">     </p>
+      </div>
+      <div class="contenedorCampos contenedorCuadreCaja oculto" id="contenedorRangoFechas">
+         <div class="ancho50por100">
+            <p class="margenSuperior negrilla">Fecha incial     </p>
+            <input type="text" ayuda="SELECCIONE_FECHA_INICIAL" id="fechaInicioCuadre" class="fechaAntigua" value="2015-02-19" maxlength="12" size="12" name="datos[fecha_inicial]">     
+         </div>
+         <div class="ancho50por100">
+            <p class="margenSuperior negrilla">Fecha final     </p>
+            <input type="text" ayuda="SELECCIONE_FECHA_FINAL" id="fechaFinCuadre" class="fechaAntigua" value="2015-02-20" maxlength="12" size="12" name="datos[fecha_final]">     
+         </div>
+      </div>
+      <div class="checkFiltroCaja">     <span class="claseTextoReporte">Para el reporte utilice todas las cajas</span>     <span class="claseTextoReporte">ó utilice una caja en particular     <input type="checkbox" id="filtrarTodasCajas" name="datos[filtrar_todas_cajas]"></span>     </div>
+      <div class="contenedorCampos contenedorSelectorCajas oculto" id="contenedorSelectorCajas">
+         <div class="ancho50por100">
+            <select class="selectChosen" id="selectorSedes" name="datos[sede]">
+                {% for key, sede in sedes%}
+                    <option value="{{key}}">{{sede}}</option>
+                {% endfor %}
+            </select>
+         </div>
+         <div class="ancho50por100">
+            <select class="margenIzquierdaDoble " id="selectorCajas" name="datos[caja]" multiple="true">
+                {% for key, caja in cajas%}
+                    <option value="{{key}}"  {% if (key == cajaPrincipal)  %} selected {%  endif  %}>{{caja}}</option>
+                {% endfor %}
+            </select>
+         </div>
+      </div>
+      <div class="wrapperBotonGenerar">     
+          <button validar="NoValidar" class="botonTextoIcono directo margenSuperiorDoble" id="botonConsultarCuadreCaja" title="ui-icon-check">
+              Generar consulta
+          </button>     
+      </div>
+   </div>
+   <div class="contenedorRespuesta" id="contenedorRespuesta"></div>
+</div>

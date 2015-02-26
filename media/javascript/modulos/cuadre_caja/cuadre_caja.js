@@ -3,38 +3,6 @@
  * and open the template in the editor.
  */
 
-function consultarCuadreCaja(obj){
-    var destino         = '/ajax/cuadre_caja/consultarCuadreCaja';
-    var fechaInicio     = $("#fechaInicioCuadre").val();
-    var fechaFin        = $("#fechaFinCuadre").val();
-    
-    if (fechaInicio == "" || fechaFin == "") {
-        Sexy.alert("Debe seleccionar un rango de fechas para consultar el cuadre de caja");
-        return;
-    }
-    
-    var caja = '0';
-    //verificar si se quiere filtrar también por caja
-    if ($("#filtrarTodasCajas").is(":checked")) {
-        caja = obj.parents(".contenedorCuadreCaja").find("#selectorCajas").val();
-    }
-    
-    $("#BoxOverlay").css("display","block");
-    $("#indicadorEspera").css("display","block");
-
-    $.ajax({
-        type:"POST",
-        url:destino,
-        dataType:"json",
-        data: {
-            fechaInicio: fechaInicio,
-            fechaFin: fechaFin,
-            idCaja : caja
-        },
-        success:procesaRespuesta
-    });
-}
-    
 var Router = Backbone.Router.extend({
     routes: {
         "": "cuadre_caja"
@@ -45,61 +13,96 @@ var router = new Router();
 
 router.on('route:cuadre_caja', function(){
     $("#idSelectorTiempos").chosen();
-    console.log("que maricada, en serio que necesito aprender rapido la mecanografia");
 });
     
     
 var Consulta = Backbone.Model.extend({
     defaults: {
-        ultimos: '',
+        ultimos: 'dia',
         rango_personalizado: false,
         fecha_inicial: '',
         fecha_final: '',
         todas_cajas: true,
-        caja: ''
+        caja: '',
+        tipo: 'compras',
         
     },
 });
 
-
 var ParametrosConsulta = Backbone.View.extend({
     el: "#wrapper",
     events: {
-        "click #rangoPersonalizado" : "mostrarContenedorRangoFechas",
-        "click #filtrarTodasCajas"  : "filtrarTodasCajas",
-        "change #selectorSedes"     : "actualizarSelectorCaja"
+        "click #rangoPersonalizado"         : "mostrarContenedorRangoFechas",
+        "click #filtrarTodasCajas"          : "filtrarTodasCajas",
+        "change #selectorSedes"             : "actualizarSelectorCaja",
+        "change #idSelectorTiempos"         : "setTiempos",
+        "change #selectorCajas"             : "setCaja",
+        "click #botonConsultarCuadreCaja"   : "consultarCuadreCaja",
+        "change #fechaInicioCuadre"         : "setFechaInicio",
+        "change #fechaFinCuadre"            : "setFechaFin",
+        "change .selectorTipo"              : "setTipo"
     },
     
     initialize: function(){
         this.model = new Consulta();
-        this.model.on('change', this.prepararCargaAjax);
     },
             
     render: function() {
         return this;
+    },       
+            
+    setFechaInicio: function(event){
+        var obj = $(event.target);
+        this.model.set('fecha_inicial', obj.val() );
     },
             
-    prepararCargaAjax: function(){
-        console.log("prepararCargaAjax");
-    },
+    setFechaFin: function(event){
+        var obj = $(event.target);
+        this.model.set('fecha_final',obj.val() );
+    },       
             
+    setCaja: function(event){
+        var obj = $(event.target);
+        this.model.set('caja', obj.val());
+    },       
+            
+    setTiempos: function(event){
+        var obj = $(event.target);
+        this.model.set('ultimos', obj.val());
+    },     
+
+    setTipo: function(event){
+        var obj = $(event.target);
+        this.model.set('tipo', obj.val());
+    },            
+
     /**
      * función que muestra los campos para seleccionar la bodega para que el 
      * kardex sea filtrado por bodega tambien
      */
     mostrarContenedorRangoFechas: function(event){
         var obj = $(event.target);
-        
+
+        var contenedorRangoFechas = $("#contenedorRangoFechas");
+        var fechaI = contenedorRangoFechas.find("#fechaInicioCuadre");     
+        var fechaF = contenedorRangoFechas.find("#fechaFinCuadre"); 
+
         if(obj.is(":checked")){
             $("#contenedorRangoFechas").fadeIn("fast");
-            
+            this.model.set('rango_personalizado', true);
+            this.model.set('fecha_inicial', fechaI.val() );
+            this.model.set('fecha_final', fechaF.val() );
+
         } else {
             $("#contenedorRangoFechas").fadeOut("fast");
-            
-        }     
-        
+            this.model.set('rango_personalizado', false);
+            this.model.set('fecha_inicial', '' );
+            this.model.set('fecha_final', '' );         
+
+        }
+
     },
-            
+
     /**
      * función que muestra los campos para seleccionar la bodega para que el 
      * kardex sea filtrado por bodega tambien
@@ -108,20 +111,23 @@ var ParametrosConsulta = Backbone.View.extend({
         var obj = $(event.target);
         
         var contenedorSelectorCajas = $("#contenedorSelectorCajas");
+        var caja = contenedorSelectorCajas.find("#selectorCajas");
         
         if(obj.is(":checked")){
             contenedorSelectorCajas.fadeIn("fast");
+            this.model.set('todas_cajas' , false);
+            this.model.set('caja' , caja.val());
             
         } else {
             contenedorSelectorCajas.fadeOut("fast");
-            
+            this.model.set('todas_cajas' , true);
+            this.model.set('caja' , "");
         }
-        
         /**
          * Función que agrega el plugin chosen ver 
          **/
         contenedorSelectorCajas.find("select").chosen({no_results_text: "Oops, sin resultados!"});      
-        
+
     },
             
     /*
@@ -144,16 +150,44 @@ var ParametrosConsulta = Backbone.View.extend({
                 success:function (respuesta){
                     var selector = obj.parents("#contenedorSelectorCajas").find("#selectorCajas");
                         selector.html(respuesta.contenido);
-                        selector.trigger("chosen:updated");
+                        selector.trigger("liszt:updated");
                 }
 
             });          
            
         }   
+    },
+    
+    consultarCuadreCaja : function (){
+        var destino                 = '/ajax/cuadre_caja/consultarCuadreCaja';
+
+        $("#BoxOverlay").css("display","block");
+        $("#indicadorEspera").css("display","block");
+
+        $.ajax({
+            type:"POST",
+            url:destino,
+            dataType:"json",
+            data: {
+                datos: this.model.attributes
+            },
+            success:this.renderDatos
+        });
+
+    },
+            
+    renderDatos: function(respuesta){
+        basicasProcesaRespuesta(respuesta);
+        
+        var opcionesTabla = JSON.parse(respuesta.contenido);
+        
+        var tabla = renderTemplate('tabla', opcionesTabla);
+        
+        $(respuesta.destino).html(tabla);
+        
     }
             
 });
-
 
 var Reporte = Backbone.View.extend({
     el: "#contenedorRespuesta",
@@ -175,7 +209,6 @@ var Reporte = Backbone.View.extend({
         
     }
 });
-
 
 var formulario = new ParametrosConsulta();
 

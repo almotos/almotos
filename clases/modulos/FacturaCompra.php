@@ -977,10 +977,11 @@ class FacturaCompra {
             $this->registrosConsulta = $sql->filasDevueltas;
         }
 
+        $sql->depurar = TRUE;
         $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad, FALSE);
 
+        $lista = array();
         if ($sql->filasDevueltas) {
-            $lista = array();
 
             while ($objeto = $sql->filaEnObjeto($consulta)) {
                 $objeto->activo =  ($objeto->activo) ? HTML::frase($textos->id("ACTIVO"), "activo") : HTML::frase($textos->id("INACTIVO"), "inactivo");

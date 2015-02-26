@@ -2,12 +2,11 @@
 
 /**
  * @package     FOM (Framework OpenSource Multiplatform)
- * @subpackage  Compras de Mercancia
+ * @subpackage  Cuadre de Caja
  * @author      Pablo Andres Velez Vidal <pavelez8@misena.edu.co>
  * @license     http://www.gnu.org/licenses/gpl.txt
- * @copyright   Copyright (c) 2012 GENESYS
+ * @copyright   Copyright (c) 2015 GENESYS
  * @version     0.1
- * Framework basado en FOLCS, desarrollado por Francisco Lozano de FELINUX ltda. Cali - Colombia
  * */
 
 if (isset($url_accion)) {
@@ -20,7 +19,7 @@ if (isset($url_accion)) {
         case 'imprimirCuadreCajaPos' :   imprimirFacturaCompraPos($forma_datos);
                                             break;
                                         
-        case 'consultarCuadreCaja'      :   consultarCuadreCaja($forma_fechaInicio, $forma_fechaFin, $forma_idCaja);
+        case 'consultarCuadreCaja'      :   consultarCuadreCaja($forma_datos);
                                             break;                                          
                                         
         
@@ -1337,51 +1336,21 @@ function listarOrdenes($cadena) {
 }
 
 /**
- * Funcion que me permite consultar el kardex de un articulo determinado
- *
- * @global array $textos objeto global de traduccion de textos
- * @param int $id identificador del articulo en la BD
- * @param string $fechaInicio primera fecha en el rango de fechas de la consulta
- * @param string $fechaFin segunda fecha en el rango de fechas
+ * 
+ * @param array $datos valores para realizar la consulta a la BD
  */
-function consultarCuadreCaja($fechaInicio, $fechaFin, $idCaja){
-    global  $textos, $sql;
-    
-    if (empty($fechaInicio) || empty($fechaFin)) {
-        $respuesta              = array();
-        $respuesta['error']     = true;
-        $respuesta['mensaje']   = $textos->id('ERROR_DEBE_SELECCIONAR_RANGO_FECHAS');
-
-        Servidor::enviarJSON($respuesta);
-        return false;
-        
-    }
+function consultarCuadreCaja($datos){
     
     $respuesta = array();
     
-    $objeto = new Articulo();
-    
-    $cabecera = array(
-        HTML::parrafo($textos->id('FECHA'), 'centrado')         => 'fecha',
-        HTML::parrafo($textos->id('PROVEEDOR'), 'centrado')     => 'proveedor',
-        HTML::parrafo($textos->id('PRECIO_COMPRA'), 'centrado') => 'precioC',
-        HTML::parrafo($textos->id('CLIENTE'), 'centrado')       => 'cliente',
-        HTML::parrafo($textos->id('PRECIO_VENTA'), 'centrado')  => 'precioV',       
-        HTML::parrafo($textos->id('CANTIDAD'), 'centrado')      => 'cantidad',
-    );
+    $reporte = new Reportes();
 
-    $arregloCuadreCaja = $objeto->consultarCuadreCaja($fechaInicio, $fechaFin, $idCaja);
+    $contenido = $reporte->consultarCuadreCaja($datos);
 
-
-    $idTabla            = 'tablaConsultarKardex';
-    $estilosColumnas    = array('', '', '');
-    $contenido          = Recursos::generarTablaRegistrosInterna($arregloCuadreCaja, $cabecera, array(), $idTabla, $estilosColumnas);
-    
-    
     $respuesta['error']             = false;
     $respuesta['accion']            = 'insertar';
-    $respuesta['destino']           = '.contenedorCuadreCaja';
-    $respuesta['contenido']         = $contenido;//"Aqui si llego-> id: ".$id." fecha 1: ".$fechaInicio." - fechaFin: ".$fechaFin;   
+    $respuesta['destino']           = '#contenedorRespuesta';
+    $respuesta['contenido']         = $contenido;
     
     Servidor::enviarJSON($respuesta);
     

@@ -719,7 +719,7 @@ $(document).ready(function(){
         var ord    = "";
         var nomOrd = "";
         
-        if(ordenamiento != ""){ //el ordenamiento se almacena del tipo ej: descendente|a.nombre, donde despues del pipe representa 
+        if(typeof ordenamiento != "undefined"){ //el ordenamiento se almacena del tipo ej: descendente|a.nombre, donde despues del pipe representa 
             //la tabla (a.) y la columna (nombre) con las cuales se quiere ordenar la consulta
             ordenamiento = ordenamiento.split("|");
             ord    = ordenamiento[0];//seria ej: descendente
@@ -732,12 +732,11 @@ $(document).ready(function(){
         }
 
         $.ajax({
-
             type:"POST",
             url:destino,
             data: {
                 pagina            : pag, 
-                orden             :ord, 
+                orden             : ord, 
                 nombreOrden       : nomOrd, 
                 consultaGlobal    : condicion,
                 cantidadRegistros : cantReg
@@ -793,7 +792,6 @@ $(document).ready(function(){
         var destino    = $("#tablaRegistros").attr("ruta_paginador");
 
         $.ajax({
-
             type:"POST",
             url:destino,
             data: {
@@ -2404,3 +2402,31 @@ function parseDouble(numero) {
     
     return parseFloat(valor);
 }
+
+
+function renderTemplate(tmpl_name, tmpl_data) {
+    if ( !renderTemplate.tmpl_cache ) { 
+        renderTemplate.tmpl_cache = {};
+    }
+
+    if ( ! renderTemplate.tmpl_cache[tmpl_name] ) {
+        var tmpl_dir = 'media/javascript/plantillas';
+        var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+
+        var tmpl_string;
+        $.ajax({
+            url: tmpl_url,
+            method: 'GET',
+            async: false,
+            dataType: 'html',
+            success: function(data) {
+                tmpl_string = data;
+            }
+        });
+
+        renderTemplate.tmpl_cache[tmpl_name] = tmpl_string;
+    }
+
+    return _.template(renderTemplate.tmpl_cache[tmpl_name], tmpl_data);
+}
+

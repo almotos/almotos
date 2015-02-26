@@ -1,0 +1,49 @@
+<div class="contenedorTablaRegistros" id="contenedorTablaRegistros">
+    <table cellspacing="1" cellpadding="3" border="2" cell-padding="5" pagina="<%= basicosTabla.pagina %>" ruta_paginador="<%= basicosTabla.rutaPaginador %>" class="tablaRegistros" id="tablaRegistros">
+      <tbody data-step="7" data-intro="En esta tabla se listan los registros. Se muestran 10 por defecto, pero se pueden mostrar cuantas se deseen(ver paso 2. Máximo recomendable 500 registros).">
+         <tr class="cabeceraTabla noSeleccionable">
+            <% _.each(cabeceras, function(cabecera) { %> 
+            <th class="columnaTabla " nombreorden="<%= cabecera.nombreOrden%>">
+                   <div ayuda="Click para organizar&lt;br&gt;de manera ASCendente" id="ascendente"></div>
+                   <div ayuda="Click para organizar&lt;br&gt;de manera DESCendente" id="descendente"></div>
+                   <p class="centrado"><%= cabecera.valor %>    </p>
+                   <input type="checkbox" class="checkPatronBusqueda" id="checkPatronBusqueda1" name="<%= cabecera.name %>" data-step="6" data-intro="Marca en estos campos de chequeo las columnas por las que desees filtrar una busqueda.">
+                </th>
+            <% }) %>
+         </tr>
+         
+        <% _.each(filas, function(fila) { %>
+           <tr <%= fila.atributos %> class="filasTabla" id="<%= fila.id %>" data-step="7" data-intro="Haz click derecho sobre las filas de la tabla para desplegar el menú de opciones, por ejemplo consultar, editar, modificar, borrar, etc.">
+               <% _.each(fila.columnas, function(columna) { %>
+                  <td class="" id="<%= columna.id %>"><%= columna.valor %></td>
+               <% }) %>
+           </tr>
+        <% }) %>
+
+      </tbody>
+   </table>
+   <div class="contenedorInferiorTabla" id="contenedorInferiorTabla" data-step="8" data-intro="Aquí se encuentra: El paginador para desplazarse hacia adelante o hacia atras en el listado de registros. La información de la paginación y a la derecha encuentras el botón 'ayuda' para mostrar el manual de uso del módulo">
+      <% if (basicosTabla.mostrarTeachme) { %>
+        <div ayuda="Enseñame!!!" class="contenedorImagenTeachme"></div>
+      <% } %>
+      
+      <% if (basicosTabla.mostrarAyuda) { %>
+        <div class="contenedorImagenAyuda" id="contenedorImagenAyuda">
+           <input type="hidden" id="textoAyudaModulo" value="&lt;p&gt;*Para agregar un Item Click en el Boton Agregar o Ctrl+A &lt;/p&gt;&lt;p&gt;*Para buscar un Item Click en el Boton buscar o Ctrl+B &lt;/p&gt;&lt;p&gt;*Para Consultar - Editar - Eliminar un Item haga Click Derecho sobre la fila en que aparece.&lt;/p&gt;*Para cerrar esta ventana presione Ctrl+H, o haga click en cualquier lugar &lt;br&gt;" name="textoAyudaModulo">     
+           <p>Ayuda<br>Ctrl+H     </p>
+        </div>
+      <% } %>
+      
+      <% if ( paginacion.mostrarPaginacion ) {%>
+            <div class="paginadorTabla" id="paginadorTabla">
+                <div pagina="<%= paginacion.botonPrimeraPagina.pagina %>" class="botonPrimeraPagina botonPaginacion" id="botonPrimeraPagina" cantidad_registros="<%= paginacion.cantidadRegistros %>">Primera</div>
+               <div pagina="<%= paginacion.botonAtrasPagina.pagina %>" class="botonAtrasPagina botonPaginacion" id="botonAtrasPagina" cantidad_registros="<%= paginacion.cantidadRegistros %>">Atrás</div>
+               <div pagina="<%= paginacion.botonSiguientePagina.pagina %>" class="botonSiguientePagina botonPaginacion" id="botonSiguientePagina" cantidad_registros="<%= paginacion.cantidadRegistros %>">Adelante</div>
+               <div pagina="<%= paginacion.botonUltimaPagina.pagina %>" class="botonUltimaPagina botonPaginacion" id="botonUltimaPagina" cantidad_registros="<%= paginacion.cantidadRegistros %>">Última</div>
+            </div>
+            <div class="informacionPaginacion">     
+                <p class="negrilla"><%= paginacion.datosPaginacion %> </p>     
+            </div>      
+      <% } %>
+   </div>
+</div>
