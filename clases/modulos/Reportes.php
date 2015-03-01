@@ -32,7 +32,8 @@ class Reportes
             $response = $this->listaFacturas($factura, $prefijo, $tercero, $datos);
             
         } else if ($datos['tipo_reporte'] == "total_sumarizado") {
-            $response = $this->sumarizadoTotal($factura, $prefijo, $tercero, $datos);
+            $response = $this->sumarizadoTotal($factura, $prefijo, $datos); 
+            
         }
         
         $respuesta = array(
