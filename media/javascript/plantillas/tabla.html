@@ -4,11 +4,15 @@
          <tr class="cabeceraTabla noSeleccionable">
             <% _.each(cabeceras, function(cabecera) { %> 
             <th class="columnaTabla " nombreorden="<%= cabecera.nombreOrden%>" <% if (cabecera.colspan) {  %> colspan="<%= cabecera.colspan %>" <% } %> >
+                <% if (basicosTabla.mostrarOrdenador) {  %>
                    <div ayuda="Click para organizar&lt;br&gt;de manera ASCendente" id="ascendente"></div>
                    <div ayuda="Click para organizar&lt;br&gt;de manera DESCendente" id="descendente"></div>
+                <% } %>
                    <p class="centrado"><%= cabecera.valor %>    </p>
+                <% if (basicosTabla.mostrarCheckBusqueda) {  %>
                    <input type="checkbox" class="checkPatronBusqueda" id="checkPatronBusqueda1" name="<%= cabecera.name %>" data-step="6" data-intro="Marca en estos campos de chequeo las columnas por las que desees filtrar una busqueda.">
-                </th>
+                <% } %>
+           </th>
             <% }) %>
          </tr>
          

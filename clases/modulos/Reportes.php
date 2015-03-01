@@ -37,10 +37,12 @@ class Reportes
         
         $respuesta = array(
             "basicosTabla" => array(
-                                    "pagina"            => "1",
-                                    "rutaPaginador"     => "ajax/{$modulo->url}/move",
-                                    "mostrarTeachme"    => false,
-                                    "mostrarAyuda"      => false 
+                                    "pagina"                => "1",
+                                    "rutaPaginador"         => "ajax/{$modulo->url}/move",
+                                    "mostrarTeachme"        => false,
+                                    "mostrarAyuda"          => false,
+                                    "mostrarOrdenador"      => false,
+                                    "mostrarCheckBusqueda"  => false,
                             ),    
             "paginacion" => array(
                                     "mostrarPaginacion" => false,
@@ -134,7 +136,7 @@ class Reportes
         
     }
     
-    public function sumarizadoTotal($factura, $prefijo, $tercero, $datos) 
+    public function sumarizadoTotal($factura, $prefijo, $datos) 
     {
 
         $respuesta = array();
