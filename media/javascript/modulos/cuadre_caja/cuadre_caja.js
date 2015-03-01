@@ -19,28 +19,41 @@ router.on('route:cuadre_caja', function(){
 var Consulta = Backbone.Model.extend({
     defaults: {
         ultimos: 'dia',
-        rango_personalizado: false,
+        rango_personalizado: 0,
         fecha_inicial: '',
         fecha_final: '',
-        todas_cajas: true,
-        caja: '',
+        todas_cajas: 1,
+        caja: [],
         tipo: 'compras',
-        
-    },
+        filtro_usuarios: 0,
+        usuarios: [],
+        tipo_reporte: "lista_facturas",
+        fields: ['idFactura','tercero','fechaFactura','total']
+    }
 });
 
 var ParametrosConsulta = Backbone.View.extend({
     el: "#wrapper",
     events: {
         "click #rangoPersonalizado"         : "mostrarContenedorRangoFechas",
+        "change #idSelectorTiempos"         : "setTiempos",
+        "change #fechaInicioCuadre"         : "setFechaInicio",
+        "change #fechaFinCuadre"            : "setFechaFin",        
+        //filtros por caja
         "click #filtrarTodasCajas"          : "filtrarTodasCajas",
         "change #selectorSedes"             : "actualizarSelectorCaja",
-        "change #idSelectorTiempos"         : "setTiempos",
         "change #selectorCajas"             : "setCaja",
+        //filtro por tipo
+        "change .selectorTipo"              : "setTipo",//determina si es de compras o ventas
+        "change .selectorTipoReporte"       : "setTipoReporte",//si es el listado de facturas, el sumarizado, el promedio, etc.
+        //filtros por usuarios
+        "change #selectorUsuarios"          : "setUsuario",
+        "click #filtroUsuarios"             : "filtrarUsuarios",
+        //escoger que campos consultar
+        "click #filtroFields"               : "filtrarFields",
+        "change #selectorFields"            : "setFields",
+        //boton consultar
         "click #botonConsultarCuadreCaja"   : "consultarCuadreCaja",
-        "change #fechaInicioCuadre"         : "setFechaInicio",
-        "change #fechaFinCuadre"            : "setFechaFin",
-        "change .selectorTipo"              : "setTipo"
     },
     
     initialize: function(){
@@ -66,6 +79,16 @@ var ParametrosConsulta = Backbone.View.extend({
         this.model.set('caja', obj.val());
     },       
             
+    setUsuario: function(event){
+        var obj = $(event.target);
+        this.model.set('usuarios', obj.val());
+    },       
+            
+    setFields: function(event){
+        var obj = $(event.target);
+        this.model.set('fields', obj.val());
+    },              
+            
     setTiempos: function(event){
         var obj = $(event.target);
         this.model.set('ultimos', obj.val());
@@ -74,7 +97,20 @@ var ParametrosConsulta = Backbone.View.extend({
     setTipo: function(event){
         var obj = $(event.target);
         this.model.set('tipo', obj.val());
-    },            
+    },   
+            
+    setTipoReporte: function(event){
+        var obj = $(event.target);
+        this.model.set('tipo_reporte', obj.val());
+
+        if(obj.val() == "lista_facturas"){
+            $("#wrapContenedorFields").fadeIn("fast");
+
+        } else {
+            $("#wrapContenedorFields").fadeOut("fast");      
+
+        }        
+    },             
 
     /**
      * función que muestra los campos para seleccionar la bodega para que el 
@@ -89,25 +125,21 @@ var ParametrosConsulta = Backbone.View.extend({
 
         if(obj.is(":checked")){
             $("#contenedorRangoFechas").fadeIn("fast");
-            this.model.set('rango_personalizado', true);
+            this.model.set('rango_personalizado', 1);
             this.model.set('fecha_inicial', fechaI.val() );
             this.model.set('fecha_final', fechaF.val() );
 
         } else {
             $("#contenedorRangoFechas").fadeOut("fast");
-            this.model.set('rango_personalizado', false);
+            this.model.set('rango_personalizado', 0);
             this.model.set('fecha_inicial', '' );
             this.model.set('fecha_final', '' );         
 
         }
 
     },
-
-    /**
-     * función que muestra los campos para seleccionar la bodega para que el 
-     * kardex sea filtrado por bodega tambien
-     */
-     filtrarTodasCajas: function(event){
+            
+    filtrarTodasCajas: function(event){
         var obj = $(event.target);
         
         var contenedorSelectorCajas = $("#contenedorSelectorCajas");
@@ -115,13 +147,13 @@ var ParametrosConsulta = Backbone.View.extend({
         
         if(obj.is(":checked")){
             contenedorSelectorCajas.fadeIn("fast");
-            this.model.set('todas_cajas' , false);
+            this.model.set('todas_cajas' , 0);
             this.model.set('caja' , caja.val());
             
         } else {
             contenedorSelectorCajas.fadeOut("fast");
-            this.model.set('todas_cajas' , true);
-            this.model.set('caja' , "");
+            this.model.set('todas_cajas' , 1);
+            this.model.set('caja' , []);
         }
         /**
          * Función que agrega el plugin chosen ver 
@@ -129,6 +161,49 @@ var ParametrosConsulta = Backbone.View.extend({
         contenedorSelectorCajas.find("select").chosen({no_results_text: "Oops, sin resultados!"});      
 
     },
+            
+    filtrarUsuarios: function(event){
+        var obj = $(event.target);
+        
+        var contenedorUsuarios = $("#contenedorUsuarios");
+        var usuarios = contenedorUsuarios.find("#selectorUsuarios");
+        
+        if(obj.is(":checked")){
+            contenedorUsuarios.fadeIn("fast");
+            this.model.set('filtro_usuarios' , 1);
+            this.model.set('usuarios' , usuarios.val());
+            
+        } else {
+            contenedorUsuarios.fadeOut("fast");
+            this.model.set('filtro_usuarios' , 0);
+            this.model.set('usuarios' , []);
+        }
+        /**
+         * Función que agrega el plugin chosen ver 
+         **/
+        contenedorUsuarios.find("select").chosen({no_results_text: "Oops, sin resultados!"});      
+
+    },      
+            
+    filtrarFields: function(event){
+        var obj = $(event.target);
+        
+        var contenedorFields = $("#contenedorFields");
+        var fields = contenedorFields.find("#selectorFields");
+        
+        if(obj.is(":checked")){
+            contenedorFields.fadeIn("fast");
+            this.model.set('fields' , fields.val());
+            
+        } else {
+            contenedorFields.fadeOut("fast");
+        }
+        /**
+         * Función que agrega el plugin chosen ver 
+         **/
+        contenedorFields.find("select").chosen({no_results_text: "Oops, sin resultados!"});     
+
+    },             
             
     /*
      *Codigos que agregan via ajax los options con las cajas

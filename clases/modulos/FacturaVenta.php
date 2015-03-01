@@ -833,6 +833,7 @@ class FacturaVenta {
             $this->registrosConsulta = $sql->filasDevueltas;
         }
         
+        $sql->depurar = true;
         $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fv.id', $orden, $inicio, $cantidad, FALSE);
 
         if ($sql->filasDevueltas) {

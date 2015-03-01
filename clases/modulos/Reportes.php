@@ -16,124 +16,31 @@ class Reportes
     {
         global $modulo;
         
-        $caja                   = $datos['caja'];
-        $fechaFinal             = $datos['fecha_final'];
-        $fechaInicial           = $datos['fecha_inicial'];
-        $rangoPersonalizado     = $datos['rango_personalizado'];
-        $tipo                   = $datos['tipo'];
-        $todasCajas             = $datos['todas_cajas'];
-        $ultimos                = $datos['ultimos'];
-        
-        unset($datos);        
-        
-        if (!empty($tipo) && $tipo == 'ventas') {
+        if (!empty($datos['tipo']) && $datos['tipo'] == 'ventas') {
             $factura = new FacturaVenta();
             $prefijo = "fv";
+            $tercero = "cliente";
 
         } else {
             $factura = new FacturaCompra();
             $prefijo = "fc";
+            $tercero = "proveedor";
 
         }
         
-        if ($rangoPersonalizado == "false" && !empty($ultimos)) {
-            $valorFechas = array(
-                'dia'           => '-1 day',
-                'semana'        => '-7 day',
-                'mes'           => '-30 day',
-                'tres_meses'    => '-90 day',
-                'seis_meses'    => '-180 day',
-                'anyo'          => '-360 day'
-            );
-            
-            $fechaInicial = date('Y-m-d H:i:s', strtotime($valorFechas[$ultimos]));
-            $fechaFinal   = date('Y-m-d H:i:s');
+        if ($datos['tipo_reporte'] == "lista_facturas") {
+            $response = $this->listaFacturas($factura, $prefijo, $tercero, $datos);
         }
         
-        $condicionGlobal = " {$prefijo}.fecha_factura BETWEEN '{$fechaInicial}' AND '{$fechaFinal}' ";
-        
-        if ($todasCajas == "false" && !empty($caja) && is_array($caja)) {
-            $cajas = implode(",", $caja);
-            $condicionGlobal .= " AND {$prefijo}.id_caja IN ({$cajas}) ";
-        } 
-        
-        
-        $datosConsulta = $factura->listar(0, 0, "", $condicionGlobal, "{$prefijo}.fecha_factura");
-        
-        $filas = array();
-        
-        if (!empty($datosConsulta) && is_array($datosConsulta)) {
-            foreach ($datosConsulta as $factura) {
-                $fila = array();
-                $fila["id"]                       = $factura->id;
-                $fila["atributos"]                = "atributo_0={$factura->id}";
-                $fila["columnas"][0]              = array();
-                $fila["columnas"][0]["id"]        = "id_columna";
-                $fila["columnas"][0]["valor"]     = $factura->idFactura;
-                $fila["columnas"][1]              = array();
-                $fila["columnas"][1]["id"]        = "id_columna";
-                $fila["columnas"][1]["valor"]     = $factura->proveedor;    
-                
-                $filas[] = $fila;
-            }
-        }
-        
-        $datos = array(
+        $respuesta = array(
             "basicosTabla" => array(
                                     "pagina"            => "1",
                                     "rutaPaginador"     => "ajax/{$modulo->url}/move",
                                     "mostrarTeachme"    => false,
                                     "mostrarAyuda"      => false 
-                            ),
-            "cabeceras" => array(
-                                    array(
-                                        "id"            => "cabecera_1",
-                                        "valor"         => "Id Factura",
-                                        "name"          => "id_factura",
-                                        "nombreOrden"   => "idFactura|{$prefijo}.id_factura"
-                                    ),
-                                    array(
-                                        "id"            => "cabecera_2",
-                                        "valor"         => "Proveedor",
-                                        "name"          => "proveedor",
-                                        "nombreOrden"   => "proveedor|p.nombre"
-                                    )                
-
-                           ),
-//            "filas" => array(
-//                                array(
-//                                    "id" => "id fila 1",
-//                                    "atributos" => "atributo_1=1 atributo2=2",
-//                                    "columnas" => array(
-//                                        array(
-//                                            "id" => "id_col_1",
-//                                            "valor" => "valor 1"
-//                                        ),
-//                                        array(
-//                                            "id" => "id_col_2",
-//                                            "valor" => "valor 2"
-//                                        )                                        
-//                                    )
-//                                ),
-//                                array(
-//                                    "id" => "id fila 2",
-//                                    "atributos" => "atributo_4=4 atributo5=5",
-//                                    "columnas" => array(
-//                                        array(
-//                                            "id" => "id_col_4",
-//                                            "valor" => "valor 4"
-//                                        ),
-//                                        array(
-//                                            "id" => "id_col_5",
-//                                            "valor" => "valor 5"
-//                                        )                                        
-//                                    )
-//                                )                
-//                
-//            ),
-                                       
+                            ),    
             "paginacion" => array(
-                                    "mostrarPaginacion" => true,
+                                    "mostrarPaginacion" => false,
                                     "datosPaginacion"   => "Registro 1 a su madre",
                                     "cantidadRegistros" => "10",
                                     "botonPrimeraPagina" => array(
@@ -151,11 +58,104 @@ class Reportes
             )
         );
                                         
-        $datos['filas'] = $filas;
+        $respuesta['filas']         = $response['filas'];
+        $respuesta['cabeceras']     = $response['cabeceras'];
         
-        return json_encode($datos);
+        return json_encode($respuesta);
 
 
+    }
+    
+    
+    public function listaFacturas($factura, $prefijo, $tercero, $datos) {
+        
+        $respuesta = array();
+        
+        if ($datos['rango_personalizado'] == false && !empty($datos['ultimos'])) {
+            $valorFechas = array(
+                'dia'           => '-1 day',
+                'semana'        => '-7 day',
+                'mes'           => '-30 day',
+                'tres_meses'    => '-90 day',
+                'seis_meses'    => '-180 day',
+                'anyo'          => '-360 day'
+            );
+            
+            $fechaInicial = date('Y-m-d H:i:s', strtotime($valorFechas[$datos['ultimos']]));
+            $fechaFinal   = date('Y-m-d H:i:s');
+        }
+        
+        $condicionGlobal = " {$prefijo}.fecha_factura BETWEEN '{$fechaInicial}' AND '{$fechaFinal}' ";
+        
+        //filtrar por cajas
+        if ($datos['todas_cajas'] == false && !empty($datos['caja']) && is_array($datos['caja'])) {
+            $cajas = implode(",", $datos['caja']);
+            $condicionGlobal .= " AND {$prefijo}.id_caja IN ({$cajas}) ";
+        } 
+        
+        //filtrar por usuarios
+        if ($datos['filtro_usuarios'] == true && !empty($datos['usuarios']) && is_array($datos['usuarios'])) {
+            $usuarios = implode(",", $datos['usuarios']);
+            $condicionGlobal .= " AND {$prefijo}.id_usuario IN ({$usuarios}) ";
+        }         
+        
+        $datosConsulta = $factura->listar(0, 0, "", $condicionGlobal, "{$prefijo}.fecha_factura");
+        
+        //generar las filas de la tabla
+        $filas      = array();
+        
+        if (!empty($datosConsulta) && is_array($datosConsulta)) {
+            foreach ($datosConsulta as $factura) {
+                $fila = array();
+                $fila["id"]                       = $factura->id;
+                $fila["atributos"]                = "atributo_0={$factura->id}";
+                
+                $i = 0;
+                foreach ($datos['fields'] as $value) {
+                    $value = ($value == "tercero") ? $tercero : $value;
+                    $value = str_replace("_", "", $value);
+                    //generar las columnas de cada fila
+                    $fila["columnas"][$i]              = array();
+                    $fila["columnas"][$i]["id"]        = "id_columna";
+                    $fila["columnas"][$i]["valor"]     = $factura->$value;
+                    $i++;
+                }
+                
+                $filas[] = $fila;
+            }
+        }
+        
+        $respuesta['filas'] = $filas;
+        
+        //generar las cabeceras de la tabla de acuerdo a los fields que el usuario quiere consultar
+        $cabeceras = array();
+        
+        if (!empty($datos['fields']) && is_array($datos['fields'])) {
+            $j = 0;
+            
+            foreach ($datos['fields'] as $value) {
+                $value = ($value == "tercero") ? $tercero : $value;
+                //cada field viene con un formato (nombre_Campo)
+                $valorObj = str_replace("_", "", $value);//este valor se usa para sacar los valores de un objeto (formato= nombreCampo)
+                $valorBd  = strtolower($value);//este valor se usa para la query en la BD (formato= nombre_campo)
+                $nombre   = ucwords(str_replace("_", " ", $value));//valor para mostrar en la tabla
+                
+                //generar las columnas de cada fila
+                $cabeceras[$j]                   = array();
+                $cabeceras[$j]["id"]             = "cabecera_1";
+                $cabeceras[$j]["valor"]          = $nombre;
+                $cabeceras[$j]["name"]           = $valorObj;
+                $cabeceras[$j]["nombreOrden"]    = "{$valorObj}|{$valorBd}.";
+                
+                $j++;
+            }  
+            
+        }
+        
+        $respuesta['cabeceras'] = $cabeceras;
+        
+        return $respuesta;
+        
     }
     
 }

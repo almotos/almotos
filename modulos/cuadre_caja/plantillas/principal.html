@@ -1,12 +1,15 @@
 <div class="contenidoBloque overflowVisible">
    <div class="wrapper" id="wrapper">
       <div class="claseContenedorUltimos" id="idContenedorUltimos">
-          <p>
-              <span class="negrita claseTextoReporte">Compras</span><input type="radio" name="tipo" value="compras" class="medioMargenIzquierda selectorTipo" checked />
-              <span class="margenIzquierda negrita claseTextoReporte">Ventas</span><input type="radio" name="tipo" value="ventas" class="medioMargenIzquierda selectorTipo" />
+      <p class="margenSuperior claseTextoReporte letraAzul">
+          1. Filtros básicos
+      </p>
+          <p class="margenSuperior claseTextoReporte margenIzquierda">
+              <span>Compras</span><input type="radio" name="tipo" value="compras" class="medioMargenIzquierda selectorTipo" checked />
+              <span class="margenIzquierda">Ventas</span><input type="radio" name="tipo" value="ventas" class="medioMargenIzquierda selectorTipo" />
           </p>
           <br/>
-         <span id="idTextoUltimos" class="claseTextoReporte">Para generar el reporte seleccione los Ultimo(s)</span>     
+         <span id="idTextoUltimos" class="claseTextoReporte margenIzquierda">Para generar el reporte seleccione los Ultimo(s)</span>     
          <select class="claseSelectorTiempos" id="idSelectorTiempos" name="selectorTiempos">
             <option value="">Seleccionar</option>
             <option value="dia" selected="">Día</option>
@@ -16,9 +19,12 @@
             <option value="seis_meses">Seis Meses</option>
             <option value="anyo">Año</option>
          </select>
-         <p id="textoRangoPersonalizado" class="textoRangoPersonalizado negrita claseTextoReporte">Ó seleccione un rango de fechas personalizado     <input type="checkbox" class="rangoPersonalizado" id="rangoPersonalizado" name="rango_personalizado">     </p>
+         <span id="textoRangoPersonalizado" class="textoRangoPersonalizado negrita claseTextoReporte margenIzquierda">
+             Ó seleccione un rango de fechas personalizado     
+             <input type="checkbox" class="rangoPersonalizado" id="rangoPersonalizado" name="rango_personalizado">     
+         </span>
       </div>
-      <div class="contenedorCampos contenedorCuadreCaja oculto" id="contenedorRangoFechas">
+      <div class="contenedorCampos contenedorCuadreCaja oculto margenIzquierda" id="contenedorRangoFechas">
          <div class="ancho50por100">
             <p class="margenSuperior negrilla">Fecha incial     </p>
             <input type="text" ayuda="SELECCIONE_FECHA_INICIAL" id="fechaInicioCuadre" class="fechaAntigua" value="2015-02-19" maxlength="12" size="12" name="datos[fecha_inicial]">     
@@ -28,23 +34,64 @@
             <input type="text" ayuda="SELECCIONE_FECHA_FINAL" id="fechaFinCuadre" class="fechaAntigua" value="2015-02-20" maxlength="12" size="12" name="datos[fecha_final]">     
          </div>
       </div>
-      <div class="checkFiltroCaja">     <span class="claseTextoReporte">Para el reporte utilice todas las cajas</span>     <span class="claseTextoReporte">ó utilice una caja en particular     <input type="checkbox" id="filtrarTodasCajas" name="datos[filtrar_todas_cajas]"></span>     </div>
-      <div class="contenedorCampos contenedorSelectorCajas oculto" id="contenedorSelectorCajas">
-         <div class="ancho50por100">
+      <div class="checkFiltroCaja margenIzquierda">     <span class="claseTextoReporte">Para el reporte utilice todas las cajas</span>     <span class="claseTextoReporte">ó utilice una caja en particular     <input type="checkbox" id="filtrarTodasCajas" name="datos[filtrar_todas_cajas]"></span>     </div>
+      <div class="contenedorCampos contenedorSelectorCajas oculto margenIzquierda" id="contenedorSelectorCajas">
+         <div class="" style="width: 200px; float: left;">
             <select class="selectChosen" id="selectorSedes" name="datos[sede]">
                 {% for key, sede in sedes%}
                     <option value="{{key}}">{{sede}}</option>
                 {% endfor %}
             </select>
          </div>
-         <div class="ancho50por100">
-            <select class="margenIzquierdaDoble " id="selectorCajas" name="datos[caja]" multiple="true">
+         <div class="" style="width: 350px; float: left;">
+            <select class=" " id="selectorCajas" name="datos[caja]" multiple="true" style="width: 400px">
                 {% for key, caja in cajas%}
                     <option value="{{key}}"  {% if (key == cajaPrincipal)  %} selected {%  endif  %}>{{caja}}</option>
                 {% endfor %}
             </select>
          </div>
       </div>
+      <p class="margenSuperior claseTextoReporte letraAzul">
+          2. Filtros avanzados
+      </p>
+      <p class="margenSuperior claseTextoReporte margenIzquierda medioMargenInferior">
+          Filtrar por Usuario <span class="letraGrisClara">(Usuario que realiza la compra/venta)</span> <input type="checkbox" class="filtroUsuarios" id="filtroUsuarios" name="filtro_usuarios">
+      </p>
+        <div class="contenedorCampos margenIzquierda contenedorUsuarios oculto" id="contenedorUsuarios" style="position: relative; clear: both;">
+           <select class="medioMargenSuperior" id="selectorUsuarios" name="datos[usuarios]" multiple="true" style="width: 500px">
+               {% for key, usuario in usuarios%}
+                   <option value="{{key}}">{{usuario}}</option>
+               {% endfor %}
+           </select>
+        </div>  
+      <p class="margenSuperior claseTextoReporte letraAzul">
+          3. Seleccione el Tipo de Reporte que desea
+      </p>
+    <p class="margenSuperior claseTextoReporte margenIzquierda">
+        <span>Lista de Facturas</span>
+        <input type="radio" name="tipo_reporte" value="lista_facturas" class="medioMargenIzquierda selectorTipoReporte" checked />
+        <span class="margenIzquierda">Sumarizado total </span>
+        <input type="radio" name="tipo_reporte" value="total_sumarizado" class="medioMargenIzquierda selectorTipoReporte" />
+    </p>  
+    <div class="contenedorFiltroFields" id="contenedorFiltroFields">
+     <div class="margenIzquierda wrapContenedorFields" id="wrapContenedorFields">    
+        <p class="claseTextoReporte  medioMargenInferior">
+            Seleccionar los campos a mostrar en la consulta <span class="letraGrisClara">(por defecto: idFactura,proveedor|cliente,fechaFactura,total)</span> 
+            <input type="checkbox" class="filtroFields" id="filtroFields" name="filtro_fields">
+        </p>      
+        <div class="contenedorCampos margenIzquierda contenedorFields oculto" id="contenedorFields">
+            <select class="selectorFields" id="selectorFields" name="fields" multiple="true" style="width: 800px;">
+               <option value="id_Factura" selected>Id factura</option>
+               <option value="tercero" selected>Tercero</option>
+               <option value="fecha_Factura" selected>Fecha factura</option>
+               <option value="total" selected>Total</option>
+               <option value="caja" >Caja</option>
+               <option value="sede" >Sede</option>
+               <option value="usuario" >Usuario</option>
+            </select>   
+        </div>
+     </div>
+    </div>
       <div class="wrapperBotonGenerar">     
           <button validar="NoValidar" class="botonTextoIcono directo margenSuperiorDoble" id="botonConsultarCuadreCaja" title="ui-icon-check">
               Generar consulta

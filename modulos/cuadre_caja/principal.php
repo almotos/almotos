@@ -51,8 +51,21 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $idCajaPrincipal = $sql->obtenerValor('cajas', 'id', 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" ANd principal = "1"');    
     
+    //listar los usuarios de la sede (vendedores)
+    $listaUsuarios = array();//arreglo que almacenará el listado de usuarios del sistema
+    
+    $consulta = $sql->seleccionar(array('usuarios'), array('id', 'usuario'), 'vendedor = "1"', '', 'usuario ASC');
+
+    if ($sql->filasDevueltas) {
+        while ($dato = $sql->filaEnObjeto($consulta)) {//recorro las respuesta, y voy guardandolas en el arreglo
+            $listaUsuarios[$dato->id] = $dato->usuario;
+        }
+    }
+    
+    
     $opciones   = array('cajas'         => $listaCajas,
                         'sedes'         => $listaSedes,
+                        'usuarios'      => $listaUsuarios,
                         'cajaPrincipal' => $idCajaPrincipal
                         );
     

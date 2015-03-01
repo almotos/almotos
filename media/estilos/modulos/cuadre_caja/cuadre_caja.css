@@ -19,11 +19,11 @@
 }
 
 .contenedorCuadreCaja{
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 .checkFiltroCaja{
-    margin-top: 20px;
+    margin-top: 5px;
     display: inline-block;
 }
 
@@ -32,12 +32,12 @@
 }
 
 .contenedorSelectorCajas{
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 .wrapperBotonGenerar{
     display: block;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .contenedorRespuesta{

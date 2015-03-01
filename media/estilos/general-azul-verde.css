@@ -314,6 +314,10 @@ img{
     color: #FF0000 !important;
 }
 
+.letraGrisClara{
+    color: #A4A4A4 !important;
+}
+
 #informacionPersonalUsuario {
     height: 250px;
 }

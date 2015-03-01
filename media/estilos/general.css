@@ -389,6 +389,10 @@ a:hover{
     color: #2E64FE;
 }
 
+.letraGrisClara{
+    color: #A4A4A4 !important;
+}
+
 #informacionPersonalUsuario {
     height: 250px;
 }

@@ -951,6 +951,7 @@ class FacturaCompra {
             'usuario'           => 'u.usuario',
             'estadoFactura'     => 'fc.estado_factura',
             'activo'            => 'fc.activo',
+            'total'             => 'total'
         );
 
         $condicion .=   ' LEFT JOIN fom_cajas c1 ON fc.id_caja = c1.id'. 
