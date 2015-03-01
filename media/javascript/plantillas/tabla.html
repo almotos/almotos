@@ -3,7 +3,7 @@
       <tbody data-step="7" data-intro="En esta tabla se listan los registros. Se muestran 10 por defecto, pero se pueden mostrar cuantas se deseen(ver paso 2. Máximo recomendable 500 registros).">
          <tr class="cabeceraTabla noSeleccionable">
             <% _.each(cabeceras, function(cabecera) { %> 
-            <th class="columnaTabla " nombreorden="<%= cabecera.nombreOrden%>">
+            <th class="columnaTabla " nombreorden="<%= cabecera.nombreOrden%>" <% if (cabecera.colspan) {  %> colspan="<%= cabecera.colspan %>" <% } %> >
                    <div ayuda="Click para organizar&lt;br&gt;de manera ASCendente" id="ascendente"></div>
                    <div ayuda="Click para organizar&lt;br&gt;de manera DESCendente" id="descendente"></div>
                    <p class="centrado"><%= cabecera.valor %>    </p>

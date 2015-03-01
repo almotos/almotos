@@ -30,6 +30,9 @@ class Reportes
         
         if ($datos['tipo_reporte'] == "lista_facturas") {
             $response = $this->listaFacturas($factura, $prefijo, $tercero, $datos);
+            
+        } else if ($datos['tipo_reporte'] == "total_sumarizado") {
+            $response = $this->sumarizadoTotal($factura, $prefijo, $tercero, $datos);
         }
         
         $respuesta = array(
@@ -67,39 +70,12 @@ class Reportes
     }
     
     
-    public function listaFacturas($factura, $prefijo, $tercero, $datos) {
-        
+    public function listaFacturas($factura, $prefijo, $tercero, $datos) 
+    {
+
         $respuesta = array();
         
-        if ($datos['rango_personalizado'] == false && !empty($datos['ultimos'])) {
-            $valorFechas = array(
-                'dia'           => '-1 day',
-                'semana'        => '-7 day',
-                'mes'           => '-30 day',
-                'tres_meses'    => '-90 day',
-                'seis_meses'    => '-180 day',
-                'anyo'          => '-360 day'
-            );
-            
-            $fechaInicial = date('Y-m-d H:i:s', strtotime($valorFechas[$datos['ultimos']]));
-            $fechaFinal   = date('Y-m-d H:i:s');
-        }
-        
-        $condicionGlobal = " {$prefijo}.fecha_factura BETWEEN '{$fechaInicial}' AND '{$fechaFinal}' ";
-        
-        //filtrar por cajas
-        if ($datos['todas_cajas'] == false && !empty($datos['caja']) && is_array($datos['caja'])) {
-            $cajas = implode(",", $datos['caja']);
-            $condicionGlobal .= " AND {$prefijo}.id_caja IN ({$cajas}) ";
-        } 
-        
-        //filtrar por usuarios
-        if ($datos['filtro_usuarios'] == true && !empty($datos['usuarios']) && is_array($datos['usuarios'])) {
-            $usuarios = implode(",", $datos['usuarios']);
-            $condicionGlobal .= " AND {$prefijo}.id_usuario IN ({$usuarios}) ";
-        }         
-        
-        $datosConsulta = $factura->listar(0, 0, "", $condicionGlobal, "{$prefijo}.fecha_factura");
+        $datosConsulta = $this->datosConsulta($datos, $factura, $prefijo);
         
         //generar las filas de la tabla
         $filas      = array();
@@ -155,6 +131,90 @@ class Reportes
         $respuesta['cabeceras'] = $cabeceras;
         
         return $respuesta;
+        
+    }
+    
+    public function sumarizadoTotal($factura, $prefijo, $tercero, $datos) 
+    {
+
+        $respuesta = array();
+        
+        $datosConsulta = $this->datosConsulta($datos, $factura, $prefijo);
+        
+        //generar las filas de la tabla
+        $filas   = array();
+        $total   = 0;
+        if (!empty($datosConsulta) && is_array($datosConsulta)) {
+            foreach ($datosConsulta as $factura) {
+                $total += $factura->total;
+            }
+        }
+        
+        $fila = array();
+        $fila["id"]                       = 'id';
+        $fila["atributos"]                = "atributo_0=id";
+        $fila["columnas"][0]              = array();
+        $fila["columnas"][0]["id"]        = "id_columna";
+        $fila["columnas"][0]["valor"]     = "Total ".  ucwords($datos['tipo']);
+        $fila["columnas"][1]              = array();
+        $fila["columnas"][1]["id"]        = "id_columna";
+        $fila["columnas"][1]["valor"]     = $total;        
+
+
+        $filas[] = $fila;        
+        
+        $respuesta['filas'] = $filas;
+        
+        //generar las cabeceras de la tabla de acuerdo a los fields que el usuario quiere consultar
+        $cabeceras = array();
+
+        //generar las columnas de cada fila
+        $cabeceras[0]                   = array();
+        $cabeceras[0]["id"]             = "cabecera_1";
+        $cabeceras[0]["valor"]          = 'Total Factura';
+        $cabeceras[0]["name"]           = 'totalFactura';
+        $cabeceras[0]["nombreOrden"]    = "totalFactura";
+        $cabeceras[0]["colspan"]        = "2";
+
+        $respuesta['cabeceras'] = $cabeceras;
+        
+        return $respuesta;
+        
+    }    
+    
+    public function datosConsulta($datos, $factura, $prefijo) 
+    {
+        if ($datos['rango_personalizado'] == false && !empty($datos['ultimos'])) {
+            $valorFechas = array(
+                'dia'           => '-1 day',
+                'semana'        => '-7 day',
+                'mes'           => '-30 day',
+                'tres_meses'    => '-90 day',
+                'seis_meses'    => '-180 day',
+                'anyo'          => '-360 day'
+            );
+            
+            $fechaInicial = date('Y-m-d H:i:s', strtotime($valorFechas[$datos['ultimos']]));
+            $fechaFinal   = date('Y-m-d H:i:s');
+        }
+        
+        $condicionGlobal = " {$prefijo}.fecha_factura BETWEEN '{$fechaInicial}' AND '{$fechaFinal}' ";
+        
+        //filtrar por cajas
+        if ($datos['todas_cajas'] == false && !empty($datos['caja']) && is_array($datos['caja'])) {
+            $cajas = implode(",", $datos['caja']);
+            $condicionGlobal .= " AND {$prefijo}.id_caja IN ({$cajas}) ";
+        } 
+        
+        //filtrar por usuarios
+        if ($datos['filtro_usuarios'] == true && !empty($datos['usuarios']) && is_array($datos['usuarios'])) {
+            $usuarios = implode(",", $datos['usuarios']);
+            $condicionGlobal .= " AND {$prefijo}.id_usuario IN ({$usuarios}) ";
+        }         
+        
+        $datosConsulta = $factura->listar(0, 0, "", $condicionGlobal, "{$prefijo}.fecha_factura");
+        
+        return $datosConsulta;
         
     }
     
