@@ -323,8 +323,6 @@ class NotaCreditoProveedor {
         
     }
 
-  
-
     /**
      *
      * Eliminar una nota
@@ -363,7 +361,6 @@ class NotaCreditoProveedor {
         }
         
     }
-    
     
     /**
      * Cargar los datos de una nota
@@ -430,6 +427,15 @@ class NotaCreditoProveedor {
 
         if (!$validarFormato) {
             $configuracionRuta = $configuracion["RUTAS"]["media"] . "/" . $configuracion["RUTAS"]["archivos"] . '/'.$tipo.'/';
+            
+            if (!is_file($configuracionRuta)) {
+                mkdir($configuracionRuta, 7777);
+            }
+            
+            if (!is_writable($configuracionRuta)) {
+                chmod($configuracionRuta, 7777);
+            }
+            
             $recurso = Archivo::subirArchivoAlServidor($archivo, $configuracionRuta);
             
             if ($recurso) {

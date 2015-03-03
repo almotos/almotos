@@ -1358,18 +1358,14 @@ function adicionarNotaCredito($id, $datos = array()) {
         
         $contenedorListaArticles = HTML::tabla($datosTabla, $listaArticulos, $clase, $idTabla, $clasesColumnas, $clasesFilas, $opciones);
 
-
-
         $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo margenInferiorDoble');
         $contenedor2 = HTML::contenedor($codigo2, 'contenedorDerecho margenInferiorDoble');
         $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos oculto', 'contenedorListaArticulosNota');
-
-
+        
         $codigo .= $contenedor1 . $contenedor2 . $contenedor3;
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), ' margenSuperiorTriple', 'botonOk', 'botonOk'), 'margenSuperiorTriple');
         $codigo .= HTML::parrafo($textos->id('NOTA_CREDITO_ADICIONADA_A_FACTURA'), 'textoExitoso', 'textoExitoso');
         $codigo1 = HTML::forma($destino, $codigo, 'P');
-
 
         $respuesta['generar']       = true;
         $respuesta['cargarJs']      = true;
