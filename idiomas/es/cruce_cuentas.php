@@ -13,8 +13,9 @@
 
 $textos = array(
     /*Basicos*/
-    'MODULO_ACTUAL'                             => 'Cruce de cuentas',
+    'MODULO_ACTUAL'                             => 'Operaciones de Negocio - Cruzar cuentas con operacion',
     'AGREGAR_CUENTAS_AFECTADAS'                 => 'Agregar cuenta contable',
+    'ADICIONAR_ITEM'                            => 'Adicionar',
     
     /*Campos y labels*/
     'NOMBRE'                                    => 'Nombre',

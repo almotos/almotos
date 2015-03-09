@@ -1,7 +1,7 @@
 #Options -MultiViews -Indexes
 php_value display_errors off
 
-php_value error_log "/varlog/syslog.log"
+php_value error_log "/var/log/almotos_php_log.log"
 
 #Permitir carga de archivos hasta de 20 MB
 php_value upload_max_filesize 20M

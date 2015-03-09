@@ -1,0 +1,22 @@
+2015/03/08 {
+	Agregar la tabla "cuentas operaciones negocio": usada para almacenar la relacion de cuentas contables con el tipo de operacion (compra/venta/devoluciones/etc)
+	CREATE TABLE `fom_1_cuentas_operacion_negocio` (
+	 `id` bigint(15) unsigned NOT NULL AUTO_INCREMENT,
+	 `id_cruce_cuenta` smallint(3) unsigned zerofill NOT NULL,
+	 `id_cuenta` mediumint(6) unsigned NOT NULL,
+	 `tipo` enum('1','2') COLLATE latin1_spanish_ci NOT NULL DEFAULT '1' COMMENT '1= afecta la cuenta por el credito, 2= por el debito',
+	 `campo_oculto` enum('0','1') COLLATE latin1_spanish_ci NOT NULL,
+	 `base_total_pesos` decimal(15,2) NOT NULL,
+	 `base_total_porcentaje` smallint(2) NOT NULL,
+	 PRIMARY KEY (`id`)
+	) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci COMMENT='Almacena las cuentas afectadas por operacion (compra/venta)'
+
+       Agregar la tabla "archivos clientes" : usada para almacenar la ruta a los archivos que adjuntan los clientes.
+
+	 CREATE TABLE `fom_1_archivos_clientes` (
+	 `id` bigint(15) NOT NULL AUTO_INCREMENT,
+	 `id_cliente` int(8) unsigned zerofill NOT NULL COMMENT 'id del cliente de la empresa',
+	 `archivo` varchar(100) COLLATE latin1_spanish_ci NOT NULL COMMENT 'ruta al archivo',
+	 PRIMARY KEY (`id`)
+	) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci COMMENT='archivos que pertenecen a los clientes de la empresa 1'
+} 

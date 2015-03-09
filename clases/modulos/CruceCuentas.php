@@ -45,36 +45,23 @@ class CruceCuentas {
      */
     public $idModulo;
 
-
     /**
      * Nombre del tipo de compra
      * @var entero
      */
-    public $nombre;
-    
-    /**
-     * Descripción del tipo de compra
-     * @var entero
-     */
-    public $descripcion;    
+    public $nombre; 
 
     /**
-     * Tipo de compra (1=> credito, 2=> contado, 3=>mixto)
+     * Codigo operacion
      * @var entero
      */
-    public $tipo;  
+    public $codigo;  
 
     /**
      * Determina si el registro esta activo
      * @var entero
      */
-    public $activo;
-    
-    /**
-     * Determina si este es el tipo de compra principal
-     * @var entero
-     */
-    public $principal;    
+    public $activo;  
     
     /**
      * Arreglo con el listado de cuentas que se afectan directamente por la partida doble
