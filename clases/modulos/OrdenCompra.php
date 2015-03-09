@@ -291,6 +291,7 @@ class OrdenCompra {
                     'idBodega'      => 'ao.id_bodega',
                     'idProveedor'   => 'ao.id_proveedor',
                     'fecha'         => 'ao.fecha',
+                    'iva'           => 'a.iva',
                     'precioVenta'   => 'ao.precio_venta',//PARA QUE?
                 );                
 

@@ -33,7 +33,9 @@ $textos = array(
     /*Errores*/
     'ERROR_FALTA_CODIGO'                        => 'Error falta codigo',
     'ERROR_FALTA_NOMBRE'                        => 'Error falta nombre',
-    'ERROR_FALTA_TIPO'                          => 'Error falta tipo',    
+    'ERROR_FALTA_TIPO'                          => 'Error falta tipo', 
+    'ERROR_FORMATO_ARCHIVO'                     => 'Error formato de archivo debe ser .xls',
+    'ERROR_FALTAN_DATOS'                        => 'Error faltan datos por ingresar.',
     
     /*Ayuda*/
     'SELECCIONA_EL_GRUPO'                       => 'Selecciona el grupo',

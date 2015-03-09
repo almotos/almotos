@@ -571,38 +571,77 @@ class Cliente {
      *
      */
     public function eliminar() {
-        global $sql;
-
+        global $sql, $textos;
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
+        }
+        
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('facturas_venta', 'id_cliente = "'.$this->id.'"', $textos->id('FACTURAS_VENTA'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('cotizaciones', 'id_cliente = "'.$this->id.'"', $textos->id('COTIZACIONES'));//arreglo del que sale la info a consultar
+        $arregloIntegridad = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad = Recursos::verificarIntegridad($textos->id('CLIENTE'), $arregloIntegridad);  
+        
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+        */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
         }
 
         $sql->iniciarTransaccion();
+        $eliminaSedes = $sql->eliminar('sedes_cliente', 'id_cliente = "' . $this->id . '"');
         
-        $eliminaSedes           = $sql->eliminar('sedes_cliente', 'id_cliente = "' . $this->id . '"');
         if (!$eliminaSedes){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando sedes';
-            return false;            
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;            
         }
         
-        $eliminaContactos       = $sql->eliminar('contactos_cliente', 'id_cliente = "' . $this->id . '"');
+        $eliminaContactos = $sql->eliminar('contactos_cliente', 'id_cliente = "' . $this->id . '"');
         if (!$eliminaContactos){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando contactos';
-            return false;            
-        }    
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            //$sql->error = 'Error eliminando contactos';
+            return $respuestaEliminar;            
+        }   
+       
+        //Aqui se eliminan las facturas temporales que este cliente tenga amarradas
+        $idsFacturasTemporales = $sql->seleccionar(array('facturas_temporales_venta'), 
+                                                   array('id'), 
+                                                   'id_cliente = "'.$this->id.'"');
+        //si el cliente tenia facturas temporales de venta
+        if ($sql->filasDevueltas) {
+            
+            while ($factTemp = $sql->filaEnObjeto($idsFacturasTemporales)) {
+                FacturaTemporalVenta::eliminarFacturaTemporal($factTemp->id);
+                
+            }
+            
+        }        
         
         $eliminaCliente = $sql->eliminar('clientes', 'id = "' . $this->id . '"');
+        
         if (!$eliminaCliente){
-            $sql->cancelarTransaccion();
-            $sql->error = 'Error eliminando cliente';
-            return false;            
-        }           
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;            
 
-        $sql->finalizarTransaccion();
-        return true;
-    }
+        } else {
+           $sql->finalizarTransaccion();
+           $respuestaEliminar['respuesta'] = true;
+           return $respuestaEliminar;
+
+       } 
+       
+    }        
+         
 
     /**
      *

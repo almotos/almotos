@@ -284,35 +284,57 @@ class Linea {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
 
-        if (!isset($this->id)) {
-            return NULL;
-        }
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
         
-        $sql->iniciarTransaccion();
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1           = array('articulos', 'id_linea = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
+        $arregloIntegridad  = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('LINEA'), $arregloIntegridad);  
 
-        if (($consulta = $sql->eliminar('lineas', 'id = "' . $this->id . '"'))) {
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('lineas', 'id = "' . $this->id . '"');
+     
+        if ($consulta) {
+            $imagen         = new Imagen($this->idImagen); 
+            $eliminarImagen = $imagen->eliminar;
             
-            $imagen = new Imagen($this->idImagen);
-            $elimina = $imagen->eliminar();
-            
-            if(!$elimina) {
-                $sql->cancelarTransaccion();
-                return false;
+            if($eliminarImagen === false){
+                $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                return $respuestaEliminar;
                 
-            }
+            }  
+            
             $sql->finalizarTransaccion();
-            return true;
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
             
         } else {
-            $sql->cancelarTransaccion();
-            return false;
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
             
         }
-        
+     
     }
-
 
     /**
      * Listar las lineas
@@ -447,13 +469,11 @@ class Linea {
                 if ($datos['inicial'] == 1) {
 
                     $row++;
-                    $campos = array();
+                    $campos = array(); 
                     
-                    if ($datos['id'] != 0)
-                        $campos['id'] = $datos['id'];   
-                    
-                    if ($datos['nombre'] != 0)
-                        $campos['nombre'] = $datos['nombre'];  
+                    if ($datos['nombre'] != 0) {
+                        $campos['nombre'] = $datos['nombre'];
+                    }
                     
                 }
 
@@ -476,7 +496,7 @@ class Linea {
                             $datosLinea[$nombre]    = $valor;
                             
                         }
-                        $sql->depurar = true;
+                        
                         $sql->insertar('lineas', $datosLinea);
 
                         $row++;

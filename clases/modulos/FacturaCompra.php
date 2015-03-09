@@ -65,6 +65,12 @@ class FacturaCompra {
      * @var entero
      */
     public $idProveedor;
+    
+    /**
+     * nit del objeto proveedor al cual se le realiza la compra
+     * @var entero
+     */
+    public $nitProveedor;
 
     /**
      * objeto proveedor al cual se le realiza la compra
@@ -188,13 +194,19 @@ class FacturaCompra {
     
     /**
      * Cadena con la informacion para las retenciones que llevara a cabo la clase Contabilidad
-     * @var entero
+     * @var string
      */
     public $retenciones;  
     
     /**
-     * arreglo (llave ->valor) con la informacion para las retenciones que llevara a cabo la clase Contabilidad
+     * Valor total de las retenciones en la factura
      * @var entero
+     */
+    public $totalRetenciones = 0;     
+    
+    /**
+     * arreglo (llave ->valor) con la informacion para las retenciones que llevara a cabo la clase Contabilidad
+     * @var array
      */
     public $arregloRetenciones = array();      
 
@@ -209,6 +221,30 @@ class FacturaCompra {
      * @var entero
      */
     public $observaciones;
+    
+    /**
+     * campo medio de pago "efectivo". Almacena la cantidad pagada en la factura por medio de "efectivo"
+     * @var entero
+     */
+    public $campoEfectivo;    
+    
+    /**
+     * campo medio de pago "tarjeta". Almacena la cantidad pagada en la factura por medio de "tarjeta"
+     * @var entero
+     */
+    public $campoTarjeta;
+    
+    /**
+     * campo medio de pago "cheque". Almacena la cantidad pagada en la factura por medio de "cheque"
+     * @var entero
+     */
+    public $campoCheque;
+    
+    /**
+     * campo medio de pago "credito". Almacena la cantidad pagada en la factura por medio de "credito"
+     * @var entero
+     */
+    public $campoCredito;    
 
     /**
      * archivo digital que representa la factura de venta del proveedor (ya sea porque el proveedor la envio digital, o se escaneo el medio fisico)
@@ -222,7 +258,7 @@ class FacturaCompra {
     public $rutaFacturaDigital;
 
     /**
-     * listado de articulos que contiene la factura (arreglño con todo el listado de articulos)
+     * listado de articulos que contiene la factura (arreglo con todo el listado de articulos)
      * @var array
      */
     public $listaArticulos;
@@ -318,6 +354,7 @@ class FacturaCompra {
                 'id'                        => 'fc.id',
                 'idFactura'                 => 'fc.id_factura',
                 'idProveedor'               => 'fc.id_proveedor',
+                'nitProveedor'              => 'p.id_proveedor',
                 //'proveedor'                 => 'p.nombre',
                 'numeroFacturaProveedor'    => 'fc.num_factura_proveedor',
                 'fechaFactura'              => 'fc.fecha_factura',
@@ -341,7 +378,12 @@ class FacturaCompra {
                 'retenciones'               => 'fc.retenciones',
                 'estadoFactura'             => 'fc.estado_factura',
                 'observaciones'             => 'fc.observaciones',
+                'campoEfectivo'             => 'fc.campo_efectivo',
+                'campoTarjeta'              => 'fc.campo_tarjeta',
+                'campoCheque'               => 'fc.campo_cheque',
+                'campoCredito'              => 'fc.campo_credito',
                 'facturaDigital'            => 'fc.archivo',
+                'activo'                    => 'fc.activo',
             );
 
             $condicion = 'fc.id_caja = c1.id AND c1.id_sede = s.id  AND fc.id_usuario = u.id AND fc.id_proveedor = p.id AND fc.id = "' . $id . '"';
@@ -408,7 +450,7 @@ class FacturaCompra {
                 }
                 
                 /**
-                 * generar arreglo de retenciones llave -> valor, donde llave es el valor de la retencion y valor, el valor :)
+                 * generar arreglo de retenciones llave -> valor, donde llave es el nombre de la retencion y valor, el valor :)
                  */
                 $arrRetenciones = explode('|', substr($this->retenciones, 0, -1));
                 
@@ -417,101 +459,8 @@ class FacturaCompra {
                     $nombreRetencion    = $configuracion["RETENCIONES"][$configuracion["GENERAL"]["idioma"]][$retencion[0]]["nombre"];
                     
                     $this->arregloRetenciones[$nombreRetencion] = $retencion[1];
+                    $this->totalRetenciones += $retencion[1];
                     
-                }
-                
-            }
-            
-        }
-        
-    }
-
-    /**
-     * Cargar los datos de una unidad
-     * @param entero $id Código interno o identificador de la unidad en la base de datos
-     */
-    public function cargarFacturaTemporal($id) {
-        global $sql;
-
-        if (isset($id) && $sql->existeItem('facturas_temporales_compra', 'id', intval($id))) {
-
-            $tablas = array(
-                'fc' => 'facturas_temporales_compra',
-                'c1' => 'cajas',
-                's'  => 'sedes_empresa',
-                'p'  => 'proveedores',
-                'u'  => 'usuarios'
-            );
-
-            $columnas = array(
-                'id'                        => 'fc.id',
-                'idProveedor'               => 'fc.id_proveedor',
-                //'proveedor'                 => 'p.nombre',
-                'numeroFacturaProveedor'    => 'fc.num_factura_proveedor',
-                'fechaFactura'              => 'fc.fecha_factura',
-                'fechaVtoFactura'           => 'fc.fecha_vencimiento',
-//                'modoPago'                  => 'fc.modo_pago',
-                'idCaja'                    => 'fc.id_caja',
-                'caja'                      => 'c1.nombre',
-                'idSede'                    => 'c1.id_sede',
-                'sede'                      => 's.nombre',
-                'id_usuario'                => 'fc.id_usuario',
-                'usuario'                   => 'u.usuario',
-                'iva'                       => 'fc.iva',
-//                'retecree'                  => 'fc.retecree',
-                'concepto1'                 => 'fc.concepto1',
-                'descuento1'                => 'fc.descuento1',
-                'concepto2'                 => 'fc.concepto2',
-                'descuento2'                => 'fc.descuento2',
-                'valorFlete'                => 'fc.valor_flete',
-                'total'                     => 'fc.total',
-                'subtotal'                  => 'fc.subtotal',
-                //'retenciones'               => 'fc.retenciones',
-                'estadoFactura'             => 'fc.estado_factura',
-                'observaciones'             => 'fc.observaciones'
-            );
-
-            $condicion = 'fc.id_caja = c1.id AND c1.id_sede = s.id  AND fc.id_usuario = u.id AND fc.id_proveedor = p.id AND fc.id = "' . $id . '"';
-
-            $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
-
-            if ($sql->filasDevueltas) {
-                $fila = $sql->filaEnObjeto($consulta);
-
-                foreach ($fila as $propiedad => $valor) {
-                    $this->$propiedad = $valor;
-                }
-
-                $this->proveedor = new Proveedor($this->idProveedor);
-
-                $tablas1 = array(
-                    'af' => 'articulos_factura_temporal_compra',
-                    'a'  => 'articulos'
-                );
-                $columnas1 = array(
-                    'id'            => 'af.id',
-                    'idFactura'     => 'af.id_factura_temporal',
-                    'idArticulo'    => 'af.id_articulo',
-                    'articulo'      => 'a.nombre',
-                    'plu_interno'   => 'a.plu_interno',
-                    'codigo_oem'    => 'a.codigo_oem',                    
-                    'cantidad'      => 'af.cantidad',
-                    'descuento'     => 'af.descuento',
-                    'precio'        => 'af.precio',
-                    'idBodega'      => 'af.id_bodega',
-                    'precioVenta'   => 'af.precio_venta',
-                    'iva'           => 'a.iva',
-                );
-
-                $condicion1 = 'af.id_articulo = a.id  AND af.id_factura_temporal = "' . $id . '"';
-  
-                $consulta1 = $sql->seleccionar($tablas1, $columnas1, $condicion1);
-
-                if ($sql->filasDevueltas) {
-                    while ($objeto = $sql->filaEnObjeto($consulta1)) {
-                        $this->listaArticulos[] = $objeto;
-                        
-                    }
                 }
                 
             }
@@ -529,7 +478,7 @@ class FacturaCompra {
      *
      */
     public function adicionar($datos) {
-        global $sql, $sesion_usuarioSesion;
+        global $sql, $sesion_usuarioSesion, $textos;
         
         //verificar si este mismo proveedor nos habia traido una factura antes con el mismo numero
         $idFacturaPrevia = $sql->obtenerValor('facturas_compras', 'id', 'id_proveedor = "'.$datos['id_proveedor'].'" AND num_factura_proveedor = "'.$datos['num_factura_proveedor'].'" ');
@@ -548,9 +497,9 @@ class FacturaCompra {
             'id_caja'                   => $datos['id_caja'],
             'subtotal'                  => $datos['subtotal'],
             'iva'                       => $datos['iva'],
-            'concepto1'                 => $datos['concepto1'],
+            'concepto1'                 => (!empty($datos['concepto1'])) ? $datos['concepto1'] : $textos->id("DESCUENTO_1"),
             'descuento1'                => $datos['descuento1'],
-            'concepto2'                 => $datos['concepto2'],
+            'concepto2'                 => (!empty($datos['concepto2'])) ? $datos['concepto2'] : $textos->id("DESCUENTO_2"),
             'descuento2'                => $datos['descuento2'],
             'valor_flete'               => $datos['valor_flete'],
             'total'                     => $datos['total'],
@@ -841,7 +790,11 @@ class FacturaCompra {
         
         $sql->iniciarTransaccion();
         
-        $datos = array('activo' => '0');
+        $activo = $sql->obtenerValor('facturas_compras', 'activo', 'id = "' . $this->id . '"');
+        
+        $valor = ($activo == "1") ? "0" : "1";
+        
+        $datos = array('activo' => $valor);
         
         $consulta = $sql->modificar('facturas_compras', $datos, 'id = "' . $this->id . '"');
 
@@ -965,16 +918,11 @@ class FacturaCompra {
             $condicion = '';
         }
 
-        /*         * * Validar que la excepción sea un arreglo y contenga elementos ** */
-        if (isset($excepcion) && is_array($excepcion) && count($excepcion)) {
-            $excepcion = implode(',', $excepcion);
-            $condicion .= 'fc.id NOT IN (' . $excepcion . ') AND ';
-        }
-
         /*         * * Definir el orden de presentación de los datos ** */
         if (!isset($orden)) {
             $orden = 'fc.fecha_factura';
         }
+        
         if ($this->listaAscendente) {
             $orden = $orden . ' ASC';
             
@@ -985,10 +933,6 @@ class FacturaCompra {
 
         $tablas = array(
             'fc' => 'facturas_compras',
-            'c1' => 'cajas',
-            's'  => 'sedes_empresa',
-            'p'  => 'proveedores',
-            'u'  => 'usuarios'
         );
 
         $columnas = array(
@@ -996,6 +940,7 @@ class FacturaCompra {
             'idFactura'         => 'fc.id_factura',
             'idProveedor'       => 'fc.id_proveedor',
             'proveedor'         => 'p.nombre',
+            'nitProveedor'      => 'p.id_proveedor',
             'numeroFactura'     => 'fc.num_factura_proveedor',
             'fechaFactura'      => 'fc.fecha_factura',
             'idCaja'            => 'fc.id_caja',
@@ -1006,26 +951,38 @@ class FacturaCompra {
             'usuario'           => 'u.usuario',
             'estadoFactura'     => 'fc.estado_factura',
             'activo'            => 'fc.activo',
+            'total'             => 'total'
         );
 
-
-
+        $condicion .=   ' LEFT JOIN fom_cajas c1 ON fc.id_caja = c1.id'. 
+                        ' LEFT JOIN fom_sedes_empresa s ON c1.id_sede = s.id'.
+                        ' LEFT JOIN fom_usuarios u ON fc.id_usuario = u.id'.
+                        ' LEFT JOIN fom_proveedores p ON fc.id_proveedor = p.id';
+        
+        $where = '';
+        
+        /*         * * Validar que la excepción sea un arreglo y contenga elementos ** */
+        if (isset($excepcion) && is_array($excepcion) && count($excepcion)) {
+            $where = ' WHERE ';
+            $excepcion = implode(',', $excepcion);
+            $condicion .= ' '.$where.' fc.id NOT IN (' . $excepcion . ')';
+        }
+        
         if (!empty($condicionGlobal)) {
-            $condicion .= $condicionGlobal . ' AND ';
+            $cond = (empty($where)) ? ' WHERE ' : ' AND ';
+            $condicion .= $cond .$condicionGlobal;
         }
 
-        $condicion .= 'fc.id_caja = c1.id AND c1.id_sede = s.id  AND fc.id_usuario = u.id AND fc.id_proveedor = p.id';
-
         if (is_null($this->registrosConsulta)) {
-            $sql->seleccionar($tablas, $columnas, $condicion);
+            $sql->seleccionar($tablas, $columnas, $condicion, "", "", NULL, NULL, FALSE);
             $this->registrosConsulta = $sql->filasDevueltas;
         }
 
-//        $sql->depurar = true;
-        $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad);
+        $sql->depurar = TRUE;
+        $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'fc.id', $orden, $inicio, $cantidad, FALSE);
 
+        $lista = array();
         if ($sql->filasDevueltas) {
-            $lista = array();
 
             while ($objeto = $sql->filaEnObjeto($consulta)) {
                 $objeto->activo =  ($objeto->activo) ? HTML::frase($textos->id("ACTIVO"), "activo") : HTML::frase($textos->id("INACTIVO"), "inactivo");
@@ -1037,7 +994,6 @@ class FacturaCompra {
 
         return $lista;
     }
-
 
     /**
      * Metodo que genera los datos que contendra la tabla principal del modulo
@@ -1053,12 +1009,12 @@ class FacturaCompra {
         $datosTabla = array(
             HTML::parrafo($textos->id('NUMERO_DE_FACTURA'), 'centrado')     => 'id|fc.id',
             HTML::parrafo($textos->id('SEDE'), 'centrado')                  => 'sede|s.nombre',
-            HTML::parrafo($textos->id('ID_PROVEEDOR'), 'centrado')          => 'idProveedor|fc.id_proveedor',             
+            HTML::parrafo($textos->id('ID_PROVEEDOR'), 'centrado')          => 'nitProveedor|p.id_proveedor',             
             HTML::parrafo($textos->id('PROVEEDOR'), 'centrado')             => 'proveedor|p.nombre',
             HTML::parrafo($textos->id('NUM_FACT_PROVEEDOR'), 'centrado')    => 'numeroFactura|fc.num_factura_proveedor',
             HTML::parrafo($textos->id('USUARIO_CREADOR'), 'centrado')       => 'usuario|u.usuario',
             HTML::parrafo($textos->id('FECHA_FACTURA'), 'centrado')         => 'fechaFactura|fc.fecha_factura',
-            HTML::parrafo($textos->id('ESTADO'), 'centrado')                => 'activo|fc.activo',
+            HTML::parrafo($textos->id('ACTIVO'), 'centrado')                => 'activo|fc.activo',
         );
         //ruta del metodo paginador
         $rutaPaginador = '/ajax' . $this->urlBase . '/move';
@@ -1088,237 +1044,6 @@ class FacturaCompra {
     }
 
     /**
-     *
-     * Adicionar una factura temporal de compra
-     *
-     * @param  arreglo $datos       Datos de la factura a adicionar
-     * @return entero               Código interno o identificador de la factura en la base de datos (NULL si hubo error)
-     *
-     */
-    public function adicionarFacturaTemporal($datos) {
-        global $sql, $sesion_usuarioSesion, $configuracion, $textos;
-
-        $datosFactura = array(
-            'id_proveedor'          => $datos['id_proveedor'],
-            'num_factura_proveedor' => $datos['num_factura_proveedor'],
-            'fecha_factura'         => $datos['fecha_factura'] . ' ' . date('H:i:s'),
-            'fecha_vencimiento'     => $datos['fecha_vto_factura'],
-//            'modo_pago'             => $datos['modo_pago'],
-            'id_usuario'            => $sesion_usuarioSesion->id,
-            'id_caja'               => $datos['id_caja'],
-            'subtotal'              => $datos['subtotal'],
-            'iva'                   => $datos['iva'],
-//            'retecree'              => $datos['retecree'],
-            'concepto1'             => $datos['concepto1'],
-            'descuento1'            => $datos['descuento1'],
-            'concepto2'             => $datos['concepto2'],
-            'descuento2'            => $datos['descuento2'],
-            'valor_flete'           => $datos['valor_flete'],
-            'total'                 => $datos['total'],
-            'observaciones'         => $datos['observaciones']
-        );
-        
-        $sql->iniciarTransaccion();
-
-        $consulta = $sql->insertar('facturas_temporales_compra', $datosFactura);
-        $idItem = $sql->ultimoId;
-
-        //forma ajax que envia al modulo de notificaciones
-        $boton = HTML::boton('lapiz', $textos->id('MODIFICAR_FACTURA'), 'directo', '', '', '', array());
-        
-        
-        //no se por que demonios lo plantee de esta forma, pero segur que tiene sentido
-        $botonFormaAjax = HTML::botonImagenAjax($boton, '', '', array(), $configuracion['SERVIDOR']['principal'] . 'compras_mercancia', array('idFactTemp' => $idItem), '', array('target' => '_blank'));
-
-        $proveedor = $sql->obtenerValor("proveedores", "nombre", "id = '".$datos['id_proveedor']."'");
-        
-        $notificacion  = str_replace('%1', $datos['fecha_factura'] . ' ' . date('H:i:s'), $textos->id('MENSAJE_FACTURA_TEMPORAL_COMPRA'));
-        $notificacion  = str_replace('%2', $proveedor, $notificacion). ' ' . $botonFormaAjax;
-
-        $idNoti = Servidor::notificar($sesion_usuarioSesion->id, addslashes($notificacion), array(), $this->idModulo, $idItem);
-        //se actualiza la tabla de facturas temporales, se pone el id de la notificacion que genera, para poder borrarla en caso que se inicie nuevamente la factura
-        $datosModificar = array('id_notificacion' => $idNoti);
-        
-        $modificar = $sql->modificar('facturas_temporales_compra', $datosModificar, 'id = "' . $idItem . '"');
-        
-        if (!$modificar) {
-            $sql->cancelarTransaccion();
-            return false;
-        }
-
-
-        if ($consulta) {
-            
-            if($datos['cadenaArticulosPrecios'] != ''){//verifico que la cadena que trae la lista con los datos de los articulos para la compra(id_articulo, precio, bodega, etc) no este vacia
-                //recibir toda la cadena y hacer el insertar en una sola consulta de la lista de articulos            
-                $arreglo = explode('|', substr($datos['cadenaArticulosPrecios'], 0, -1));
-
-
-                foreach ($arreglo as $id => $valor) {
-                    $articulo = explode(';', $valor);
-                    $valoresConsulta .= '("' . $idItem . '", "' . $articulo[0] . '", "' . $articulo[1] . '", "' . $articulo[2] . '", "' . $articulo[3] . '" , "' . $articulo[4] . '" , "' . $articulo[5] . '"),';
-
-                }
-
-                $valoresConsulta = substr($valoresConsulta, 0, -1);
-
-
-                $sentencia = "INSERT INTO fom_articulos_factura_temporal_compra (id_factura_temporal, id_articulo, cantidad, descuento, precio, id_bodega, precio_venta) VALUES $valoresConsulta";
-                //$sql->depurar = true;
-                $query = $sql->ejecutar($sentencia);  
-                
-                if (!$query) {
-                    $sql->cancelarTransaccion();
-                    return false;
-                }                
-                
-            }
-
-            $sql->finalizarTransaccion();
-            return $idItem;
-            
-        } else {
-            $sql->cancelarTransaccion();
-            return false;
-            
-        }//fin del if($consulta)
-    }
-
-    /**
-     *
-     * Modificar factura temporal
-     *
-     * @param  arreglo $datos       Datos del articulo a modificar
-     * @return lógico               Indica si el procedimiento se pudo realizar correctamente o no
-     *
-     */
-    public function modificarFacturaTemporal($datos) {
-        global $sql, $sesion_usuarioSesion;
-
-        $idItem = $datos['id_factura_temporal'];
-        if (!isset($idItem)) {
-            return false;
-        }
-
-        $datosFactura = array(
-            'id_proveedor'                  => $datos['id_proveedor'],
-            'num_factura_proveedor'         => $datos['num_factura_proveedor'],
-            'fecha_factura'                 => $datos['fecha_factura'] . ' ' . date('H:i:s'),
-            'fecha_vencimiento'             => $datos['fecha_vto_factura'],
-//            'modo_pago'                     => $datos['modo_pago'],
-            'id_usuario'                    => $sesion_usuarioSesion->id,
-            'id_caja'                       => $datos['id_caja'],
-            'iva'                           => $datos['iva'],
-//            'retecree'                      => $datos['retecree'],
-            'subtotal'                      => $datos['subtotal'],
-            'concepto1'                     => $datos['concepto1'],
-            'descuento1'                    => $datos['descuento1'],
-            'concepto2'                     => $datos['concepto2'],
-            'descuento2'                    => $datos['descuento2'],
-            'valor_flete'                   => $datos['valor_flete'],
-            'total'                         => $datos['total'],
-            'observaciones'                 => $datos['observaciones']
-        );
-
-        $sql->iniciarTransaccion();
-
-        $consulta = $sql->modificar('facturas_temporales_compra', $datosFactura, 'id = "' . $datos['id_factura_temporal'] . '"');
-
-        if ($consulta) {
-            //primero elimino todos los articulos existentes en la tabla
-            
-            $consulta = $sql->eliminar('articulos_factura_temporal_compra', 'id_factura_temporal = "' . $datos['id_factura_temporal'] . '"');
-            
-            if (!$consulta) {
-                $sql->cancelarTransaccion();
-                return false;
-            }
-            
-            if ($datos['cadenaArticulosPrecios'] != '') {
-                //recibir toda la cadena y hacer el insertar en una sola consulta de la lista de articulos  
-                $arreglo = explode('|', substr($datos['cadenaArticulosPrecios'], 0, -1));
-
-
-                foreach ($arreglo as $id => $valor) {
-                    $articulo = explode(';', $valor);
-                    $valoresConsulta .= '("' . $datos['id_factura_temporal'] . '", "' . $articulo[0] . '", "' . $articulo[1] . '", "' . $articulo[2] . '", "' . $articulo[3] . '", "' . $articulo[4] . '", "' . $articulo[5] . '" ),';
-
-                }
-
-                $valoresConsulta = substr($valoresConsulta, 0, -1);
-
-
-                $sentencia = "INSERT INTO fom_articulos_factura_temporal_compra (id_factura_temporal, id_articulo, cantidad, descuento, precio, id_bodega, precio_venta) VALUES $valoresConsulta";
-                //$sql->depurar = true;
-                $insertarListaArticulos = $sql->ejecutar($sentencia);
-
-                if (!$insertarListaArticulos) {
-                    $sql->cancelarTransaccion();
-                    $idItem = false;
-                    
-                }   
-                
-            }
-            
-            $sql->finalizarTransaccion();
-            return $idItem;
-            
-        } else {
-            $sql->cancelarTransaccion();
-            return false;
-            
-        }
-        
-    }
-
-    /**
-     *
-     * Eliminar una factura
-     *
-     * @param entero $id    Código interno o identificador de una unidad en la base de datos
-     * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
-     *
-     */
-    public function eliminarFacturaTemporal($idFactTemp) {
-        global $sql;
-
-        if (!isset($idFactTemp)) {
-            return false;
-        }
-
-        $idNotificacion = $sql->obtenerValor('facturas_temporales_compra', 'id_notificacion', 'id = "' . $idFactTemp . '"');
-        
-        $sql->iniciarTransaccion();
-        
-        $query = $sql->eliminar('facturas_temporales_compra', 'id = "' . $idFactTemp . '"');
-
-        if (!$query) {
-            $sql->cancelarTransaccion();
-            return false;
-            
-        } else {
-            $query = $sql->eliminar('notificaciones', 'id = "' . $idNotificacion . '"'); 
-            
-            if (!$query) {
-                $sql->cancelarTransaccion();
-                return false;
-            }
-            
-            $query = $sql->eliminar('articulos_factura_temporal_compra', 'id_factura_temporal = "' . $idFactTemp . '"');
-            
-            if (!$query) {
-                $sql->cancelarTransaccion();
-                return false;
-            }
-            
-            $sql->finalizarTransaccion();
-            return true;
-            
-        }
-        
-    }
-
-    /**
      * modificar la fecha de una factura
      * @param entero $id    Código interno o identificador de una unidad en la base de datos
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
@@ -1344,6 +1069,5 @@ class FacturaCompra {
             
         }
     }
-    
-    
+  
 }

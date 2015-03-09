@@ -164,13 +164,6 @@ class Plantilla {
             }
         }
 
-
-        $ruta = $configuracion['RUTAS']['media'] . "/" . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
-        if (file_exists($ruta)) {
-            $ruta = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
-            $JavaScript .= "  <script type=\"text/javascript\" src=\"$ruta\"></script>\n";
-        }
-
         //cargar los javascript del modulo actual
         if (isset($configuracion['JAVASCRIPT'][$modulo->nombre])) {
             foreach ($configuracion['JAVASCRIPT'][$modulo->nombre] as $archivo) {
@@ -183,6 +176,12 @@ class Plantilla {
                 }
             }
         }
+        
+        $ruta = $configuracion['RUTAS']['media'] . "/" . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
+        if (file_exists($ruta)) {
+            $ruta = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . "/modulos/" . strtolower($modulo->nombre) . "/" . strtolower($modulo->nombre) . ".js";
+            $JavaScript .= "  <script type=\"text/javascript\" src=\"$ruta\"></script>\n";
+        }        
 
 
         self::$etiquetas['JAVASCRIPT'] = $JavaScript;
@@ -376,7 +375,7 @@ class Plantilla {
             self::$etiquetas['BLOQUE_SESION'] = HTML::contenedor(HTML::acordeon($titulosPestana, $contenidoPestana, 'pestanasInicioSesion', ""), "bloqueLogueo");
         } else {
             $contenido = HTML::enlace(HTML::imagen($sesion_usuarioSesion->persona->imagenPrincipal, 'imagenPrincipalUsuario'), $sesion_usuarioSesion->url, '', '');
-            $contenido .= HTML::parrafo($sesion_usuarioSesion->persona->nombreCompleto . ' ' . substr($sesion_usuarioSesion->persona->primerApellido, 0, 1), 'nombreSesion cursiva');
+            $contenido .= HTML::parrafo($sesion_usuarioSesion->persona->nombreCompleto, 'nombreSesion cursiva');
             $contenido .= HTML::parrafo($sesion_usuarioSesion->sede->nombre, '', 'sedeEmpresa');
             $contenido .= HTML::contenedor('', 'contenedorCerrarSesion enlaceAjaxRuta', 'contenedorCerrarSesion', array('ruta' => '/ajax/usuarios/logout', 'ayuda' => $textos->id('FINALIZAR')));
 

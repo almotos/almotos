@@ -211,18 +211,19 @@ class Subgrupo {
                     $row++;
                     $campos = array();
                     
-                    if ($datos['id'] != 0)
-                        $campos['id'] = $datos['id'];   
-                    
-                    if ($datos['nombre'] != 0)
+                    if ($datos['nombre'] != 0){
                         $campos['nombre'] = $datos['nombre'];
+                    }
                     
-                    if ($datos['id_grupo'] != 0)
-                        $campos['id_grupo'] = $datos['id_grupo'];                      
+                    if ($datos['id_grupo'] != 0){
+                        $campos['id_grupo'] = $datos['id_grupo'];
+                    }
                 }
 
                 $valor1    = $data->val($row, $col);
                 $respuesta = array();
+                
+                $grupo = new Grupo();
 
                 while ($valor1 != null) {
                     if ($datos['inicial'] == 0) {
@@ -237,9 +238,16 @@ class Subgrupo {
                         foreach ($campos AS $nombre => $valor) {
 
                             $valor = $data->val($row, $valor);
-//                            if ($nombre == 'id_grupo') {
-//                                $valor = $sql->obtenerValor('grupos', 'id', "nombre LIKE '%" . $valor . "%'");
-//                            } 
+                            if ($nombre == 'id_grupo') {
+                                $idGrupo = $sql->obtenerValor('grupos', 'id', "nombre = '" . $valor . "'");
+                                
+                                if ($idGrupo == "") {
+                                    $datosGrupo = array("nombre" => $valor, "tipo" => "I", "activo" => TRUE );
+                                    $idGrupo = $grupo->adicionar($datosGrupo);
+                                }
+                                
+                                $valor = $idGrupo;
+                            } 
 
                             $datosArticulo[$nombre] = $valor;
                         }
@@ -303,22 +311,46 @@ class Subgrupo {
      * Eliminar un subgrupo
      * @param entero $id    Código interno o identificador de un subgrupo en la base de datos
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
-     */
+     */  
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
+     
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );      
 
         if (!isset($this->id)) {
-            return false;
+            return $respuestaEliminar;
         }
+          
+        //hago la validacion de la integridad referencial
+        $arreglo1          = array('articulos', 'id_subgrupo = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
+        $arregloIntegridad = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad        = Recursos::verificarIntegridad($textos->id('SUBGRUPO'), $arregloIntegridad);
 
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
+        $sql->iniciarTransaccion();
         $consulta = $sql->eliminar('subgrupos', 'id = "' . $this->id . '"');
         
-        if (!$consulta) {
-            return false;
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
             
         } else {
-            return true;
-            
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
         }
     }
 

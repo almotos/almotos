@@ -29,7 +29,7 @@ $registros          = $configuracion['GENERAL']['registrosPorPagina'];
 $pagina             = 1;
 $registroInicial    = 0;
 
-/* Formulario para adicionar un nuevo elemento */
+/* Verificar permisos para adicionar un nuevo elemento */
 $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
 
 $botonAdicionar = '';
@@ -42,7 +42,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 /**
  * Verificar permisos para el boton de adicion de masivo 
  */
-$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivo', $modulo->id);
+$puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoArticulos', $modulo->id);
 
 $botonCargarMasivo = '';
 
@@ -51,7 +51,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAdicionarMasivo) || isset($sesion_usu
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoArticulos', $modulo->nombre);
 
 $botonEliminar = '';
 
@@ -62,7 +62,7 @@ if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSes
 /**
  * Verificar permisos para el boton de imprimir varios pdfs
  */
-$puedeImprimirBarcodePdf = Perfil::verificarPermisosBoton('botonImprimirVariosBarcode', $modulo->id);
+$puedeImprimirBarcodePdf = Perfil::verificarPermisosBoton('botonImprimirVariosBarcodeArticulos', $modulo->id);
 
 $botonImprimirBarcodePdf = '';
 

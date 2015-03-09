@@ -33,9 +33,15 @@ if (isset($url_accion)) {
         
         case 'search'               :   buscarItem($forma_datos, $forma_cantidadRegistros);
                                         break;
+                                    
+        case 'searchModal'          :   buscarItemModal($forma_datos, $forma_cantidadRegistros);
+                                        break;                                    
         
         case 'move'                 :   paginador($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal, $forma_cantidadRegistros);
                                         break;
+                                    
+        case 'moveModal'            :   paginadorModal($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal, $forma_cantidadRegistros);
+                                        break;                                    
         
         case 'moveNew'              :   paginadorNuevo($forma_pagina, $forma_orden, $forma_nombreOrden, $forma_consultaGlobal);
                                         break;
@@ -408,8 +414,22 @@ function cosultarMasDelItem($id, $destino, $pestana = '') {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql, $archivo_imagen, $archivo_imagen2, $sesion_configuracionGlobal, $configuracion;
+    global $textos, $sql, $archivo_imagen, $archivo_imagen2, $sesion_configuracionGlobal, $configuracion, $modulo, $sesion_usuarioSesion;
 
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto         = new Articulo();
     $destino        = '/ajax' . $objeto->urlBase . '/add';
@@ -540,10 +560,10 @@ function adicionarItem($datos = array()) {
         
         $textoExitoso = HTML::frase($textos->id('REGISTRO_AGREGADO'), 'textoExitoso margenIzquierda', 'textoExitoso');
         
-        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk') . $textoExitoso, 'margenSuperior');
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk directo', 'botonOk', 'botonOk') . $textoExitoso, 'margenSuperior');
 
 
-        $codigo_f = HTML::forma($destino, $codigo, 'P', true);
+        $codigo_f = HTML::forma($destino, $codigo, 'P', true, "formaAdicionarArticulos");
 
         $respuesta['generar']       = true;
         $respuesta['codigo']        = $codigo_f;
@@ -557,7 +577,6 @@ function adicionarItem($datos = array()) {
     } else {
 
         $respuesta['error'] = true;
-
         $existeNombre = $sql->existeItem('articulos', 'nombre', $datos['nombre']);
 
         if (isset($datos['marca'])) {
@@ -575,7 +594,7 @@ function adicionarItem($datos = array()) {
 
         if (!empty($archivo_imagen2['tmp_name'])) {
             $validarFormato2 = Recursos::validarArchivo($archivo_imagen2, array('jpg', 'jpeg', 'png', 'gif', 'jpeg'));
-        }
+        }    
 
         if (empty($datos['nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
@@ -589,7 +608,7 @@ function adicionarItem($datos = array()) {
         } elseif (!empty($datos['linea']) && !$existeLinea) {
             $respuesta['mensaje'] = $textos->id('ERROR_LINEA_INEXISTENTE');
             
-        } elseif ($existeNombre) {
+        }  elseif ($existeNombre) {
             $respuesta['mensaje'] = $textos->id('ERROR_EXISTE_NOMBRE');
             
         } elseif (empty($datos['unidad'])) {
@@ -607,10 +626,10 @@ function adicionarItem($datos = array()) {
         } elseif (!empty($datos['marca']) && !$existeMarca) {
             $respuesta['mensaje'] = $textos->id('ERROR_MARCA_INEXISTENTE');
             
-        } elseif (empty($datos['precio1']) && empty($datos['precio2'])) {
+        } /*elseif (empty($datos['precio1']) && empty($datos['precio2'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_PRECIO_BASE');
             
-        } elseif ($validarFormato || $validarFormato2) {
+        }*/ elseif ($validarFormato || $validarFormato2) {
             $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_IMAGEN');
             
         } else {
@@ -626,16 +645,28 @@ function adicionarItem($datos = array()) {
                 if($objeto->referencia){
                     $objeto->nombre = $objeto->nombre.' :: ('.$objeto->referencia.')';
                 }                 
+                
+                $idPrincipal = (int) $objeto->$idPrincipalArticulo;
+                
+                $arregloContenido   = array("id"                => $idPrincipal, 
+                                            "nombre"            => $objeto->nombre, 
+                                            "linea"             => $objeto->linea, 
+                                            "subgrupo"          => $objeto->subgrupo,
+                                            "codigoPais"        => $objeto->codigoPais, 
+                                            "precioVenta"       => $objeto->precio1, 
+                                            "precioCompra"      => '0', 
+                                            "completo"          => $objeto->completo,
+                                            );
+                
+                //si el regimen es diferente al simplificado muestro el iva en los articulos
+                if ($sesion_configuracionGlobal->empresa->regimen != "1"){
+                    $arregloContenido['iva'] = $objeto->iva;            
 
-
-                $celdas     = array((int) $objeto->$idPrincipalArticulo, $objeto->nombre, $objeto->linea, $objeto->subgrupo, $objeto->codigoPais, '$ '.$objeto->precio1, $objeto->iva, '$ 0', $objeto->completo);
-                $claseFila  = '';
-                $idFila     = $idItem;
-                $celdas_f   = HTML::crearNuevaFila($celdas, $claseFila, $idFila);
+                } 
 
                 $respuesta['error']             = false;
                 $respuesta['accion']            = 'insertar';
-                $respuesta['contenido']         = $celdas_f;
+                $respuesta['contenido']         = $arregloContenido;
                 $respuesta['idContenedor']      = '#tr_' . $idItem;
                 $respuesta['idDestino']         = '#tablaRegistros';
 
@@ -672,7 +703,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql, $configuracion, $archivo_imagen, $archivo_imagen2, $sesion_configuracionGlobal;
+    global $textos, $sql, $configuracion, $archivo_imagen, $archivo_imagen2, $sesion_configuracionGlobal, $modulo, $sesion_usuarioSesion;
+    
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
     
     if (empty($id) || (!empty($id) && !$sql->existeItem('articulos', 'id', $id))) {
         $respuesta              = array();
@@ -938,7 +984,22 @@ function modificarItem($id, $datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto         = new Articulo($id);
     $destino        = '/ajax' . $objeto->urlBase . '/delete';
@@ -948,7 +1009,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $titulo     = HTML::frase($objeto->nombre, 'negrilla');
         $titulo_f   = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION'));
         $codigo     = HTML::campoOculto('procesar', 'true');
-        $codigo    .= HTML::campoOculto('id', $id);
+        $codigo    .= HTML::campoOculto('id', (int)$id);
         $codigo    .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
         $codigo    .= HTML::parrafo($titulo_f);
         $codigo    .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
@@ -962,59 +1023,35 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['ancho']         = 350;
         $respuesta['alto']          = 150;
         
-    } else {
+ } else {
+                
+        $respuesta['error']     = true;
+        $respuestaEliminar = $objeto->eliminar();
         
-        $arreglo1   = array('articulos_factura_compra',             'id_articulo = "'.$id.'"', $textos->id('FACTURAS_COMPRA'));//arreglo del que sale la info a consultar
-        $arreglo2   = array('articulos_factura_venta',              'id_articulo = "'.$id.'"', $textos->id('FACTURAS_VENTA'));
-        $arreglo3   = array('articulos_factura_temporal_compra',    'id_articulo = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
-        $arreglo4   = array('articulos_factura_temporal_venta',     'id_articulo = "'.$id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
-        $arreglo5   = array('articulos_cotizacion',                 'id_articulo = "'.$id.'"', $textos->id('COTIZACIONES'));
-        $arreglo6   = array('articulos_orden_compra',               'id_articulo = "'.$id.'"', $textos->id('ORDENES_COMPRA'));
-        $arreglo7   = array('articulos_modificados_ncp',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_CREDITO_P'));
-        $arreglo8   = array('articulos_modificados_ndp',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_DEBITO_P'));
-        $arreglo9   = array('articulos_modificados_ncc',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_CREDITO_C'));
-        $arreglo10  = array('articulos_modificados_ndc',            'id_articulo = "'.$id.'"', $textos->id('ARTICULO_NOTA_DEBITO_C')); 
-        $arreglo11  = array('inventarios',                          'id_articulo = "'.$id.'"', $textos->id('ARTICULO_INVENTARIO'));
-        $arreglo12  = array('movimientos_mercancia',                'id_articulo = "'.$id.'"', $textos->id('MOVIMIENTOS_MERCANCIA_ARTICULO'));
-        
-        
-        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6, $arreglo7,
-                                    $arreglo8, $arreglo9, $arreglo10, $arreglo11, $arreglo12);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
-        
-        $integridad = Recursos::verificarIntegridad($textos->id('ARTICULO'), $arregloIntegridad);  
-        
-        if ($integridad != '') {
-            $respuesta['error']     = true;
-            $respuesta['mensaje']   = $integridad;
-            
-        } else {  
+        if ($respuestaEliminar['respuesta']) {
 
-            if ($objeto->eliminar()) {
                 $respuesta['error']     = false;
                 $respuesta['accion']    = 'insertar';
-                $respuesta['idDestino'] = '#tr_' . $id;
+                $respuesta['idDestino'] = '#tr_' . $id;            
 
-                if ($dialogo == '') {
-                    $respuesta['eliminarFilaTabla'] = true;
-
-                } else {
-                    $respuesta['eliminarFilaDialogo'] = true;
-                    $respuesta['ventanaDialogo'] = $dialogo;
-
-                }
+            if ($dialogo == '') {
+                $respuesta['eliminarFilaTabla'] = true;
 
             } else {
-                $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+                $respuesta['eliminarFilaDialogo'] = true;
+                $respuesta['ventanaDialogo'] = $dialogo;
 
-            }            
-            
-        }        
-        
-    }
+            }
+        } else {
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }  
+
+    } 
 
     Servidor::enviarJSON($respuesta);
-    
 }
+
 
 /**
  * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
@@ -1090,6 +1127,97 @@ function buscarItem($data, $cantidadRegistros = NULL) {
         } else {
             $datosPaginacion = 0;
             $item .= $objeto->generarTabla($textos->id('NO_HAY_REGISTROS'), $datosPaginacion);
+            $info = HTML::parrafo($textos->id('BUSQUEDA_SIN_RESULTADOS'), 'textoErrorNotificaciones');
+            
+        }
+
+        $respuesta['error']             = false;
+        $respuesta['accion']            = 'insertar';
+        $respuesta['contenido']         = $item;
+        $respuesta['idContenedor']      = '#tablaRegistros';
+        $respuesta['idDestino']         = '#contenedorTablaRegistros';
+        $respuesta['paginarTabla']      = true;
+        $respuesta['info']              = $info;
+    }
+
+    Servidor::enviarJSON($respuesta);
+    
+}
+
+/**
+ * Función que se encarga de realizar una busqueda de acuerdo a una condicion que se
+ * le pasa. Es llamada cuando se ingresa un texto en el campo de busqueda en la pantalla principal del modulo.
+ * Una vez es llamada esta función, se encarga de recargar la tabla de registros con los datos coincidientes 
+ * en el patrón de busqueda.
+ *
+ * @global objeto $textos             = objeto global que gestiona los textos a traducir
+ * @global arreglo $configuracion      = arreglo global de configuracion
+ * @param arreglo $data                = arreglo con los parametros de busqueda
+ * @param int $cantidadRegistros   = cantidad de registros aincluir por busqueda
+ */
+function buscarItemModal($data, $cantidadRegistros = NULL) {
+    global $textos, $configuracion;
+
+    $data   = explode('[', $data);
+    $datos  = $data[0];
+
+    if (empty($datos)) {
+        $respuesta['error']     = true;
+        $respuesta['mensaje']   = $textos->id('ERROR_FALTA_CADENA_BUSQUEDA');
+        
+    } else if (!empty($datos) && strlen($datos) < 2) {
+        $respuesta['error']     = true;
+        $respuesta['mensaje']   = str_replace('%1', '2', $textos->id('ERROR_TAMAÑO_CADENA_BUSQUEDA'));
+        
+    } else {
+        $item               = '';
+        $respuesta          = array();
+        $objeto             = new Articulo();
+        $registros          = $configuracion['GENERAL']['registrosPorPagina'];
+        
+        if (!empty($cantidadRegistros)) {
+            $registros = (int) $cantidadRegistros;
+        }
+        
+        $pagina             = 1;
+        $registroInicial    = 0;
+
+        $palabras = explode(' ', $datos);
+
+        $condicionales = $data[1];
+
+        if ($condicionales == '') {
+            $condicion = '(a.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            
+        } else {
+            $condicionales = explode('|', $condicionales);
+
+            $condicion      = '(';
+            $tam            = sizeof($condicionales) - 1;
+            
+            for ($i = 0; $i < $tam; $i++) {
+                $condicion .= $condicionales[$i] . ' REGEXP "(' . implode('|', $palabras) . ')" ';
+                if ($i != $tam - 1) {
+                    $condicion .= ' OR ';
+                    
+                }
+                
+            }
+            
+            $condicion .= ')';
+            
+        }
+
+        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'a.nombre');
+
+        if ($objeto->registrosConsulta) {//si la consulta trajo registros
+            $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina, $objeto->registrosConsulta);
+            $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion);
+            $info = HTML::parrafo(str_replace('%1', $objeto->registrosConsulta, $textos->id('RESULTADOS_BUSQUEDA')), 'textoExitosoNotificaciones');
+            
+        } else {
+            $datosPaginacion = 0;
+            $item .= $objeto->generarTablaModal($textos->id('NO_HAY_REGISTROS'), $datosPaginacion);
             $info = HTML::parrafo($textos->id('BUSQUEDA_SIN_RESULTADOS'), 'textoErrorNotificaciones');
             
         }
@@ -1211,6 +1339,110 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
     Servidor::enviarJSON($respuesta);
 }
 
+
+/**
+ * Funcion que se encarga de realizar la paginacion del listado de registros.
+ * Una vez llamada recarga la tabla de registros con la info de acuerdo a los
+ * parametros de paginacion, es decir de acuerdo a la pagina, al total de registros.
+ * esto realiza una nueva consulta modificando los valores SQL (LIMIT X, Y)
+ *
+ * @global array $configuracion     = arreglo global de configuracion
+ * @param int $pagina               = pagina en la cual inicia la paginacion
+ * @param string $orden             = orden ascendente o descendente
+ * @param string $nombreOrden       = nombre de la columna por la cual se va a ordenar
+ * @param string $consultaGlobal    = la consulta que debe mantenerse (al realizar el filtro de registros) mientras se pagina
+ * @param int $cantidadRegistros    = cantidad de registros a incluir en la paginacion
+ */
+function paginadorModal($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal = NULL, $cantidadRegistros = NULL) {
+    global $configuracion;
+
+    $item           = '';
+    $respuesta      = array();
+    $objeto         = new Articulo();
+
+
+    $registros = $configuracion['GENERAL']['registrosPorPagina'];
+
+    if (!empty($cantidadRegistros)) {
+        $registros = (int) $cantidadRegistros;
+    }
+
+
+    if (isset($pagina) && !empty($pagina)) {
+        $pagina = $pagina;
+    } else {
+        $pagina = 1;
+    }
+
+
+    if (isset($consultaGlobal) && $consultaGlobal != '') {
+        $data       = explode('[', $consultaGlobal);
+        $datos      = $data[0];
+        $palabras   = explode(' ', $datos);
+
+        if ($data[1] != '') {
+            $condicionales = explode('|', $data[1]);
+
+            $condicion  = '(';
+            $tam        = sizeof($condicionales) - 1;
+            
+            for ($i = 0; $i < $tam; $i++) {
+                $condicion .= $condicionales[$i] . ' REGEXP "(' . implode('|', $palabras) . ')" ';
+                
+                if ($i != $tam - 1) {
+                    $condicion .= ' OR ';
+                }
+                
+            }
+            $condicion .= ')';
+
+            $consultaGlobal = $condicion;
+            
+        } else {
+            $consultaGlobal = '(a.nombre REGEXP "(' . implode('|', $palabras) . ')")';
+            
+        }
+        
+    } else {
+        $consultaGlobal = '';
+    }
+
+    if (!isset($nombreOrden)) {
+        $nombreOrden = $objeto->ordenInicial;
+    }
+
+
+    if (isset($orden) && $orden == 'descendente') {//ordenamiento
+        $objeto->listaAscendente = false;
+        
+    } else {
+        $objeto->listaAscendente = true;
+        
+    }
+
+    if (isset($nombreOrden) && $nombreOrden == 'estado') {//ordenamiento
+        $nombreOrden = 'activo';
+    }
+
+    $registroInicial = ($pagina - 1) * $registros;
+
+
+    $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $consultaGlobal, $nombreOrden);
+
+    if ($objeto->registrosConsulta) {//si la consulta trajo registros
+        $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina);
+        $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion, true, false);
+    }
+
+    $respuesta['error']                 = false;
+    $respuesta['accion']                = 'insertar';
+    $respuesta['contenido']             = $item;
+    $respuesta['idContenedor']          = '.ui-dialog #tablaRegistros';
+    $respuesta['idDestino']             = '.ui-dialog #contenedorTablaRegistros';
+    $respuesta['paginarTabla']          = true;
+
+    Servidor::enviarJSON($respuesta);
+}
 /**
  * Funcion que se encarga de realizar la paginacion del listado de registros.
  * Una vez llamada recarga la tabla de registros con la info de acuerdo a los
@@ -1527,57 +1759,105 @@ function verificarItem($cadena) {
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
-    $destino    = '/ajax/articulos/eliminarVarios';
-    $respuesta  = array();
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoArticulos', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
+    
+    $destino = '/ajax/articulos/eliminarVarios';
+    $respuesta = array();
 
     if (!$confirmado) {
-        $titulo   = HTML::frase($cantidad, 'negrilla');
-        $titulo_f = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
-        $codigo   = HTML::campoOculto('procesar', 'true');
-        $codigo  .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
-        $codigo  .= HTML::parrafo($titulo_f);
-        $codigo  .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
-        $codigo  .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
-        $codigo_f = HTML::forma($destino, $codigo);
+        $titulo  = HTML::frase($cantidad, 'negrilla');
+        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
+        $codigo  = HTML::campoOculto('procesar', 'true');
+        $codigo .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
+        $codigo .= HTML::parrafo($titulo1);
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
+        $codigo .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
+        $codigo1 = HTML::forma($destino, $codigo);
 
-        $respuesta['generar']       = true;
-        $respuesta['codigo']        = $codigo_f;
-        $respuesta['destino']       = '#cuadroDialogo';
-        $respuesta['titulo']        = HTML::parrafo($textos->id('ELIMINAR_VARIOS_REGISTROS'), 'letraBlanca negrilla subtitulo');
-        $respuesta['ancho']         = 350;
-        $respuesta['alto']          = 150;
+        $respuesta['generar']   = true;
+        $respuesta['codigo']    = $codigo1;
+        $respuesta['destino']   = '#cuadroDialogo';
+        $respuesta['titulo']    = HTML::parrafo($textos->id('ELIMINAR_VARIOS_REGISTROS'), 'letraBlanca negrilla subtitulo');
+        $respuesta['ancho']     = 350;
+        $respuesta['alto']      = 150;
         
     } else {
 
-        $cadenaIds = substr($cadenaItems, 0, -1);
-        $arregloIds = explode(",", $cadenaIds);
+        $cadenaIds  = substr($cadenaItems, 0, -1);
+        $arregloIds = explode(',', $cadenaIds);
+        
+        /**
+         * arreglo que va a contener la respuesta a enviar al javascript, contendra las siguientes posiciones
+         * -numero de items eliminados7
+         * -numero de items que no se pudieron eliminar
+         * -nombre(s) de los items que no se pudieron eliminar 
+         */
+        $arregloRespuesta = array(
+            'items_eliminados'          => 0,
+            'items_no_eliminados'       => 0,
+            'lista_items_no_eliminados' => array(),
+        );
 
-        $eliminarVarios = true;
         
         foreach ($arregloIds as $val) {
-            $objeto         = new Articulo($val);
+            $objeto = new Articulo($val);
             $eliminarVarios = $objeto->eliminar();
+            
+            if ($eliminarVarios['respuesta']) {
+                $arregloRespuesta['items_eliminados']++;
+                
+            } else {
+                $arregloRespuesta['items_no_eliminados']++;
+                $arregloRespuesta['lista_items_no_eliminados'][] = $objeto->nombre;
+            }
             
         }
 
-        if ($eliminarVarios) {
+        if ($arregloRespuesta['items_eliminados']) {
+            //por defecto asumimos que se pudieron eliminar todos los items
+            $mensajeEliminarVarios = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+            //por eso enviamos texto exito como "true" para que muestre el "chulo verde" en la alerta
+            $respuesta['textoExito']   = true;
+            //Aqui verificamos si hubo algun item que no se pudo eliminar
+            if ($arregloRespuesta['items_no_eliminados']) {
+                $respuesta['textoExito']   = false;//para que muestre el signo de admiracion o advertencia
+                
+                /**
+                 * reemplazo los valores de lo sucedido en la cadena a ser mostrada en la alerta
+                 */
+                $mensajeEliminarVarios     = str_replace('%1', $arregloRespuesta['items_eliminados'], $textos->id('ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO'));//modificamos el texto
+                $mensajeEliminarVarios     = str_replace('%2', $arregloRespuesta['items_no_eliminados'], $mensajeEliminarVarios);
+                $mensajeEliminarVarios     = str_replace('%3', implode(', ', $arregloRespuesta['lista_items_no_eliminados']), $mensajeEliminarVarios);
+            }
+            
             $respuesta['error']         = false;
-            $respuesta['textoExito']    = true;
-            $respuesta['mensaje']       = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+
+            $respuesta['mensaje']       = $mensajeEliminarVarios;
             $respuesta['accion']        = 'recargar';
             
         } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+            $respuesta['mensaje'] = $textos->id('NINGUN_ITEM_ELIMINADO');
             
         }
-        
     }
 
     Servidor::enviarJSON($respuesta);
 }
-
 /**
  * Función que se encarga de mostrar la tabla de los articulos en la ventana modal
  * ademas muestra un boton que es el que permite agregar a las facturas los articulos
@@ -1612,7 +1892,7 @@ function cosultarTodos() {
     /* campo de texto para seleccionar cuantos registros traer en la consulta */
     $campoNumRegistros  = '';
     $campoNumRegistros .= HTML::frase($textos->id('NUMERO_FILAS'), 'margenIzquierdaDoble medioMargenDerecha');
-    $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/articulos/move'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
+    $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/articulos/moveModal'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
 
     $rutaImagen = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . 'adicionar.png';
     $botonAgregarArticulos = HTML::imagen($rutaImagen, 'imagenAdicionarVariosArticulos', 'imagenAdicionarVariosArticulos', array('ayuda' => $textos->id('ADICIONAR_ARTICULOS_FACTURA')));
@@ -1626,8 +1906,8 @@ function cosultarTodos() {
     
     /* Boton que carga la ventana modal para realizar la busqueda */
     $destino            = HTML::urlInterna($modulo->nombre, 0, true, 'search');
-    $botonRestaurar     = HTML::contenedor('', 'botonRestaurarConsulta', 'botonRestaurarConsulta', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'move'), 'ayuda' => $textos->id('RESTAURAR_CONSULTA')));
-    $botonBuscador      = HTML::contenedor('', 'botonBuscador', 'botonBuscador', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'search'), 'title' => $textos->id('BUSCAR_ITEM')));
+    $botonRestaurar     = HTML::contenedor('', 'botonRestaurarConsulta', 'botonRestaurarConsulta', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'moveModal'), 'ayuda' => $textos->id('RESTAURAR_CONSULTA')));
+    $botonBuscador      = HTML::contenedor('', 'botonBuscador', 'botonBuscador', array('alt' => HTML::urlInterna($modulo->nombre, 0, true, 'searchModal'), 'title' => $textos->id('BUSCAR_ITEM')));
     $buscador           = HTML::campoTexto('datos[patron]', 22, '', '', 'campoBuscador margenIzquierdaDoble', 'campoBuscador') . $botonRestaurar . $botonBuscador;
     $buscador           = HTML::forma($destino, $buscador);
     $buscador           = HTML::contenedor($buscador, 'flotanteDerecha', 'botonBuscar' . ucwords(strtolower($modulo->nombre)) . '');
@@ -1636,7 +1916,7 @@ function cosultarTodos() {
     $arregloItems = $objeto->listar($registroInicial, $registros, $excluidas, '');
 
     $datosPaginacion = array($objeto->registros, $registroInicial, $registros, $pagina);
-    $item .= $objeto->generarTabla($arregloItems, $datosPaginacion, true, false);
+    $item .= $objeto->generarTablaModal($arregloItems, $datosPaginacion, true, false);
 
 
     $codigo = HTML::contenedor($botonesSuperiores. '<br><br>' . $item, 'listaItem', 'listaItem');
@@ -1664,7 +1944,22 @@ function cosultarTodos() {
  * @param type $datos 
  */
 function moverMercancia($id) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+       
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeMoverMercancia = Perfil::verificarPermisosBoton('botonMoverMercanciaBodega', $modulo->nombre);
+    
+    if(!$puedeMoverMercancia && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new Articulo($id);
     $inventario = new Inventario($id);
@@ -1693,7 +1988,7 @@ function moverMercancia($id) {
     $imagen3 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/3_verde.png', 'imagenAyuda3 margen3', 'imagenAyuda3', array('ayuda' => $textos->id('AYUDA_MOVER_MERCANCIA_3')));
     $imagen4 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/4_verde.png', 'imagenAyuda4 margen3', 'imagenAyuda4', array('ayuda' => $textos->id('AYUDA_MOVER_MERCANCIA_4')));
 
-    $imagen5 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/pregunta_azul.png', 'imagenPregunta4 margen3', 'imagenPregunta', array('ayuda' => $textos->id('AYUDA_RESTAURAR_VALORES')));
+    $imagen5 = HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/pregunta_azul.png', 'imagenPregunta4 margen3', 'imagenPregunta4', array('ayuda' => $textos->id('AYUDA_RESTAURAR_VALORES')));
 
     //si el nombre del articulo es largo, lo recortamos
     if (strlen($objeto->nombre) > 60) {
@@ -1941,8 +2236,23 @@ function imprimirBarcode($id, $cantidad = NULL) {
  * @param type $id 
  */
 function imprimirVariosBarcode($confirmado, $cantidad, $cadenaItems) {
-    global $textos, $sesion_configuracionGlobal, $sql;
+    global $textos, $sesion_configuracionGlobal, $sql, $modulo, $sesion_usuarioSesion;
 
+     /**
+     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+     */
+    $puedeImprimirBarcodePdf = Perfil::verificarPermisosBoton('botonImprimirVariosBarcodeArticulos', $modulo->id);
+    
+    if(!$puedeImprimirBarcodePdf && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
+    
     if (!$confirmado) {
         $destino    = '/ajax/articulos/imprimirVariosBarcode';
         $respuesta  = array();
@@ -2083,8 +2393,23 @@ function imprimirVariosBarcode($confirmado, $cantidad, $cadenaItems) {
  * @param array $datos      = arreglo con la información a mostrar en el formulario
  */
 function adicionarMasivo($datos = array()) {
-    global $textos, $configuracion, $archivo_masivo;
+    global $textos, $configuracion, $archivo_masivo, $modulo, $sesion_usuarioSesion;
 
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAdicionarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoArticulos', $modulo->id);
+
+    if(!$puedeAdicionarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta = array();
+        $respuesta['error'] = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+
+    }
+    
     $objeto     = new Articulo();
     $destino    = '/ajax' . $objeto->urlBase . '/addMassive';
     $respuesta  = array();

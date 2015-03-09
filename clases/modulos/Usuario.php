@@ -602,7 +602,7 @@ class Usuario {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      *
      */
-    public function eliminar() {
+    /*public function eliminar() {
         global $sql;
 
         if (!isset($this->id)) {
@@ -654,6 +654,91 @@ class Usuario {
         $sql->finalizarTransaccion();
         
         return true;
+        
+    }*/
+    
+    public function eliminar() {
+        global $sql, $textos;
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+        
+        $arreglo1   = array('personas',                      'id_usuario = "'.$this->id.'"', $textos->id('PERSONAS'));//arreglo del que sale la info a consultar
+        $arreglo2   = array('facturas_compras',              'id_usuario = "'.$this->id.'"', $textos->id('FACTURAS_COMPRAS'));
+        $arreglo3   = array('facturas_temporales_compra',    'id_usuario = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
+        $arreglo4   = array('facturas_temporales_venta',     'id_usuario = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
+        $arreglo5   = array('facturas_venta',                'id_usuario = "'.$this->id.'"', $textos->id('FACTURAS_VENTA'));
+        $arreglo6   = array('ordenes_compra',                'id_usuario = "'.$this->id.'"', $textos->id('ORDENES_COMPRA'));
+        $arreglo7   = array('paginas',                       'id_usuario = "'.$this->id.'"', $textos->id('PAGINAS'));
+        $arreglo8   = array('proveedores',                   'id_usuario = "'.$this->id.'"', $textos->id('PROVEEDORES'));
+        $arreglo9   = array('clientes',                      'id_usuario = "'.$this->id.'"', $textos->id('CLIENTES'));
+        $arreglo10  = array('cotizaciones',                  'id_usuario = "'.$this->id.'"', $textos->id('COTIZACIONES')); 
+                
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6, $arreglo7,
+                                    $arreglo8, $arreglo9, $arreglo10);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        
+        $integridad = Recursos::verificarIntegridad($textos->id('ARTICULO'), $arregloIntegridad);  
+        
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }        
+
+        //eliminar cada uno de los Documentos pertenecientes a este usuario en caso de que los tenga
+        $tablas     = array("documentos");
+        $columnas   = array("id" => "id");
+        $condicion  = "id_usuario = " . $this->id . "";
+        $consulta   = $sql->seleccionar($tablas, $columnas, $condicion);
+        
+        $sql->iniciarTransaccion();
+
+        //eliminar permisos del usuario sobre modulos y componentes
+        $query1 = $sql->eliminar("permisos_componentes_usuarios", "id_usuario = '" . $this->id . "'");
+        $query2 = $sql->eliminar("permisos_modulos_usuarios", "id_usuario = '" . $this->id . "'");
+        
+        //eliminar notificaciones del usuario
+        $query3 = $sql->eliminar("notificaciones", "id_usuario = '" . $this->id . "'");
+
+        //eliminar eventos del usuario
+        $query4 = $sql->eliminar("eventos", "id_usuario = '" . $this->id . "'");        
+        
+        if (!$query1 || !$query2 || !$query3 || !$query4) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;  
+            
+        } else {
+            $query = $sql->eliminar("usuarios", "id = '" . $this->id . "'");
+            
+            if (!$query){
+                $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                return $respuestaEliminar;
+                
+            }
+            
+            if ($sql->filasDevueltas) {
+                while ($docs = $sql->filaEnObjeto($consulta)) {
+                    $doc = new Documento($docs->id);
+                    $doc->eliminar();
+                    
+                }
+                
+            }
+            
+        }               
+        
+        $sql->finalizarTransaccion();
+        
+        return $respuestaEliminar;
         
     }
     

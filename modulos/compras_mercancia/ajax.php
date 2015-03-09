@@ -78,6 +78,7 @@ function adicionarItem($datos) {
             'datos[concepto2]'                  => $datos['concepto2'],
             'datos[descuento2]'                 => $datos['descuento2'],
             'datos[valor_flete]'                => $datos['valor_flete'],
+            'datos[retenciones]'                => $datos['retenciones'],
             'datos[subtotal]'                   => $datos['subtotal'],
             'datos[total]'                      => $datos['total'],
             'datos[observaciones]'              => $datos['observaciones'],
@@ -508,7 +509,7 @@ function imprimirFacturaCompraPdf($datos) {
         $idItem     = $objeto->adicionar($datos);
 
         if (!empty($idItem)) {//si se pudo crear la factura de compra
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
+            FacturaTemporalCompra::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
             
         }
         
@@ -675,6 +676,8 @@ function imprimirFacturaCompraPdf($datos) {
     if($idPrincipalArticulo == 'id'){
         $idPrincipalArticulo = 'idArticulo';
     }    
+    
+    $dctoTotalSobreArticulos = 0;
 
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
     foreach ($objeto->listaArticulos as $obj) {
@@ -684,10 +687,12 @@ function imprimirFacturaCompraPdf($datos) {
         if (strlen($obj->articulo) > 45) {
             $obj->articulo = substr($obj->articulo, 0, 44) . '.';
         }
-        if ($obj->descuento == 0 || $obj->descuento == "0") {
+        if ($obj->descuento == "0") {
             $obj->subtotal = $obj->cantidad * $obj->precio;
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
         }
         
         $obj->descuento = Recursos::formatearNumero($obj->descuento, '%', '0');
@@ -736,13 +741,21 @@ function imprimirFacturaCompraPdf($datos) {
     $impuestoIva = $objeto->iva;
 
     $pdf->Ln(7);
-
-    $pdf->SetFont('times', 'B', 7);
-    $pdf->Cell(170, 7, $textos->id("VALOR_FLETE") . ': ', 0, 0, 'R');
-    $pdf->SetFont('times', '', 7);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->valorFlete, '$'), 0, 0, 'R');    
-   
+    if ($objeto->valorFlete > 0) {
+        $pdf->SetFont('times', 'B', 7);
+        $pdf->Cell(170, 7, $textos->id("VALOR_FLETE") . ': ', 0, 0, 'R');
+        $pdf->SetFont('times', '', 7);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->valorFlete, '$'), 0, 0, 'R');    
+    }
     
+    if ($dctoTotalSobreArticulos > 0) {
+        $pdf->Ln(4);
+        $pdf->SetFont('times', 'B', 8);
+        $pdf->Cell(170, 7, $textos->id("DCTO_TOTAL_ARTICULOS") . ':   ', 0, 0, 'R');
+        $pdf->SetFont('times', 'B', 8);
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($dctoTotalSobreArticulos, '$'), 0, 0, 'R'); 
+    }
+        
     $pdf->Ln(4);
     $pdf->SetFont('times', 'B', 10);
     $pdf->Cell(170, 7, $textos->id("SUBTOTAL") . ':   ', 0, 0, 'R');
@@ -760,7 +773,7 @@ function imprimirFacturaCompraPdf($datos) {
     }
 
 
-    $totalFactura = $subtotalFactura;
+    $totalFactura = $subtotalFactura + $objeto->iva;
 
     $totalDescuentos = 0;
 
@@ -811,7 +824,6 @@ function imprimirFacturaCompraPdf($datos) {
     }
 
     //Agregar las retenciones realizadas en la compra a la factura de compra
-    $totalRetenciones = 0;
     
     if (count($objeto->arregloRetenciones) > 0) {
         $pdf->Ln(1);
@@ -824,8 +836,7 @@ function imprimirFacturaCompraPdf($datos) {
                 $pdf->Cell(170, 7, $key . ': ', 0, 0, 'R');
                 $pdf->SetFont('times', '', 7);
                 $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($value, '$'), 0, 0, 'R');
-
-                $totalRetenciones += $value;    
+ 
             }
         }
         
@@ -833,7 +844,7 @@ function imprimirFacturaCompraPdf($datos) {
         $pdf->SetFont('times', 'B', 10);
         $pdf->Cell(170, 7, $textos->id("TOTAL_RETENCIONES") . ':   ', 0, 0, 'R');
         $pdf->SetFont('times', 'B', 10);
-        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($totalRetenciones, '$'), 0, 0, 'R');           
+        $pdf->Cell(30, 7, '$'.Recursos::formatearNumero($objeto->totalRetenciones, '$'), 0, 0, 'R');           
         
     }
    
@@ -842,7 +853,7 @@ function imprimirFacturaCompraPdf($datos) {
     $pdf->SetFont('times', 'B', 14);
     $pdf->Cell(170, 7, $textos->id("TOTAL") . ':  ', 0, 0, 'R');
     $pdf->SetFont('times', 'B', 13);
-    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero( ($totalFactura - $totalRetenciones), '$'), 0, 0, 'R');
+    $pdf->Cell(30, 7, '$'.Recursos::formatearNumero( ($totalFactura - $objeto->totalRetenciones), '$'), 0, 0, 'R');
 
     $pdf->Output($nombrePdf, 'F');
     chmod($nombrePdf, 0777);
@@ -979,20 +990,18 @@ function imprimirFacturaCompraPos($datos) {
     } else if (!empty($datos['id_factura_temporal'])) { //si se trata de generar una factura desde una factura que no se finalizo previamente
         $objeto     = new FacturaCompra();
         $idItem     = $objeto->adicionar($datos);
-        echo "jueputa";
+
         if (!empty($idItem)) {//si se pudo crear la factura de compra
-            $objeto->eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
+            FacturaTemporalCompra::eliminarFacturaTemporal($datos['id_factura_temporal']); //eliminar la factura temporal creada  
 
         }
 
     } else {
         $objeto     = new FacturaCompra();
         $idItem     = $objeto->adicionar($datos);
-        echo "entra bien donde es";
         
     }
     
-    return true;
 
     //verificar que del mismo proveedor no vayamos a ingresar la misma orden de compra
     if ($objeto->existeFacturaProveedor) {
@@ -1072,6 +1081,7 @@ function imprimirFacturaCompraPos($datos) {
     //ciclo que va recorriendo el listado de articulos de una factura determinada y los imprime
 
     $contador = 0;
+    $dctoTotalSobreArticulos = 0;
 
     foreach ($objeto->listaArticulos as $obj) {
         $contador++;
@@ -1084,7 +1094,9 @@ function imprimirFacturaCompraPos($datos) {
             $obj->subtotal = $obj->cantidad * $obj->precio;
             
         } else {
-            $obj->subtotal = ($obj->cantidad * $obj->precio) - ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $descuentoArticulo = ( ( ($obj->cantidad * $obj->precio) * $obj->descuento) / 100 );
+            $obj->subtotal = ($obj->cantidad * $obj->precio) - $descuentoArticulo;
+            $dctoTotalSobreArticulos += $descuentoArticulo;
             
         }
 
@@ -1118,10 +1130,17 @@ function imprimirFacturaCompraPos($datos) {
 
     $pieTirilla = '';
     
-    $totalFactura = $subtotalFactura;
+    $totalFactura = $subtotalFactura + $impuestoIva;
     
+    if($objeto->valorFlete > 0){
     $pieTirilla .= $textos->id("VALOR_FLETE") . ": $" . $objeto->valorFlete . "\n\n";    
     
+    }
+    
+    if ($dctoTotalSobreArticulos > 0){
+        $pieTirilla .= $textos->id("DCTO_TOTAL_ARTICULOS") . ': $' . Recursos::formatearNumero($dctoTotalSobreArticulos, '$') . "\n";
+    }
+        
     $pieTirilla .= $textos->id("SUBTOTAL") . ': $' . Recursos::formatearNumero($subtotalFactura, '$') . "\n";  
     
     if ($impuestoIva > 0) {
@@ -1277,7 +1296,7 @@ function imprimirFacturaCompraPos($datos) {
     $respuesta["recargar"]          = true;
     $respuesta["textoInfo"]         = $textos->id('FACTURA_GENERADA_EXITOSAMENTE');
     
-    unlink($fichero);
+    //unlink($fichero);
 
     Servidor::enviarJSON($respuesta);
 
@@ -1295,7 +1314,7 @@ function imprimirFacturaCompraPos($datos) {
  */
 function guardarFacturaTemporal($datos) {
     
-    $objeto     = new FacturaCompra();
+    $objeto     = new FacturaTemporalCompra();
     $idItem     = $objeto->adicionarFacturaTemporal($datos);
 
     $respuesta              = array();
@@ -1315,7 +1334,7 @@ function guardarFacturaTemporal($datos) {
  */
 function modificarFacturaTemporal($datos) {
 
-    $objeto     = new FacturaCompra();
+    $objeto     = new FacturaTemporalCompra();
     $idItem     = $objeto->modificarFacturaTemporal($datos);
 
     $respuesta              = array();

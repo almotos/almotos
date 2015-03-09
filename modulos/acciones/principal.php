@@ -42,7 +42,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoAcciones', $modulo->nombre);
 
 $botonEliminar = '';
 

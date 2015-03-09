@@ -18,7 +18,7 @@ $objeto = new Cotizacion(); /* creacion del objeto */
 $excluidas = array('0'); //items excluidos en la consulta
 $item = '';
 $contenido = '';
-$contenido .= HTML::contenedor(HTML::contenedor($textos->id('AYUDA_MODULO'), 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
+$contenido .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
 
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
@@ -44,12 +44,12 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
     $destino = $configuracion['SERVIDOR']['principal'] . 'ventas_mercancia';
     $conte = HTML::campoOculto('crearCotizacion', true, 'ocultoCrearCotizacion');
     $conte .= HTML::boton('lapiz', $textos->id('ADICIONAR_ITEM'), 'botonOk directo', 'botonOk', 'botonOk');
-    $botonAdicionar = HTML::forma($destino, $conte, 'P', '', '', array('target' => '_blank'));
-    $botonAdicionar = HTML::contenedor($botonAdicionar, 'flotanteDerecha');
+    $botonAdicionar  = HTML::forma($destino, $conte, 'P', '', '', array('target' => '_blank'));
+    $botonAdicionar  = HTML::contenedor($botonAdicionar, 'flotanteDerecha');
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoCotizaciones', $modulo->nombre);
 $botonEliminar = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');

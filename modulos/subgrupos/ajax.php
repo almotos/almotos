@@ -61,10 +61,9 @@ function cosultarItem($id) {
 
     $objeto     = new Subgrupo($id);
     $respuesta  = array();
-
-    $codigo  = HTML::campoOculto('id', $id);
-    $codigo .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
-    $codigo .= HTML::parrafo($objeto->codigo, '', '');
+    
+    $codigo  = HTML::campoOculto('procesar', 'true');
+    $codigo .= HTML::campoOculto('id', $id);
     $codigo .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
     $codigo .= HTML::parrafo($objeto->nombre, '', '');
     $codigo .= HTML::parrafo($textos->id('GRUPO'), 'negrilla margenSuperior');
@@ -96,7 +95,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto         = new Subgrupo();
     $destino        = '/ajax' . $objeto->urlBase . '/add';
@@ -197,8 +211,22 @@ function adicionarItem($datos = array()) {
  * @param array $datos      = arreglo con la información a mostrar en el formulario
  */
 function adicionarMasivo($datos = array()) {
-    global $textos, $configuracion, $archivo_masivo;
-
+    global $textos, $configuracion, $archivo_masivo, $modulo, $sesion_usuarioSesion;
+        
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarMasivo = Perfil::verificarPermisosBoton('botonCargarMasivoSubgrupos', $modulo->nombre);
+    
+    if(!$puedeAgregarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo();
     $destino = '/ajax' . $objeto->urlBase . '/addMassive';
@@ -219,11 +247,8 @@ function adicionarMasivo($datos = array()) {
             $textos->id('CAMPO_BASE_DATOS'),
             $textos->id('CAMPO_ARCHIVO')
         );
-        $filas = array(
-            array(
-                HTML::parrafo($textos->id('ID'), 'negrilla margenSuperior'),
-                HTML::listaDesplegable('datos[id]', array('' => ''), '', 'selectorCampo', 'id', '', array('onChange' => 'seleccionarCampo(this)'))
-            ),            
+        
+        $filas = array(          
             array(
                 HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior'),
                 HTML::listaDesplegable('datos[nombre]', array('' => ''), '', 'selectorCampo', 'nombre', '', array('onChange' => 'seleccionarCampo(this)'))
@@ -238,11 +263,10 @@ function adicionarMasivo($datos = array()) {
         $codigo2 = HTML::contenedorCampos($tabla, '');
         $pestana1 = HTML::contenedor($codigo1 . $codigo2, 'altura400px');
 
-
         $texto1 = HTML::parrafo($textos->id('INDICACIONES_ARCHIVO_MASIVO_1'), 'negrilla margenSuperior');
         $imagen1 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones2.jpg', 'imagenItem margenIzquierda', '');
         $texto2 = HTML::parrafo($textos->id('INDICACIONES_ARCHIVO_MASIVO_2'), 'negrilla margenSuperior');
-        $imagen2 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones1.jpg', 'imagenItem margenIzquierda', '');
+        $imagen2 = HTML::imagen($configuracion['RUTAS']['media'] . $configuracion['RUTAS']['imagenesEstaticas'] . '/indicaciones_masivo_subgrupos.png', 'imagenItem margenIzquierda', '');
         $codigo3 = HTML::contenedor($texto1 . $imagen1 . $texto2 . $imagen2);
 
         $pestana2 = HTML::contenedor($codigo3, 'altura400px');
@@ -276,7 +300,7 @@ function adicionarMasivo($datos = array()) {
             $formato = strtolower(substr($archivo_masivo['name'], strrpos($archivo_masivo['name'], '.') + 1));
 
             if (!in_array($formato, array('xls'))) {
-                $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_ARCHIVO' . $formato);
+                $respuesta['mensaje'] = $textos->id('ERROR_FORMATO_ARCHIVO' );
             } else {
 
                 if ( $datos['inicial'] == 1 && $datos['nombre'] == 0 ) {
@@ -326,7 +350,22 @@ function adicionarMasivo($datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo($id);
     $destino = '/ajax' . $objeto->urlBase . '/edit';
@@ -414,7 +453,22 @@ function modificarItem($id, $datos = array()) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Subgrupo($id);
     $destino = '/ajax' . $objeto->urlBase . '/delete';
@@ -437,23 +491,32 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['titulo'] = HTML::parrafo($textos->id('ELIMINAR_ITEM'), 'letraBlanca negrilla subtitulo');
         $respuesta['ancho'] = 350;
         $respuesta['alto'] = 150;
+        
     } else {
 
-        if ($objeto->eliminar()) {
+        $respuesta['error']     = true;
+        
+        $respuestaEliminar = $objeto->eliminar();
+        
+        if ($respuestaEliminar['respuesta']) {
 
-            $respuesta['error'] = false;
-            $respuesta['accion'] = 'insertar';
-            $respuesta['idDestino'] = '#tr_' . $id;
+                $respuesta['error']     = false;
+                $respuesta['accion']    = 'insertar';
+                $respuesta['idDestino'] = '#tr_' . $id;            
 
             if ($dialogo == '') {
                 $respuesta['eliminarFilaTabla'] = true;
+
             } else {
                 $respuesta['eliminarFilaDialogo'] = true;
                 $respuesta['ventanaDialogo'] = $dialogo;
+
             }
         } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
-        }
+            $respuesta['mensaje'] = $respuestaEliminar['mensaje'];
+
+        }  
+
     }
 
     Servidor::enviarJSON($respuesta);
@@ -655,21 +718,35 @@ function listarItems($cadena) {
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
+    global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoSubgrupos', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
-
-    $destino    = '/ajax/subgrupos/eliminarVarios';
-    $respuesta  = array();
+    $destino = '/ajax/subgrupos/eliminarVarios';
+    $respuesta = array();
 
     if (!$confirmado) {
-        $titulo     = HTML::frase($cantidad, 'negrilla');
-        $titulo1    = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
-        $codigo     = HTML::campoOculto('procesar', 'true');
-        $codigo    .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
-        $codigo    .= HTML::parrafo($titulo1);
-        $codigo    .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
-        $codigo    .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
-        $codigo1    = HTML::forma($destino, $codigo);
+        $titulo = HTML::frase($cantidad, 'negrilla');
+        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_ELIMINACION_VARIOS'));
+        $codigo = HTML::campoOculto('procesar', 'true');
+        $codigo .= HTML::campoOculto('cadenaItems', $cadenaItems, 'cadenaItems');
+        $codigo .= HTML::parrafo($titulo1);
+        $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', 'botonOk', 'botonOk'), 'margenSuperior');
+        $codigo .= HTML::parrafo($textos->id('REGISTRO_ELIMINADO'), 'textoExitoso', 'textoExitoso');
+        $codigo1 = HTML::forma($destino, $codigo);
 
         $respuesta['generar']   = true;
         $respuesta['codigo']    = $codigo1;
@@ -680,30 +757,62 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
         
     } else {
 
-        $cadenaIds  = substr($cadenaItems, 0, -1);
-        $arregloIds = explode(",", $cadenaIds);
+        $cadenaIds = substr($cadenaItems, 0, -1);
+        $arregloIds = explode(',', $cadenaIds);
+        
+        /**
+         * arreglo que va a contener la respuesta a enviar al javascript, contendra las siguientes posiciones
+         * -numero de items eliminados7
+         * -numero de items que no se pudieron eliminar
+         * -nombre(s) de los items que no se pudieron eliminar 
+         */
+        $arregloRespuesta = array(
+            'items_eliminados'          => 0,
+            'items_no_eliminados'       => 0,
+            'lista_items_no_eliminados' => array(),
+        );
 
-        $eliminarVarios = true;
         
         foreach ($arregloIds as $val) {
-            
             $objeto = new Subgrupo($val);
-            
             $eliminarVarios = $objeto->eliminar();
+            
+            if ($eliminarVarios['respuesta']) {
+                $arregloRespuesta['items_eliminados']++;
+                
+            } else {
+                $arregloRespuesta['items_no_eliminados']++;
+                $arregloRespuesta['lista_items_no_eliminados'][] = $objeto->nombre;
+            }
             
         }
 
-        if ($eliminarVarios) {
+        if ($arregloRespuesta['items_eliminados']) {
+            //por defecto asumimos que se pudieron eliminar todos los items
+            $mensajeEliminarVarios = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+            //por eso enviamos texto exito como "true" para que muestre el "chulo verde" en la alerta
+            $respuesta['textoExito']   = true;
+            //Aqui verificamos si hubo algun item que no se pudo eliminar
+            if ($arregloRespuesta['items_no_eliminados']) {
+                $respuesta['textoExito']   = false;//para que muestre el signo de admiracion o advertencia
+                
+                /**
+                 * reemplazo los valores de lo sucedido en la cadena a ser mostrada en la alerta
+                 */
+                $mensajeEliminarVarios     = str_replace('%1', $arregloRespuesta['items_eliminados'], $textos->id('ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO'));//modificamos el texto
+                $mensajeEliminarVarios     = str_replace('%2', $arregloRespuesta['items_no_eliminados'], $mensajeEliminarVarios);
+                $mensajeEliminarVarios     = str_replace('%3', implode(', ', $arregloRespuesta['lista_items_no_eliminados']), $mensajeEliminarVarios);
+            }
+            
             $respuesta['error']         = false;
-            $respuesta['textoExito']    = true;
-            $respuesta['mensaje']       = $textos->id('ITEMS_ELIMINADOS_CORRECTAMENTE');
+
+            $respuesta['mensaje']       = $mensajeEliminarVarios;
             $respuesta['accion']        = 'recargar';
             
         } else {
-            $respuesta['mensaje'] = $textos->id('ERROR_DESCONOCIDO');
+            $respuesta['mensaje'] = $textos->id('NINGUN_ITEM_ELIMINADO');
             
         }
-        
     }
 
     Servidor::enviarJSON($respuesta);

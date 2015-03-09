@@ -16,6 +16,10 @@
 require_once('configuracion/general.php');
 require_once('configuracion/contabilidad.php');
 
+
+require_once('clases/fpdf.php');
+require_once('clases/Efpdf.php');
+
 /**
  * Funcion encargada de cargar las clases requeridas
  * @param type $className
@@ -44,6 +48,10 @@ function myAutoloader($className)
 }
 
 spl_autoload_register('myAutoloader');
+
+//Cargar las plantillas de Twig
+require_once 'media/Twig/Autoloader.php';
+Twig_Autoloader::register();
 
 /**
  * Redefinir los nombres de las variables para hacerlas globales

@@ -17,7 +17,7 @@ $objeto = new TipoEmpleado(); /* creacion del objeto */
 $excluidas = array('0'); //items excluidos en la consulta
 $item = '';
 $contenido = '';
-$contenido .= HTML::contenedor(HTML::contenedor($textos->id('AYUDA_MODULO'), 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
+$contenido .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
 
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
@@ -43,7 +43,7 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 }
 
 /* Formulario para eliminar un masivo de elementos */
-$puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);
+$puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoTipos_empleado', $modulo->nombre);
 $botonEliminar = '';
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');

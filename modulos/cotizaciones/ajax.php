@@ -222,7 +222,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function adicionarItem($datos) {
-    global $textos, $configuracion, $sql, $sesion_configuracionGlobal;
+    global $textos, $configuracion, $sql, $sesion_configuracionGlobal, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto    = new Cotizacion();
     $respuesta = array();
@@ -543,7 +558,22 @@ function adicionarItem($datos) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('cotizaciones', 'id', $id))) {
         $respuesta = array();
@@ -599,7 +629,22 @@ function modificarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+     global $textos, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new Cotizacion($id);
     $destino    = '/ajax' . $objeto->urlBase . '/delete';
@@ -861,8 +906,22 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+ 
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoCotizaciones', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino    = '/ajax/cotizaciones/eliminarVarios';
     $respuesta  = array();

@@ -9,3 +9,10 @@ Prueba push a almotos-prod 2
 
 
 cambio a prod 3
+
+TODO:
+
+Facturas compra/ventas:
+
+
+Reportes:

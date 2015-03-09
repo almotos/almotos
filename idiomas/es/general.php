@@ -79,6 +79,8 @@ $textos = array(
     'DESCRIPCION'                       => 'Descripción',
     'CONTENIDO'                         => 'Contenido',
     'PALABRAS_CLAVES'                   => 'Palabras Clave',
+    'DESCUENTO_1'                       => 'Descuento 1',
+    'DESCUENTO_2'                       => 'Descuento 2',
     'URL'                               => 'URL',
     'ARCHIVO'                           => 'Archivo',
     'DESTINO'                           => 'Destino',
@@ -93,7 +95,7 @@ $textos = array(
     'MI_PERFIL'                         => 'My perfil',
     'NOTIFICACIONES'                    => 'Notificaciones',
     'MENSAJES'                          => 'Mensajes',
-    'RESTAURAR_CONSULTA'                => '<span class=margenDerechaTriple>Click para restaurar la consulta global</span>',
+    'RESTAURAR_CONSULTA'                => '<span class=margenDerechaTriple>Refrescar consulta.</span>',
     'BUSCAR_ITEM'                       => '<span class=margenDerechaTriple>Click para buscar</span>',
     'ESCRIBA_NOMBRE_MODULO'             => 'Escriba el nombre del modulo al cual desea ir',
     'BUSCAR_MODULOS'                    => 'Buscar Modulos',
@@ -176,6 +178,7 @@ $textos = array(
     'OCHO'                              => 'Ocho',
     'NUEVE'                             => 'Nueve',
     'DIEZ'                              => 'Diez',
+    'ACCESO_DENEGADO'                   => 'Acceso denegado.',
     /**
      *
      * Módulos
@@ -255,6 +258,9 @@ $textos = array(
     'COMPLETO_1'                                => 'Si',
     'COMPLETO_0'                                => 'No',
     'MASIVO_CARGADO_CORRECTAMENTE'              => 'Información cargada correctamente!!!',
+    'ACTIVAR_INACTIVAR_ITEM'                    => 'Activar/Inactivar Item',
+    'CONFIRMAR_ACTIVACION'                      => 'Solo puede <b>Activar</b> este item. <u>Desea Activarlo?</u>',
+    'CONFIRMAR_INACTIVACION'                    => 'Solo puede <b>Inactivar</b> este item. <u>Desea Inactivarlo?</u>',
     'INDICACIONES_ARCHIVO_MASIVO_1'             => 'Por favor, asegurese que el archivo sea de extensión [xls]<br />',
     'INDICACIONES_ARCHIVO_MASIVO_2'             => 'Que contenga los encabezados en la primera fila [1] y los datos inicien desde la primera columna [A]<br />Evite filas completas en blanco entre los datos a cargar<br />',
     /**
@@ -283,6 +289,8 @@ $textos = array(
     'ERROR_FORMATO_ARCHIVO'             => 'Error, formato de archivo invalido.',
     'ERROR_DEBE_LLENAR_TODOS_LOS_CAMPOS_DEL_FORMULARIO' => 'Error, debe de llenar todos los campos del formulario.',
     'FORMATO_ARCHIVO_INVALIDO'          => 'Error, formato de archivo invalido',
+    'ELIMINAR_VARIOS_EXITOSO_Y_FALLIDO' => 'Se eliminaron %1 items. No se pudo eliminar %2 items que son los siguientes: %3.',
+    'NINGUN_ITEM_ELIMINADO'             => 'Ningún item eliminado.',
     
     'TEXTO_NUMERICO_DE_X_CARACTERES'    => 'Debe introducir numeros y maximo <br>  %1 caracter(es)',
     'TEXTO_CODIGO_INTERNO'              => 'Escriba un codigo corto para %1',

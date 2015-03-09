@@ -288,7 +288,6 @@ class Resolucion {
              * de una factura de configuracion
              */
             if (!empty($datos['numero_retoma_facturacion'])) {
-                
                 /**
                  *ya que la sede se relaciona con la caja, capturamos la caja principal 
                  * haciendo uso de la sede 
@@ -303,6 +302,7 @@ class Resolucion {
                     'id_usuario'        => $sesion_usuarioSesion->id,
                     'id_caja'           => $idCaja,
                     'estado_factura'    => '2',
+                    'activo'            => '0',
                     'observaciones'     => str_replace('%1', $datos['numero'], $textos->id('FACTURA_PARAMETRIZACION_RETOMA_FACTURACION_RESOLUCION')),
                 );
 
@@ -462,6 +462,36 @@ class Resolucion {
      *
      */
     public function eliminar() {
+        global $sql, $configuracion, $textos;
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('resoluciones', 'id = "'.$this->id.'"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+            
+        }//fin del si funciono eliminar
+        
+    }//Fin del metodo eliminar objeto
+    
+   /* public function eliminar() {
         global $sql;
 
         if (!isset($this->id)) {
@@ -479,7 +509,7 @@ class Resolucion {
 
         return true;
 
-    }
+    }*/
 
     /**
      *

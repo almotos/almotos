@@ -1,4 +1,4 @@
-﻿Modulo: Oden de compra.
+﻿﻿Modulo: Oden de compra.
 
 Descripción: modulo encargado de gestionar la información relacionada a Ordenes de compra o pedidos a proveedores que son generadas cuando se va a realizar compra de mercancia dentro del sistema. Podria ser una especie de pedido que generamos en el sistema, el cual permite generar un archivo PDF con la información que se introdujo. Dicho archivo puede ser entregado a el proveedor para que recuerde exactamente nuestro pedido. Una vez el proveedor trae el pedido, podemos buscar la orden de compra con la que realizamos el pedido y generar una factura de compra a partir de esta información, ahorrandonos asi la necesidad de volver a introducir toda esta información.
 

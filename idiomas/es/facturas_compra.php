@@ -38,7 +38,6 @@ $textos = array(
     'FACTURA_DIGITAL_PROVEEDOR'                 => 'Factura digital N° ',
     'GENERAR_FACTURA_DESDE_ORDEN'               => 'Generar factura desde orden de compra',
     'NUM_FACT_PROVEEDOR'                        => '# Fact. Prov.',
-    'CONFIRMAR_INACTIVACION'                    => 'Solo puede inactivar esta factura. Desea inactivarla?',
     
     'ELIMINAR_FACTURA_DIGITAL'                  => 'Click aquí para eliminar<br> la factura digital',
     'FACTURA_DIGITAL_ELIMINADA'                 => 'Factura digital eliminada correctamente',
@@ -98,7 +97,7 @@ $textos = array(
     'MODELO'                                    => 'Modelo',
     'MEDIDAS'                                   => 'Medidas',
     'CANTIDAD'                                  => 'Cantidad',
-    'ID_PROVEEDOR'                              => 'Id. Proveedor',
+    'ID_PROVEEDOR'                              => 'Nit. Proveedor',
     'PRECIO_COMPRA'                             => 'Precio de Compra',
     'PRECIO_COMPRA_ANTERIOR'                    => 'Precio de Compra Anterior',
     'MARGEN_GANANCIA'                           => 'Margen de Ganancia',
@@ -191,6 +190,8 @@ $textos = array(
     'ERROR_FALTA_TOTAL_NOTA'                    => 'Error, falta el total de la nota',
     'ERROR_FALTA_CONCEPTO_NOTA'                 => 'Error, falta el concepto de la nota',
     
+    'AYUDA_CANTIDAD_NUEVA'                      => 'Ayuda cantidad nueva',
+    'NOTA_DEBITO_ADICIONADA_A_FACTURA'          => 'Nota debito adicionada correctamente',
     
     /*Errores*/
     'ERROR_FALTA_CODIGO'                        => 'Error falta codigo',

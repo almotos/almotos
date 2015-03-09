@@ -745,14 +745,45 @@ class Articulo {
      * @return lógico       = Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function eliminar() {
-        global $sql;
-
-        if (!isset($this->id)) {
-            return NULL;
-        }
-
-        $sql->iniciarTransaccion();
+        global $sql, $textos;
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
         
+        if (!isset($this->id)) {
+            return $respuestaEliminar;
+        }
+        
+        $arreglo1   = array('articulos_factura_compra',             'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_COMPRA'));//arreglo del que sale la info a consultar
+        $arreglo2   = array('articulos_factura_venta',              'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_VENTA'));
+        $arreglo3   = array('articulos_factura_temporal_compra',    'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_COMPRA'));
+        $arreglo4   = array('articulos_factura_temporal_venta',     'id_articulo = "'.$this->id.'"', $textos->id('FACTURAS_TEMPORALES_VENTA'));
+        $arreglo5   = array('articulos_cotizacion',                 'id_articulo = "'.$this->id.'"', $textos->id('COTIZACIONES'));
+        $arreglo6   = array('articulos_orden_compra',               'id_articulo = "'.$this->id.'"', $textos->id('ORDENES_COMPRA'));
+        $arreglo7   = array('articulos_modificados_ncp',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_CREDITO_P'));
+        $arreglo8   = array('articulos_modificados_ndp',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_DEBITO_P'));
+        $arreglo9   = array('articulos_modificados_ncc',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_CREDITO_C'));
+        $arreglo10  = array('articulos_modificados_ndc',            'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_NOTA_DEBITO_C')); 
+        $arreglo11  = array('inventarios',                          'id_articulo = "'.$this->id.'"', $textos->id('ARTICULO_INVENTARIO'));
+        $arreglo12  = array('movimientos_mercancia',                'id_articulo = "'.$this->id.'"', $textos->id('MOVIMIENTOS_MERCANCIA_ARTICULO'));
+        
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6, $arreglo7,
+                                    $arreglo8, $arreglo9, $arreglo10, $arreglo11, $arreglo12);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        
+        $integridad = Recursos::verificarIntegridad($textos->id('ARTICULO'), $arregloIntegridad);  
+        
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }        
+
+        $sql->iniciarTransaccion();    
         $consulta = $sql->eliminar('articulos', 'id = "' . $this->id . '" ');
         
         if ($consulta) {
@@ -769,14 +800,18 @@ class Articulo {
             $query = $aplicacionMoto->eliminarMotoAplicacion($this->id);
             
             if(!$query){
-                $sql->cancelarTransaccion();
+                $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                return $respuestaEliminar;
             }
             
             $sql->finalizarTransaccion();
-            return true;
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
             
         } else {
-            $sql->cancelarTransaccion();
+           $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+           return $respuestaEliminar;
             
         }
         
@@ -868,14 +903,13 @@ class Articulo {
         //$sql->depurar = true;
         $consulta = $sql->seleccionar($tablas, $columnas, $condicion, 'a.id', $orden, $inicio, $cantidad);
         
-        
-        $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
+        //$idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
         
         if ($sql->filasDevueltas) {
             $lista = array();
 
             while ($objeto = $sql->filaEnObjeto($consulta)) {
-                $objeto->$idPrincipalArticulo = Recursos::completarCeros($objeto->$idPrincipalArticulo, 6);
+                //$objeto->$idPrincipalArticulo = Recursos::completarCeros($objeto->$idPrincipalArticulo, 6);
                 //$objeto->estado = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
                 if($objeto->referencia){
                     $objeto->nombre = $objeto->nombre.' :: ('.$objeto->referencia.')';
@@ -889,7 +923,7 @@ class Articulo {
                 $indicador_completo = ($objeto->completo == '1') ? 'activo' : 'inactivo';
                 $objeto->completo = HTML::frase($textos->id('COMPLETO_' . $objeto->completo), $indicador_completo);
                 
-                $objeto->campoCantidad = '<input type="text" class="campo-cantidad-articulo" value="1" maxlength="20" size="5">';
+                $objeto->campoCantidad = HTML::campoTexto("campo-cantidad-articulo", 5, 20, "1", "campo-cantidad-articulo", "campoCantidadArticulo");
 
                 $objeto->codigoPais = $objeto->codigoPais . HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['iconosBanderas'] . '/' . strtolower($objeto->codigo) . '.png', 'miniaturaBanderas');
 
@@ -923,7 +957,6 @@ class Articulo {
             HTML::parrafo($textos->id('PRECIO_VENTA'), '')                      => 'precio1|a.precio1',            
             HTML::parrafo($textos->id('ULTIMO_PRECIO_COMPRA'), '')              => 'ultimoPrecioCompra|a.ultimo_precio_compra',
             HTML::parrafo($textos->id('COMPLETO'), '')                          => 'completo',
-            HTML::parrafo($textos->id('CANTIDAD'), '')                          => 'campoCantidad',
         );        
 
         //ruta del metodo paginador
@@ -939,14 +972,14 @@ class Articulo {
         }
 
         $botonesExtras      = array($moverMercancia);
-        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 pais', 'columna6', 'columna7 iva', 'columna8', ' columna9 completo', 'columna10 cantidad');   
+        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 pais', 'columna6', 'columna7 completo', 'columna8 iva', ' columna9');   
         
         //si el regimen es diferente al simplificado muestro el iva en los articulos
         if ($sesion_configuracionGlobal->empresa->regimen != "1"){
             $datosTabla[HTML::parrafo($textos->id('IVA'), '')] = 'iva|a.iva';             
 
         } else {//si es simplificado remuevo el estilo del iva del arreglo de estilos columnas
-            $estilosColumnas = array_diff($estilosColumnas, array('columna7 iva'));
+            $estilosColumnas = array_diff($estilosColumnas, array('columna8 iva'));
             
         }
         
@@ -959,6 +992,49 @@ class Articulo {
         return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion, $estilosColumnas, $tablaModal) . $botonDerecho;
         
     }
+    
+    /**
+     * Metodo que genera los datos que contendra la tabla principal del modulo
+     * 
+     * @global objeto $textos = objeto global de traduccion de textos
+     * @param array $arregloRegistros matriz con la info a ser mostrada en la tabla
+     * @param array $datosPaginacion arreglo con la información para la paginacion
+     * @return string cadena HTML con la tabla (<table>) generada 
+     */
+    public function generarTablaModal($arregloRegistros, $datosPaginacion = NULL, $tablaModal = false) {
+        global $textos, $sesion_configuracionGlobal;
+        
+        $idPrincipalArticulo    = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
+        $arrayIdArticulo        = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));
+        
+        $datosTabla = array(
+            HTML::parrafo($arrayIdArticulo[$idPrincipalArticulo], 'centrado')   => ''.$idPrincipalArticulo.'|a.'.$idPrincipalArticulo.'', //concateno el nombre del alias para usarlo al armar la tabla con el fila en objeto
+            HTML::parrafo($textos->id('NOMBRE'), 'centrado')                    => 'nombre|a.nombre',
+            HTML::parrafo($textos->id('LINEA'), '')                             => 'linea|l.nombre', //la busqueda, al armar la tabla dividira la cadena y usara el que necesite
+            HTML::parrafo($textos->id('PRECIO_VENTA'), '')                      => 'precio1|a.precio1',            
+            HTML::parrafo($textos->id('ULTIMO_PRECIO_COMPRA'), '')              => 'ultimoPrecioCompra|a.ultimo_precio_compra',
+            HTML::parrafo($textos->id('CANTIDAD'), '')                          => 'campoCantidad',
+        );        
+        
+        //si el regimen es diferente al simplificado muestro el iva en los articulos
+        if ($sesion_configuracionGlobal->empresa->regimen != "1"){
+            $datosTabla[HTML::parrafo($textos->id('IVA'), '')] = 'iva|a.iva';             
+
+        } else {//si es simplificado remuevo el estilo del iva del arreglo de estilos columnas
+            $estilosColumnas = array_diff($estilosColumnas, array('columna7 iva'));
+            
+        }        
+
+        //ruta del metodo paginador
+        $rutaPaginador = '/ajax' . $this->urlBase . '/moveModal';
+
+        $estilosColumnas    = array('columna1 id', 'columna2 descripcion-articulo', 'columna3 texto-alineado-izquierda', 'columna4 texto-alineado-izquierda', 'columna5 ', 'columna6');   
+
+        return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion, $estilosColumnas, $tablaModal);
+        
+    }    
+    
+    
 
     /**
      * Metodo que genera los datos que contendra la tabla principal del modulo
@@ -987,7 +1063,6 @@ class Articulo {
         return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion);
         
     }
-    
     
     /**
      * Metodo llamado por la clase factura de compra. Cada vez que se realiza una compra, por cada uno de los articulos de la compra, se deberá modificar

@@ -168,7 +168,6 @@ class SedeEmpresa {
 
             $tablas = array(
                 's'  => 'sedes_empresa',
-                'c'  => 'lista_ciudades'
             );
 
             $columnas = array(
@@ -186,9 +185,9 @@ class SedeEmpresa {
                 'activo'            => 's.activo'
             );
 
-            $condicion = 's.id_ciudad = c.id AND s.id = "'.$id.'"';
-
-            $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
+            $condicion = ' LEFT JOIN fom_lista_ciudades c ON s.id_ciudad = c.id WHERE s.id = "'.$id.'"';
+            
+            $consulta = $sql->seleccionar($tablas, $columnas, $condicion, "", "", NULL, NULL, FALSE);
 
             if ($sql->filasDevueltas) {
                 $fila = $sql->filaEnObjeto($consulta);
@@ -287,9 +286,6 @@ class SedeEmpresa {
         return $consulta;
     }
 
-
-
-
     /**
      *
      * Eliminar una sede empresa
@@ -299,19 +295,54 @@ class SedeEmpresa {
      *
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
 
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
         if (!isset($this->id)) {
-            return NULL;
+            return $respuestaEliminar;
         }
+         
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('permisos_componentes_usuarios',   'id_sede     = "'.$this->id.'"', $textos->id('PERMISOS_COMPONENTES_USUARIOS'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('permisos_modulos_usuarios',       'id_sede     = "'.$this->id.'"', $textos->id('PERMISOS_MODULOS_USUARIOS'));//arreglo del que sale la info a consultar
+        $arreglo3 = array('resoluciones',                    'id_sede     = "'.$this->id.'"', $textos->id('RESOLUCIONES'));//arreglo del que sale la info a consultar
+        $arreglo4 = array('bodegas',                         'id_sede     = "'.$this->id.'"', $textos->id('BODEGAS'));//arreglo del que sale la info a consultar
+        $arreglo5 = array('empleados',                       'id_sede     = "'.$this->id.'"', $textos->id('EMPLEADOS'));//arreglo del que sale la info a consultar
+        $arreglo6 = array('cajas',                           'id_sede     = "'.$this->id.'"', $textos->id('CAJAS'));//arreglo del que sale la info a consultar
 
+        $arregloIntegridad  = array($arreglo1, $arreglo2, $arreglo3, $arreglo4, $arreglo5, $arreglo6);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad         = Recursos::verificarIntegridad($textos->id('SEDES_EMPRESA'), $arregloIntegridad);
+
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+            
+        }
+              
+        $sql->iniciarTransaccion();
         $consulta = $sql->eliminar('sedes_empresa', 'id = "'.$this->id.'"');
-        return $consulta;
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
     }
-
-
-
-
 
     /**
      *

@@ -1,0 +1,42 @@
+﻿Modulo: Cargos.
+
+Descripción: modulo encargado de gestionar la información de los cargos registrados en el sistema. En este módulo se pueden agregar, consultar, eliminar o modificar la información de los cargos que se utilizan en el negocio.  En el formulario de “Agregar cargo”, a cada  cargo se le debe suministrar su información básica. 
+
+Clases: Cargo.
+
+Tablas: 
+fom_cargo: almacena la información de un cargo.
+
+Estructura relacional:
+
+Un empleado tiene 1..1 cargo.
+
+Ayuda
+
+Agregar un cargo: Haga click en el boton “Agregar cargo” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con el formulario que contiene los datos para ingresar un cargo. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cargo sera almacenada en el sistema.
+
+Modificar un cargo: Haga click derecho sobre la fila de la tabla correspondiente al cargo que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal con el formulario que contiene los campos con los datos pertenecientes al cargo a ser modificado. Modifique los datos que desea y haga click en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del cargo sera modificada y almacenada en el sistema.
+
+
+Eliminar un cargo: Haga click derecho sobre la fila de la tabla correspondiente al cargo que desea eliminar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del cargo. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de dicho cargo.
+
+Consultar un cargo: Haga click derecho sobre la fila de la tabla correspondiente al cargo que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al cargo.
+
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar cargo: click en el boton “agregar cargo”, se despliega la ventana modal. Se ingresan los datos del cargo y se hace click en aceptar. (Funcionando perfecto, se ingresa un cargo al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cargos registrados con un mismo nombre al cual se desea ingresar. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+
+2) Modificar cargo: click derecho sobre la fila del cargo que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del cargo a ser modificado. Se modifican algunos datos del cargo y se hace click en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y tambien se valida que no existan ya cargos registrados con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar: click derecho sobre la fila del cargo que desea eliminar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminación.(Funciona perfectamente)
+
+3.1) se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) se confirma la eliminacion. Se debe eliminar el registro de este cargo en la BD. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este cargo (existentes actualmente en el sistema) como por ejemplo: empleados. En caso de que existan relaciones de empleados con este cargo, el sistema debera notificar al usuario de dicha situacion y no permitir la eliminación del registro.

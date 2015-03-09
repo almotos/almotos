@@ -4,7 +4,7 @@
  */
 
 $("#chkModInventario").bind("click", function(){
-    var contenedor = $("#contenedorListaArticulosNotaC");
+    var contenedor = $("#contenedorListaArticulosNota");
     if(contenedor.is(":visible")){
         contenedor.slideUp("fast");
     }else{

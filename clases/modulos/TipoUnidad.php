@@ -236,27 +236,47 @@ class TipoUnidad {
      *
      */
     public function eliminar() {
-        global $sql;
+        global $sql, $textos;
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
        
         if (!isset($this->id)) {
-            return NULL;
-        }
-
-        $consulta = $sql->eliminar('tipos_unidades', "id = '".$this->id."'");
-        if(!($consulta)){                  
-            return false;
+            return $respuestaEliminar;
             
-         }else{
-           return true;
-
-         }//fin del si funciono eliminar
-  
+        }
         
-    }//Fin del metodo eliminar Unidades
-
-
-
-    
+        $arreglo1 = array('unidades', 'id_tipo_unidad = "'.$this->id.'"', $textos->id('UNIDADES'));//arreglo del que sale la info a consultar
+        $arregloIntegridad = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad = Recursos::verificarIntegridad($textos->id('TIPO_DE_UNIDAD'), $arregloIntegridad);  
+         
+        /**
+        * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+        * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+        */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+        
+        $sql->iniciarTransaccion();
+        $consulta = $sql->eliminar('tipos_unidades', "id = '".$this->id."'");
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
+    }
 
     /**
      *

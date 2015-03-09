@@ -1,0 +1,54 @@
+﻿Modulo: Facturas de venta.
+
+Descripción:  Módulo encargado de gestionar la información de las facturas de venta que se encuentran registradas en el sistema. A través de este módulo se gestiona la consulta, modificacion , inactivacion , notas de credito y  notas debito de una factura de venta. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de las facturas de venta.
+-Adiccionar una nota de credito.
+-Adiccionar una nota de dedito.
+-Afectar las cantidades en el inventario.
+
+Clases: facturaVenta.
+
+Tablas relacionadas al modulo: 
+
+fom_facturas_venta: almacena la información de las facturas de venta.
+
+
+Estructura relacional:
+
+Una venta de mercancia tiene  1..1 factura de venta.
+
+
+Ayuda:
+
+Modificar una factura de venta: Haga click derecho sobre la fila de la tabla correspondiente a la factura de venta que desea modificar, se mostrara un menu con diferentes opciones, haga click en “Editar”. Se desplegara una ventana modal que contiene varias pestañas. En la primera se encuentran los datos basicos de la factura y un boton en el centro de la parte inferior "Click aqui para ir al modulo de facturacion y editar esta factura" y en la segunda pentaña se encuentra la modificación de la fecha de dicha factura. Modifique los datos que desea y haga click en el boton “Fin factura” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la factura de venta sera modificada y almacenada en el sistema.
+
+Inactivar una factura de venta: Haga click derecho sobre la fila de la tabla correspondiente a la factura de venta que desea inactivar, se mostrara un menu con diferentes opciones, haga click en “Borrar”. Se desplegara una ventana modal con el formulario de confirmación de inactivar la factura de venta. Si desea cancelar esta opción, simplemente cierre esta ventana de confirmacion haciendo click sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario click en el boton “Aceptar” para confirmar la eliminacion de la informacion de esta factura de venta.
+
+Consultar una factura de venta: Haga click derecho sobre la fila de la tabla correspondiente a la factura de venta que desea consultar, se mostrara un menu con diferentes opciones, haga click en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes a la factura de venta.
+
+Adiccionar nota de credito: Haga click derecho sobre la fila de la tabla correspondiente a la factura de venta que desea adiccionarle una nota de credito. Se desplegara una ventana modal con el formulario que contiene los campos para realizar el ingreso de una nota de credito, con la opcion de elegir afectar las cantidades del inventario o no.
+
+Adiccionar nota debito: Haga click derecho sobre la fila de la tabla correspondiente a la factura de venta que desea adiccionarle una nota debito. Se desplegara una ventana modal con el formulario que contiene los campos para realizar el ingreso de una nota debito, con la opcion de elegir afectar las cantidades del inventario o no.
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Modificar una factura de venta: click derecho sobre la fila de la factura de venta que desea modificar, luego hacer click en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la factura de venta a ser modificada. Se modifican algunos datos de la factura de venta y se hace click en Fin factura. (Funcionando perfecto)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+1.2)En la segunda pestaña se permite modificar la fecha de la factura de venta y verifica si se efectuo el cambio. (funcionando perfectamente).
+
+2.0) Inactivar: click derecho sobre la fila de la factura de venta que desea inactivar, luego hacer click en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de la inactivacion.(Funciona perfectamente)
+
+2.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de inactivacion).
+
+3.0) Consultar: click derecho sobre la fila de la factura de venta que desea consultar, luego hacer click en “Consultar”, se despliega la ventana modal con el formulario que contiene los datos de la factura de venta consultada.(Funciona perfectamente)
+
+4.0) Adiccionar nota de credito: click derecho sobre la fila de la factura de venta que le desea agregar la nota de credito, luego hacer click en “+ nota credito”, se despliega la ventana modal con el formulario que contiene los campos necesarios para agregar una nota de credito.(Funciona perfectamente)
+
+4.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+5.0) Adiccionar nota debito: click derecho sobre la fila de la factura de venta que le desea agregar la nota debito, luego hacer click en “+ nota debito”, se despliega la ventana modal con el formulario que contiene los campos necesarios para agregar una nota debito.(Funciona perfectamente)
+
+5.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)

@@ -404,11 +404,34 @@ class Moto {
      *
      */
     public function eliminar() {
-        global $sql, $configuracion;
+        global $sql, $configuracion, $textos;
 
         if (!isset($this->id)) {
             return false;
         }
+        
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        //hago la validacion de la integridad referencial
+        $arreglo1 = array('articulos',    'id_moto = "'.$this->id.'"', $textos->id('ARTICULOS'));//arreglo del que sale la info a consultar
+        $arreglo2 = array('articulo_moto',     'id_moto = "'.$this->id.'"', $textos->id('ARTICULOS'));
+        
+        $arregloIntegridad = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+        $integridad = Recursos::verificarIntegridad($textos->id('MOTO'), $arregloIntegridad);
+             
+        /**
+         * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
+         * un texto diciendo que tabla contiene n cantidad de relaciones con esta
+         */
+        if ($integridad != "") {
+            $respuestaEliminar['mensaje'] = $integridad;
+            return $respuestaEliminar;
+        }
+              
         $sql->iniciarTransaccion();
         $consulta = $sql->eliminar('motos', 'id = "' . $this->id . '"');
         
@@ -417,31 +440,38 @@ class Moto {
             $eliminarImagen = $imagen->eliminar;
             
             if($eliminarImagen === false){
-                $sql->cancelarTransaccion();
-                return false;
+                $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                return $respuestaEliminar;
             }            
             
             if($this->archivo != 'empty'){
-                $eliminarCatalogo = Archivo::eliminarArchivoDelServidor(array($configuracion['RUTAS']['media'] .'/'. $configuracion['RUTAS']['archivosCatalogos'] . $this->archivo));
+                $rutaArchivo = $configuracion['RUTAS']['media'] .'/'. $configuracion['RUTAS']['archivosCatalogos'] . $this->archivo;
+                
+                if (is_file($rutaArchivo)) {
+                    $eliminarCatalogo = Archivo::eliminarArchivoDelServidor(array($rutaArchivo));
 
-                if($eliminarCatalogo === false){
-                    $sql->cancelarTransaccion();
-                    return false;
+                    if($eliminarCatalogo === false){
+                        $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+                        return $respuestaEliminar;
+                    }
                 }
+                
             }
             
             $sql->finalizarTransaccion();
-            return true;
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
             
         } else {
-            $sql->cancelarTransaccion();
-            return false;
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
             
         }
         
     }
 
-//Fin del metodo eliminar Unidades
+//Fin del metodo eliminar Moto
 
     /**
      *

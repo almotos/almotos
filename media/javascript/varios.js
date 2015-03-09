@@ -506,11 +506,16 @@ $(document).ready(function(){
             if(tecla != 8){
                 e.preventDefault();    
                 var rango = $(this).attr("rango");
-            
-                rango = rango.split("-");
-            
+                
                 var cantidad = String.fromCharCode(e.which);
-                cantidad = $(this).val()+cantidad;
+                cantidad = $(this).val()+cantidad;                
+                
+                if (typeof rango == "undefined") {
+                    $(this).val(cantidad);
+                    return;
+                }
+                
+                rango = rango.split("-");
 
                 if(cantidad < parseInt(rango[0]) || cantidad > parseInt(rango[1])){
                     return;
@@ -714,7 +719,7 @@ $(document).ready(function(){
         var ord    = "";
         var nomOrd = "";
         
-        if(ordenamiento != ""){ //el ordenamiento se almacena del tipo ej: descendente|a.nombre, donde despues del pipe representa 
+        if(typeof ordenamiento != "undefined"){ //el ordenamiento se almacena del tipo ej: descendente|a.nombre, donde despues del pipe representa 
             //la tabla (a.) y la columna (nombre) con las cuales se quiere ordenar la consulta
             ordenamiento = ordenamiento.split("|");
             ord    = ordenamiento[0];//seria ej: descendente
@@ -727,12 +732,11 @@ $(document).ready(function(){
         }
 
         $.ajax({
-
             type:"POST",
             url:destino,
             data: {
                 pagina            : pag, 
-                orden             :ord, 
+                orden             : ord, 
                 nombreOrden       : nomOrd, 
                 consultaGlobal    : condicion,
                 cantidadRegistros : cantReg
@@ -788,7 +792,6 @@ $(document).ready(function(){
         var destino    = $("#tablaRegistros").attr("ruta_paginador");
 
         $.ajax({
-
             type:"POST",
             url:destino,
             data: {
@@ -1164,419 +1167,20 @@ $(document).ready(function(){
 var cuentaRespuestas = 0;//machete
 
 function procesaRespuesta(respuesta){
-    $("#indicadorEspera").css("display","none");
-    $("#BoxOverlay").css("display","none");
-    $("#BoxOverlayTransparente").css("display","none");
-    
-    if(respuesta.pruebas){
-        Sexy.alert(respuesta.pruebas)
-
-    }
-    
-    //verificar si hay checks marcados, de ser asi llamo a la funcion para volver a marcarlos
-    if($("#tablaRegistros").is(":visible") && !respuesta.generar){
-        restaurarValoresTablaRegistros();
-    }
-    
-    
-    if(respuesta.mostrarDatosArticulo){
-        $("#contenedorInfoArticulo").html("");
-        $("#contenedorInfoArticulo").html(respuesta.contenido);
-    }
-    
-    if(respuesta.cargarJs){
-        cargarJS(respuesta.archivoJs);
-    }
+    basicasProcesaRespuesta(respuesta);
 
     if(respuesta.error){
-        if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
-            Sexy.info(respuesta.mensaje);
-            if(respuesta.recargarTablaRegistros){
-                recargarTablaRegistros();
-            }
-        }else{
-            Sexy.alert(respuesta.mensaje);
-        }
-                
-        if(respuesta.objetivo == "activarSlider"){ 
-            $("#sliderInicio").css("display", "block");
-            $("#parrafoMensajeSlider").css("display", "block");              
-        }
+        funcionesRespuestaError(respuesta);
 
     }else{
         if(respuesta.accion=="recargar"){
-            if(respuesta.mensaje){
-                
-                if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
-                    Sexy.info(respuesta.mensaje, {
-                        onComplete: function(){ 
-                            window.location.reload();
-                        }
-                    });
-                }else{
-                    Sexy.alert(respuesta.mensaje, {
-                        onComplete: function(){ 
-                            window.location.reload();
-                        }
-                    });
-                }
-                
-            } else {
-                window.location.reload();
-            }
-            
+            funcionesRespuestaRecargar(respuesta);
 
         }else if(respuesta.accion == "insertar"){
-            /********** BLOQUE DE FUNCIONES QUE SE ENCARGAN DE HACER LOS EVENTOS AJAX ****/
-            /**
-             * si la respuesta ajax requiere modificar un select en el DOM,
-             * tambien se agrega la funcionalidad para modificar el plugin chosen
-             */
-            if (respuesta.idSelect && ($(respuesta.idSelect).is(":visible") || $(respuesta.idSelect+"_chzn").is(":visible"))) {
-                var _datos = respuesta.idYNombre.split("|");
-                
-                var _id      = _datos[0];
-                var _nombre  = _datos[1];
-                
-                var _option = "<option value="+_id+" selected>"+_nombre+"</option>";
-                
-                $(respuesta.idSelect).append(_option);
-                
-                //si el chosen esta visible
-                if ($(respuesta.idSelect+"_chzn").is(":visible")) {
-                    $(respuesta.idSelect).trigger("liszt:updated");
-                }
-                
-                
-            }
-            
-            
-            if(respuesta.destino  || respuesta.destinoInsertar){
-
-                if(respuesta.insertarAjax){
-                    $(respuesta.destino).prepend(respuesta.contenido);
-                }else{
-                    $(respuesta.destino).html(respuesta.contenido);
-                }
-                
-                if(respuesta.removerTexto){//codigo para quitar los textos de advertencia de los buscadores
-                    setTimeout(function(){
-                        $(respuesta.removerTexto).slideUp("slow");
-                    }, 2000)
-                    
-                }
-
-                /*--INSERTAR DATOS VIA AJAX---*/
-                if(respuesta.insertarAjax){
-
-                    if(respuesta.idContenedor){
-                        $(respuesta.idContenedor).css("display", "none");
-                        $(respuesta.idContenedor).show(1500);
-                    }
-                    desaBtnYMostrarText();                
-
-                    cerrarDialogYHabiBtn();                        
-                    
-                }
-
-            }//fin de si se envio por ajax una variable destino o una destinoInsertar
-
-
-            /*INSERTAR DATOS VIA AJAX*/
-            if(respuesta.insertarAjax){
-                if(respuesta.idContenedor){
-                    $(respuesta.idContenedor).css("display", "none");
-                    $(respuesta.idContenedor).show(1500);
-                }
-
-                if(respuesta.ventanaDialogo){
-                    desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);
-                    setTimeout(function(){ 
-                        cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo);
-                    }, 1200);                       
-                } else {
-                    if(respuesta.mostrarNotificacionDinamica){
-                        setTimeout(function(){ 
-                            mostrarNotificacionDinamica('Registro agregado exitosamente', 'exitoso');
-                            ocultarNotificacionDinamica();
-                        }, 1200);  
-                    }                    
-                    desaBtnYMostrarText();                         
-                    cerrarDialogYHabiBtn();                    
-                }
-
-            }
-
-            /**
-             * Codigo para editar la informacion del usuario y que
-             * haga una recarga de la informacion via ajax
-             **/
-            if(respuesta.modificarUsuarioAjax){
-                desaBtnYMostrarText();
-                $(respuesta.idContenedor).prev().hide(1500, function(){
-                    cerrarDialogYHabiBtn();
-                    $(respuesta.idContenedor).prev().remove();
-                    $(respuesta.idContenedor).parent("div").prepend(respuesta.contenido);
-                    $(respuesta.idContenedor).prev().css("display", "none");
-                    $(respuesta.idContenedor).prev().show("slow");
-                    
-                    return false;
-
-                });
-
-            }
-
-
-            /*-- MODIFICAR EL ITEM DIRECTAMENTE DESDE LA LISTA --*/
-            if(respuesta.modificarAjaxLista){
-                desaBtnYMostrarText();
-                $(respuesta.idContenedor).hide(1500, function(){
-                    $(respuesta.idContenedor).html("");
-                    $(respuesta.idContenedor).html(respuesta.contenido);
-                    $(respuesta.idContenedor).show("slow");
-                    cerrarDialogYHabiBtn();
-                    return false;
-                });
-            }
-            
-            /*-- ELIMINAR EL ITEM DIRECTAMENTE DESDE LA LISTA --*/
-            if(respuesta.eliminarAjaxLista){
-                desaBtnYMostrarText();//llamada a funcion, ver para detalles
-                $(respuesta.idContenedor).hide(1500, function(){
-                    $(respuesta.idContenedor).html("");
-                    $(respuesta.idContenedor).remove();
-                    cerrarDialogYHabiBtn();
-                    return false;
-                });
-            }            
-
- 
-            /*Codigo para agregar una nueva Fila a la tabla de registros*/
-            if(respuesta.insertarNuevaFila){
-                mostrarNotificacionDinamica('Registro agregado exitosamente', 'exitoso');
-                $(respuesta.idDestino).append(respuesta.contenido);             
-
-                $("#cuadroDialogo").dialog("close");                
-                ocultarNotificacionDinamica();
-  
-                $(respuesta.idContenedor).fadeIn("slow", function(){                    
-                    if($("#trSinRegistros").is(":visible")){
-                        $("#trSinRegistros").fadeOut("slow");
-                    }
-                });
-     
-            }
-            
-            /*Codigo para agregar una nueva Fila a la tabla de registros*/
-            if(respuesta.insertarNuevaFilaDialogo && respuesta.ventanaDialogo){
-                                
-                desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);//llamada a funcion, consultar para más info.
-                
-                setTimeout(function(){
-                    $(respuesta.ventanaDialogo).dialog("close");                
-                    
-                }, 1200);
-                //Aqui hay que validar porque esta ingresando en otros modulos
-                //si no se puede de una forma global y funcional hay que usar la variable modulo para saber donde se encuentra
-                if(respuesta.idDestino == "#tablaRegistros" && $(respuesta.idDestino).is(":visible")){ //Si tabla es igual a tabla registros, y es visible 
-                    if(respuesta.modulo && respuesta.modulo != modulo){
-                        //asi funciona no tocar
-                    } else {
-                        $(respuesta.idDestino).append(respuesta.contenido);                    
-                        setTimeout(function(){    
-                            $(respuesta.idContenedor).fadeIn("slow", function(){
-                                $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
-                                $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');
-                            });  
-                        }, 1200);                          
-                    }
-                    
-                } else if(respuesta.idDestino != "#tablaRegistros" && $(respuesta.idDestino).is(":visible")){ //Si tabla es diferente a tabla registros, y es visible 
-                    $(respuesta.idDestino).append(respuesta.contenido);
-                    
-                    setTimeout(function(){    
-                        $(respuesta.idContenedor).fadeIn("slow", function(){
-                            $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
-                            $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');
-                        });  
-                    }, 1200);     
-                    
-                }
-                
-            }            
-
-            /*Codigo para modificar una Fila de la tabla de registros*/
-            if(respuesta.modificarFilaTabla){
-                //verifico que la fila a editar se encuentre en el DOM en caso de haber sido editada desde el buscador
-                var visible = $(respuesta.idContenedor).is (':visible');
-               
-                if(visible){
-                    mostrarNotificacionDinamica('Registro modificado exitosamente', 'exitoso');
-                    $("#cuadroDialogo").dialog("close"); 
-                    $(respuesta.idContenedor).fadeOut(350); 
-                  
-                    setTimeout(function(){
-                        $(respuesta.idDestino).html(respuesta.contenido);
-                        $(respuesta.idContenedor).fadeIn("fast");
-                    }, 350);      
-                    
-                    ocultarNotificacionDinamica();               
-                   
-                }else{
-                    desaBtnYMostrarText();                    
-                    cerrarDialogYHabiBtn();                   
-                   
-                }                 
-              
-            }//fin del metodo modificar fila tabla
-            
-           
-            
-            if(respuesta.modificarFilaDialogo && respuesta.ventanaDialogo){
-                desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);
-                //verifico que la fila a editar se encuentre en el DOM en caso de haber sido editada desde el buscador
-                visible = $(respuesta.idContenedor).is (':visible');
-               
-                if(visible){
-                    setTimeout(function(){    
-                        $(respuesta.idContenedor).fadeOut("slow", function(){                        
-                            $(respuesta.idDestino).html(respuesta.contenido);                            
-                            cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo); 
-                        
-                        });  
-                    }, 1200);
-                  
-                    setTimeout(function(){
-                        $(respuesta.idContenedor).fadeIn("slow", function(){                                      
-                            });
-                    }, 1200);                    
-               
-                   
-                }else{
-                    setTimeout(function(){ 
-                        cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo);
-                    }, 1200);                   
-                   
-                }                 
-              
-            }//fin del metodo modificar fila tabla            
-            
-            
-            /**
-             * Codigo para eliminar una fila de la tabla de registros cuando es la unica ventana de dialogo visible
-             * por convencion, solo se debe poder eliminar la fila desde el mismo
-             * modulo al cual pertenece, es decir, un articulo puede ser eliminado
-             * si y solo si se esta viendo el listado general de articulos en el 
-             * modulo de articulos
-             **/
-            if(respuesta.eliminarFilaTabla){
-                
-                mostrarNotificacionDinamica('Registro Eliminado exitosamente', 'exitoso');//como es la unica ventana de dialogo se llama a esta funcion (ver para detalles)          
-                    
-                $("#cuadroDialogo").dialog("close"); 
-                $("#contenedorBotonDerecho").slideUp("fast");
-                
-                ocultarNotificacionDinamica();//llamada a funcion, ver para detalles
-                
-                $(respuesta.idDestino).animate({
-                    backGroundColor:'#fff', 
-                    color:'#fff'
-                }, 500, function(){            
-                    $(respuesta.idDestino).fadeOut(500, function(){
-                        $(respuesta.idDestino).remove();                     
-                    });
-                });
-                
-            }
-            
-            
-            /**
-             * Codigo para eliminar una fila de la tabla de registros cuando hay varias ventanas de dialogo visibles
-             * por convencion, solo se debe poder eliminar la fila desde el mismo
-             * modulo al cual pertenece, es decir, un articulo puede ser eliminado
-             * si y solo si se esta viendo el listado general de articulos en el 
-             * modulo de articulos *** excepcion "acciones" las acciones son vicibles desde el modulo "modulos"
-             **/
-            if(respuesta.eliminarFilaDialogo && respuesta.ventanaDialogo){
-                desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);//llamada a funcion, ver funcion para mas detalles
-                $(respuesta.ventanaDialogo+" #full").trigger("click");
-                
-                console.log("aqui estoy");
-                
-                setTimeout(function(){                    
-                    $(respuesta.ventanaDialogo).dialog("close");
-                    $("#contenedorBotonDerecho").slideUp("fast");
-                }, 1000);
-                
-                var fila;
-                
-                if (respuesta.idDestino2) {
-                    fila = respuesta.idDestino2; 
-                } else {
-                    fila =respuesta.idDestino;
-                }
-                
-                $(fila).animate({
-                    backGroundColor:'#fff', 
-                    color:'#fff'
-                }, 1000, function(){            
-                    $(fila).fadeOut("slow", function(){
-                        $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
-                        $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');                        
-                        $(fila).remove();                     
-                    });
-                });
-            }            
-            
-            
-            /*Codigo para paginar de forma ajax la tabla de registros*/
-            if(respuesta.paginarTabla){                
-                if(respuesta.info){
-                    $("#contenedorNotificaciones").html(respuesta.info);
-                }
-                
-                setTimeout(function(){    
-                    $(respuesta.idContenedor).fadeOut(5, function(){                        
-                        $(respuesta.idDestino).html(respuesta.contenido);
-                          
-                    });  
-                }, 10);
-                                
-                setTimeout(function(){
-                    $(respuesta.idContenedor).fadeIn(7, function(){
-                                      
-                        });
-                }, 15);                
-            }
-            
-        if(respuesta.destino && respuesta.cargarFunciones){
-            armarDomConJquery(respuesta.destino);//funcion contenida en funciones .js
-            activarFuncionesCuadroDialogo(respuesta.destino);   
-        }            
-            
+            funcionesRespuestaInsertar(respuesta);
 
         }else if(respuesta.accion=="redireccionar"&&respuesta.destino!=""){
-            if(respuesta.mensaje){                
-                if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
-                    Sexy.info(respuesta.mensaje, {
-                        onComplete: function(){ 
-                            window.location.href=respuesta.destino; 
-                        }
-                    });
-                }else{
-                    Sexy.alert(respuesta.mensaje, {
-                        onComplete: function(){ 
-                            window.location.href=respuesta.destino; 
-                        }
-                    });
-                }
-            //                setTimeout(function(){
-            //                    window.location.href=respuesta.destino; 
-            //                }, 1500);
-                
-            }else{
-                window.location.href=respuesta.destino;
-            }
+            funcionesRespuestaRedireccionar(respuesta);
 
         }else if(respuesta.generar){
             if(respuesta.destino){
@@ -1759,6 +1363,408 @@ function procesaRespuesta(respuesta){
 
 }//fin de procesa respuesta
 
+function basicasProcesaRespuesta(respuesta) {
+    $("#indicadorEspera").css("display","none");
+    $("#BoxOverlay").css("display","none");
+    $("#BoxOverlayTransparente").css("display","none");
+    
+    if(respuesta.pruebas){
+        Sexy.alert(respuesta.pruebas);
+
+    }
+    
+    //verificar si hay checks marcados, de ser asi llamo a la funcion para volver a marcarlos
+    if($("#tablaRegistros").is(":visible") && !respuesta.generar){
+        restaurarValoresTablaRegistros();
+    }
+    
+    if(respuesta.mostrarDatosArticulo){
+        $("#contenedorInfoArticulo").html("");
+        $("#contenedorInfoArticulo").html(respuesta.contenido);
+    }
+    
+    if(respuesta.cargarJs){
+        cargarJS(respuesta.archivoJs);
+    }
+}
+
+
+function funcionesRespuestaError(respuesta) {
+    if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
+        Sexy.info(respuesta.mensaje);
+        if(respuesta.recargarTablaRegistros){
+            recargarTablaRegistros();
+        }
+    }else{
+        Sexy.alert(respuesta.mensaje);
+    }
+
+    if(respuesta.objetivo == "activarSlider"){ 
+        $("#sliderInicio").css("display", "block");
+        $("#parrafoMensajeSlider").css("display", "block");              
+    }
+    
+}
+
+function funcionesRespuestaRecargar(respuesta) {
+    if(respuesta.mensaje){
+        if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
+            Sexy.info(respuesta.mensaje, {
+                onComplete: function(){ 
+                    window.location.reload();
+                }
+            });
+        }else{
+            Sexy.alert(respuesta.mensaje, {
+                onComplete: function(){ 
+                    window.location.reload();
+                }
+            });
+        }
+
+    } else {
+        window.location.reload();
+    }
+}
+
+function funcionesRespuestaRedireccionar(respuesta){
+    if(respuesta.mensaje){                
+        if(respuesta.textoExito){//si se va a mostrar el alert pero con el  icono de registro exitoso
+            Sexy.info(respuesta.mensaje, {
+                onComplete: function(){ 
+                    window.location.href=respuesta.destino; 
+                }
+            });
+        }else{
+            Sexy.alert(respuesta.mensaje, {
+                onComplete: function(){ 
+                    window.location.href=respuesta.destino; 
+                }
+            });
+        }
+    //                setTimeout(function(){
+    //                    window.location.href=respuesta.destino; 
+    //                }, 1500);
+
+    }else{
+        window.location.href=respuesta.destino;
+    }
+}
+
+function funcionesRespuestaInsertar(respuesta) {
+    /**
+      * si la respuesta ajax requiere modificar un select en el DOM,
+      * tambien se agrega la funcionalidad para modificar el plugin chosen
+      */
+     if (respuesta.idSelect && ($(respuesta.idSelect).is(":visible") || $(respuesta.idSelect+"_chzn").is(":visible"))) {
+         var _datos = respuesta.idYNombre.split("|");
+
+         var _id      = _datos[0];
+         var _nombre  = _datos[1];
+
+         var _option = "<option value="+_id+" selected>"+_nombre+"</option>";
+
+         $(respuesta.idSelect).append(_option);
+
+         //si el chosen esta visible
+         if ($(respuesta.idSelect+"_chzn").is(":visible")) {
+             $(respuesta.idSelect).trigger("liszt:updated");
+         }
+
+     }
+
+     if(respuesta.destino  || respuesta.destinoInsertar){
+
+         if(respuesta.insertarAjax){
+             $(respuesta.destino).prepend(respuesta.contenido);
+         }else{
+             $(respuesta.destino).html(respuesta.contenido);
+         }
+
+         if(respuesta.removerTexto){//codigo para quitar los textos de advertencia de los buscadores
+             setTimeout(function(){
+                 $(respuesta.removerTexto).slideUp("slow");
+             }, 2000)
+
+         }
+
+         /*--INSERTAR DATOS VIA AJAX---*/
+         if(respuesta.insertarAjax){
+             if(respuesta.idContenedor){
+                 $(respuesta.idContenedor).css("display", "none");
+                 $(respuesta.idContenedor).show(1500);
+             }
+             desaBtnYMostrarText();                
+
+             cerrarDialogYHabiBtn();                        
+
+         }
+
+     }//fin de si se envio por ajax una variable destino o una destinoInsertar
+
+     /*INSERTAR DATOS VIA AJAX*/
+     if(respuesta.insertarAjax){
+         if(respuesta.idContenedor){
+             $(respuesta.idContenedor).css("display", "none");
+             $(respuesta.idContenedor).show(1500);
+         }
+
+         if(respuesta.ventanaDialogo){
+             desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);
+             setTimeout(function(){ 
+                 cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo);
+             }, 1200);                       
+         } else {
+             if(respuesta.mostrarNotificacionDinamica){
+                 setTimeout(function(){ 
+                     mostrarNotificacionDinamica('Registro agregado exitosamente', 'exitoso');
+                     ocultarNotificacionDinamica();
+                 }, 1200);  
+             }                    
+             desaBtnYMostrarText();                         
+             cerrarDialogYHabiBtn();                    
+         }
+
+     }
+
+     /**
+      * Codigo para editar la informacion del usuario y que
+      * haga una recarga de la informacion via ajax
+      **/
+     if(respuesta.modificarUsuarioAjax){
+         desaBtnYMostrarText();
+         $(respuesta.idContenedor).prev().hide(1500, function(){
+             cerrarDialogYHabiBtn();
+             $(respuesta.idContenedor).prev().remove();
+             $(respuesta.idContenedor).parent("div").prepend(respuesta.contenido);
+             $(respuesta.idContenedor).prev().css("display", "none");
+             $(respuesta.idContenedor).prev().show("slow");
+
+             return false;
+
+         });
+
+     }
+
+     /*-- MODIFICAR EL ITEM DIRECTAMENTE DESDE LA LISTA --*/
+     if(respuesta.modificarAjaxLista){
+         desaBtnYMostrarText();
+         $(respuesta.idContenedor).hide(1500, function(){
+             $(respuesta.idContenedor).html("");
+             $(respuesta.idContenedor).html(respuesta.contenido);
+             $(respuesta.idContenedor).show("slow");
+             cerrarDialogYHabiBtn();
+             return false;
+         });
+     }
+
+     /*-- ELIMINAR EL ITEM DIRECTAMENTE DESDE LA LISTA --*/
+     if(respuesta.eliminarAjaxLista){
+         desaBtnYMostrarText();//llamada a funcion, ver para detalles
+         $(respuesta.idContenedor).hide(1500, function(){
+             $(respuesta.idContenedor).html("");
+             $(respuesta.idContenedor).remove();
+             cerrarDialogYHabiBtn();
+             return false;
+         });
+     }            
+
+     /*Codigo para agregar una nueva Fila a la tabla de registros*/
+     if(respuesta.insertarNuevaFila){
+         mostrarNotificacionDinamica('Registro agregado exitosamente', 'exitoso');
+         $(respuesta.idDestino).append(respuesta.contenido);             
+
+         $("#cuadroDialogo").dialog("close");                
+         ocultarNotificacionDinamica();
+
+         $(respuesta.idContenedor).fadeIn("slow", function(){                    
+             if($("#trSinRegistros").is(":visible")){
+                 $("#trSinRegistros").fadeOut("slow");
+             }
+         });
+
+     }
+
+     /*Codigo para agregar una nueva Fila a la tabla de registros*/
+     if(respuesta.insertarNuevaFilaDialogo && respuesta.ventanaDialogo){
+
+         desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);//llamada a funcion, consultar para más info.
+
+         setTimeout(function(){
+             $(respuesta.ventanaDialogo).dialog("close");                
+
+         }, 1200);
+         //Aqui hay que validar porque esta ingresando en otros modulos
+         //si no se puede de una forma global y funcional hay que usar la variable modulo para saber donde se encuentra
+         if(respuesta.idDestino == "#tablaRegistros" && $(respuesta.idDestino).is(":visible")){ //Si tabla es igual a tabla registros, y es visible 
+             if(respuesta.modulo && respuesta.modulo != modulo){
+                 //asi funciona no tocar
+             } else {
+                 $(respuesta.idDestino).append(respuesta.contenido);                    
+                 setTimeout(function(){    
+                     $(respuesta.idContenedor).fadeIn("slow", function(){
+                         $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
+                         $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');
+                     });  
+                 }, 1200);                          
+             }
+
+         } else if(respuesta.idDestino != "#tablaRegistros" && $(respuesta.idDestino).is(":visible")){ //Si tabla es diferente a tabla registros, y es visible 
+             $(respuesta.idDestino).append(respuesta.contenido);
+
+             setTimeout(function(){    
+                 $(respuesta.idContenedor).fadeIn("slow", function(){
+                     $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
+                     $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');
+                 });  
+             }, 1200);     
+
+         }
+
+     }            
+
+     /*Codigo para modificar una Fila de la tabla de registros*/
+     if(respuesta.modificarFilaTabla){
+         //verifico que la fila a editar se encuentre en el DOM en caso de haber sido editada desde el buscador
+         var visible = $(respuesta.idContenedor).is (':visible');
+
+         if(visible){
+             mostrarNotificacionDinamica('Registro modificado exitosamente', 'exitoso');
+             $("#cuadroDialogo").dialog("close"); 
+             $(respuesta.idContenedor).fadeOut(350); 
+
+             setTimeout(function(){
+                 $(respuesta.idDestino).html(respuesta.contenido);
+                 $(respuesta.idContenedor).fadeIn("fast");
+             }, 350);      
+
+             ocultarNotificacionDinamica();               
+
+         }else{
+             desaBtnYMostrarText();                    
+             cerrarDialogYHabiBtn();                   
+
+         }                 
+
+     }//fin del metodo modificar fila tabla
+
+     if(respuesta.modificarFilaDialogo && respuesta.ventanaDialogo){
+         desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);
+         //verifico que la fila a editar se encuentre en el DOM en caso de haber sido editada desde el buscador
+         visible = $(respuesta.idContenedor).is (':visible');
+
+         if(visible){
+             setTimeout(function(){    
+                 $(respuesta.idContenedor).fadeOut("slow", function(){                        
+                     $(respuesta.idDestino).html(respuesta.contenido);                            
+                     cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo); 
+
+                 });  
+             }, 1200);
+
+             setTimeout(function(){
+                 $(respuesta.idContenedor).fadeIn("slow", function(){                                      
+                     });
+             }, 1200);                    
+
+
+         }else{
+             setTimeout(function(){ 
+                 cerrarDialogYHabiBtnDialog(respuesta.ventanaDialogo);
+             }, 1200);                   
+
+         }                 
+
+     }//fin del metodo modificar fila tabla            
+
+     /**
+      * Codigo para eliminar una fila de la tabla de registros cuando es la unica ventana de dialogo visible
+      * por convencion, solo se debe poder eliminar la fila desde el mismo
+      * modulo al cual pertenece, es decir, un articulo puede ser eliminado
+      * si y solo si se esta viendo el listado general de articulos en el 
+      * modulo de articulos
+      **/
+     if(respuesta.eliminarFilaTabla){
+
+         mostrarNotificacionDinamica('Registro Eliminado exitosamente', 'exitoso');//como es la unica ventana de dialogo se llama a esta funcion (ver para detalles)          
+
+         $("#cuadroDialogo").dialog("close"); 
+         $("#contenedorBotonDerecho").slideUp("fast");
+
+         ocultarNotificacionDinamica();//llamada a funcion, ver para detalles
+
+         $(respuesta.idDestino).animate({
+             backGroundColor:'#fff', 
+             color:'#fff'
+         }, 500, function(){            
+             $(respuesta.idDestino).fadeOut(500, function(){
+                 $(respuesta.idDestino).remove();                     
+             });
+         });
+
+     }
+     /**
+      * Codigo para eliminar una fila de la tabla de registros cuando hay varias ventanas de dialogo visibles
+      * por convencion, solo se debe poder eliminar la fila desde el mismo
+      * modulo al cual pertenece, es decir, un articulo puede ser eliminado
+      * si y solo si se esta viendo el listado general de articulos en el 
+      * modulo de articulos *** excepcion "acciones" las acciones son vicibles desde el modulo "modulos"
+      **/
+     if(respuesta.eliminarFilaDialogo && respuesta.ventanaDialogo){
+         desaBtnYMostrarTextDialog(respuesta.ventanaDialogo);//llamada a funcion, ver funcion para mas detalles
+         $(respuesta.ventanaDialogo+" #full").trigger("click");
+         
+         setTimeout(function(){                    
+             $(respuesta.ventanaDialogo).dialog("close");
+             $("#contenedorBotonDerecho").slideUp("fast");
+         }, 1000);
+
+         var fila;
+
+         if (respuesta.idDestino2) {
+             fila = respuesta.idDestino2; 
+         } else {
+             fila =respuesta.idDestino;
+         }
+
+         $(fila).animate({
+             backGroundColor:'#fff', 
+             color:'#fff'
+         }, 1000, function(){            
+             $(fila).fadeOut("slow", function(){
+                 $(respuesta.ventanaDialogo+" #textoExitoso").fadeOut("100");
+                 $(respuesta.ventanaDialogo+" #botonOk").removeAttr('disabled');                        
+                 $(fila).remove();                     
+             });
+         });
+     }            
+
+     /*Codigo para paginar de forma ajax la tabla de registros*/
+     if(respuesta.paginarTabla){                
+         if(respuesta.info){
+             $("#contenedorNotificaciones").html(respuesta.info);
+         }
+
+         setTimeout(function(){    
+             $(respuesta.idContenedor).fadeOut(5, function(){                        
+                 $(respuesta.idDestino).html(respuesta.contenido);
+
+             });  
+         }, 10);
+
+         setTimeout(function(){
+             $(respuesta.idContenedor).fadeIn(7, function(){
+
+                 });
+         }, 15);                
+     }
+
+ if(respuesta.destino && respuesta.cargarFunciones){
+     armarDomConJquery(respuesta.destino);//funcion contenida en funciones .js
+     activarFuncionesCuadroDialogo(respuesta.destino);   
+ }
+        
+}
 
 /**
  * Funcion encargada de redondear un  numero decimal
@@ -1954,7 +1960,6 @@ function verificarTecla(e, patron) {
         }      
         
         if ( !( /^\d$/.test(valor) ) ) {
-            //console.warn("tecla no valida");
             e.stopPropagation();
             e.preventDefault();  
             e.returnValue   = false;
@@ -2397,3 +2402,31 @@ function parseDouble(numero) {
     
     return parseFloat(valor);
 }
+
+
+function renderTemplate(tmpl_name, tmpl_data) {
+    if ( !renderTemplate.tmpl_cache ) { 
+        renderTemplate.tmpl_cache = {};
+    }
+
+    if ( ! renderTemplate.tmpl_cache[tmpl_name] ) {
+        var tmpl_dir = 'media/javascript/plantillas';
+        var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+
+        var tmpl_string;
+        $.ajax({
+            url: tmpl_url,
+            method: 'GET',
+            async: false,
+            dataType: 'html',
+            success: function(data) {
+                tmpl_string = data;
+            }
+        });
+
+        renderTemplate.tmpl_cache[tmpl_name] = tmpl_string;
+    }
+
+    return _.template(renderTemplate.tmpl_cache[tmpl_name], tmpl_data);
+}
+

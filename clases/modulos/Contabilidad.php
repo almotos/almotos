@@ -76,6 +76,27 @@ class Contabilidad {
      *      '5'     => 'ivateorico',
      */
     public function getArregloRetenciones(){
+//        $retenciones = array();
+//        
+//        $retenciones["1"]       = array();
+//        $retenciones["1"]["1"]  = array();
+//        $retenciones["1"]["2"]  = array();
+//        $retenciones["1"]["3"]  = array();
+//        $retenciones["1"]["4"]  = array("4");
+//        $retenciones["2"]["1"]  = array("1", "2", "5");
+//        $retenciones["2"]["2"]  = array("1", "4");
+//        $retenciones["2"]["3"]  = array("1", "4");
+//        $retenciones["2"]["4"]  = array();
+//        $retenciones["3"]["1"]  = array("1", "3", "5");
+//        $retenciones["3"]["2"]  = array("1", "2", "3", "4");
+//        $retenciones["3"]["3"]  = array("1", "4");
+//        $retenciones["3"]["4"]  = array();
+//        $retenciones["4"]["1"]  = array("1", "2", "5");
+//        $retenciones["4"]["2"]  = array("1", "2", "3", "4");
+//        $retenciones["4"]["3"]  = array("1", "4");
+//        $retenciones["4"]["4"]  = array();  
+
+        //Se quita el retecree de la contabilidad, arriba se deja como estuvo en el 2013
         $retenciones = array();
         
         $retenciones["1"]       = array();
@@ -84,17 +105,17 @@ class Contabilidad {
         $retenciones["1"]["3"]  = array();
         $retenciones["1"]["4"]  = array("4");
         $retenciones["2"]["1"]  = array("1", "2", "5");
-        $retenciones["2"]["2"]  = array("1", "4");
-        $retenciones["2"]["3"]  = array("1", "4");
+        $retenciones["2"]["2"]  = array("1", "2");
+        $retenciones["2"]["3"]  = array("1");
         $retenciones["2"]["4"]  = array();
         $retenciones["3"]["1"]  = array("1", "3", "5");
-        $retenciones["3"]["2"]  = array("1", "2", "3", "4");
-        $retenciones["3"]["3"]  = array("1", "4");
+        $retenciones["3"]["2"]  = array("1", "2", "3");
+        $retenciones["3"]["3"]  = array("1");
         $retenciones["3"]["4"]  = array();
         $retenciones["4"]["1"]  = array("1", "2", "5");
-        $retenciones["4"]["2"]  = array("1", "2", "3", "4");
-        $retenciones["4"]["3"]  = array("1", "4");
-        $retenciones["4"]["4"]  = array();        
+        $retenciones["4"]["2"]  = array("1", "2", "3");
+        $retenciones["4"]["3"]  = array("1");
+        $retenciones["4"]["4"]  = array();         
         
         return $retenciones;
     }

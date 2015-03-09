@@ -1,0 +1,48 @@
+﻿﻿Modulo: Paginas.
+
+Descripción:  Módulo encargado de gestionar la información de las paginas que se encuentran registradas en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevas paginas, la modificación de las paginas existentes en el sistema y la eliminación de las paginas. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de las paginas.
+-Conocer la cantidad de paginas registradas en el sistema.
+-Realizar cambios al texto informativo de la pagina con editor funcional del sistema.
+-Visualizar la fecha de creado, publicado y actualizado de la pagina en el sistema.
+-Permite ver el titulo, autor y si esta activa o no dicha pagina. 
+
+
+Clase: Pagina.
+
+Tablas relacionadas al modulo: 
+
+fom_paginas: almacena la informacion de las paginas.
+fom_usuarios: almacena la informacion de los usuarios.
+
+Estructura relacional:
+
+Un usuario tiene  1..* paginas.
+
+
+Ayuda:
+
+Agregar una pagina: Haga clic en el boton “Adicionar pagina” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal, Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Se encuentra un campo para el titulo y otro para el editor de texto el cual permite copiar, cortar y pegar cualquier dato tipo texto y se encarga de organizar la informacion de la pagina a mostrar. Una vez ingresados los datos haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la pagina sera almacenada en el sistema.
+
+Modificar una pagina: Haga clic en el boton "Editar" ubicado en la parte superior izquierda del registro de la pagina. Pase el puntero del mouse sobre la fila del registro correspondiente a la pagina que desea modificar. Se desplegara una ventana modal con los campos pertenecientes al formulario que contiene los datos de la pagina a ser modificada. Modifique los datos que desea y haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion de la pagina sera modificada y almacenada en el sistema.
+
+Eliminar una pagina:  Haga clic en el boton "Borrar" ubicado en la parte superior izquierda del registro de la pagina. Pase el puntero del mouse sobre la fila del registro correspondiente a la pagina que desea borrar, con esto se muestra el boton "Borrar" haga clic en él, Se desplegara una ventana modal con los datos de confirmacion. haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. 
+
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar pagina: clic en el boton “Adicionar pagina”, se despliega la ventana modal. Se ingresan los datos de la pagina junto con su descripcion. (Funcionando perfecto, se ingresa una pagina al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+2) Modificar pagina: Pasar el puntero del mouse sobre la fila del registro de la pagina que desea modificar, luego hacer clic en el boton “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos de la pagina a ser modificada. Se modifican algunos datos de la pagina y se hace clic en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios. Tambien se valida que no existan ya paginas registradas con un mismo nombre al cual se desea modificar. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+3.0) Eliminar pagina: Pasar el puntero del mouse sobre la fila del registro de la pagina que desea eliminar, luego hacer clic en el boton “borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion. (Funciona perfectamente)
+
+3.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) Se confirma la eliminacion. Se deben eliminar todos los registros asociados a esta pagina. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a esta pagina(existentes actualmente en el sistema). En caso de tener relaciones con este registro, el sistema debera notificar al usuario de dicha situacion.
+

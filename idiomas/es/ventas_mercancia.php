@@ -41,6 +41,7 @@ $textos = array(
     'ACTUALIZAR_RETENCIONES'                    => 'Actualizar retenciones',
     'TOTAL_RETENCIONES'                         => 'Total retenciones',
     'TOTAL_A_PAGAR'                             => 'Total a pagar',
+    'DCTO_TOTAL_ARTICULOS'                      => 'Dcto. total Articulos',
     
     'MENSAJE_FACTURA_TEMPORAL_VENTA'            => 'Tienes una factura de <span class=negrilla>venta</span> sin finalizar realizada el <span class=negrilla>%1</span> al cliente <span class=negrilla>%2</span>', 
     
@@ -81,7 +82,7 @@ $textos = array(
     'VALIDAR_DESCUENTO'                         => 'Validar descuento',
     'MAXIMO_DESCUENTO_PERMITIDO'                => 'Ingrese el descuento para<br> todos los articulos. <br>Maximo descuento permitido %1 %',
     'EXPLICACION_AUTORIZACION_DCTO'             => '* El descuento que intenta aplicar (<span id="txtValDcto" class="negrilla"></span>) supera su autorizado. Solicite a su supervisor el ingreso de usuario y contraseña para validar la autorizacion del descuento',
-    
+    'SUBTOTAL_ARTICULOS'                        => 'Subtotal articulos',
 
     
     /*Campos y labels*/

@@ -148,8 +148,22 @@ function cosultarItem($id) {
  * @param type $datos 
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql;
-
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+       
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregar = Perfil::verificarPermisosAdicion($modulo->nombre);
+    
+    if(!$puedeAgregar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto = new Empleado();
     $destino = '/ajax' . $objeto->urlBase . '/add';
@@ -250,6 +264,9 @@ function adicionarItem($datos = array()) {
         $existetipoEmpleado         = $sql->existeItem('tipos_empleado', 'nombre', $datos['id_tipo_empleado']);
         $existeSede                 = $sql->existeItem('sedes_empresa', 'nombre', $datos['id_sede']);
         $existeCargo                = $sql->existeItem('cargos', 'id', $datos['id_cargo']);
+        
+        $idPersona                  = $sql->obtenerValor('personas', 'id', 'documento_identidad = "'. $datos['documento_identidad'] .'"'); 
+        $existeEmpleado             = ($idPersona == "") ? FALSE : $sql->existeItem('empleados', 'id_persona', $idPersona);
 
         if (empty($datos['id_tipo_empleado'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_TIPO_EMPLEADO');
@@ -278,6 +295,9 @@ function adicionarItem($datos = array()) {
         } elseif (empty($datos['documento_identidad'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_DOCUMENTO_CONTACTO');
             
+        } elseif ($existeEmpleado) {
+            $respuesta['mensaje'] = $textos->id('ERROR_EXISTENCIA_DOCUMENTO_EMPLEADO');
+ 
         } elseif (empty($datos['primer_nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
             
@@ -333,7 +353,22 @@ function adicionarItem($datos = array()) {
  * @param type $datos 
  */
 function modificarItem($id, $datos = array()) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('empleados', 'id', $id))) {
         $respuesta              = array();
@@ -526,7 +561,22 @@ function modificarItem($id, $datos = array()) {
  * @param type $confirmado 
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos, $sql;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('empleados', 'id', $id))) {
         $respuesta              = array();
@@ -1090,8 +1140,22 @@ function eliminarContacto($id, $confirmado, $dialogo) {
  * @param type $confirmado 
  */
 function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
-    global $textos;
-
+    global $textos, $modulo, $sesion_usuarioSesion;
+       
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoEmpleados', $modulo->nombre);
+    
+    if(!$puedeEliminarMasivo && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $destino    = '/ajax/empleados/eliminarVarios';
     $respuesta  = array();

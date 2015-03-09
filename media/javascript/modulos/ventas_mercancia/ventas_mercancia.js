@@ -66,7 +66,7 @@ $(document).ready(function(){
         
         if(ev.which == 13 && isCtrl == true) {//Ctrl + Enter
             if(modulo == "Ventas_mercancia"){
-                
+                alert("control + enter");
                 $("#botonFinalizarFactura").trigger("click");
             }
             return false;
@@ -237,7 +237,8 @@ $(document).ready(function(){
                     } else {
                         descuento = '0';
                     } 
-                
+                    
+                    subtotal *= cantidad;
                         
                     var noExisteEnListado   = true;
                     var idFila              = '';
@@ -476,6 +477,51 @@ $(document).ready(function(){
         }
     });
      
+    //Evento enter sobre el campo de agregar articulos
+    //Utilizado por el lector del codigo de barras
+    $("#articuloFactura").on("keyup", function(e){
+        e.preventDefault();
+        var tecla = (document.all) ? e.keyCode : e.which; 
+        
+        if (tecla == "13") {
+            
+            var that = $(this);
+            setTimeout(function(){
+
+                if (that.attr("autocompletable") !== "true") {
+                    var id          = that.val();
+
+                    if (id == "") {
+                        return;
+                    }
+
+                    var idBodega    = $("#selectorBodegas").val();
+                    var destino     = "/ajax/articulos/listarArticulosVenta?extra="+idBodega+"&term="+id;
+
+                    $.ajax({
+                        type:"POST",
+                        url: destino,
+                        dataType:"json",
+                        data: {},
+                        success:function(data) {
+                            setTimeout(function(){
+                                $("ul.ui-autocomplete").css("display", "none"); 
+                            },250);   
+
+                            if (data.id == ""){
+                                return false;
+                            }
+
+                            agregarItemListaArticulo(data[0]);
+
+                        }
+                    });
+                }
+
+            }, 75);
+
+        }
+    });
     
     
     /**
@@ -625,11 +671,12 @@ $(document).ready(function(){
             $("#BoxOverlayTransparente").css("display","block");
             
             var datos = {};
+            var $contenedorValidarDescuento = $("#contenedorValidarDescuento");
             
-            datos["usuario"]        = $("#contenedorValidarDescuento").find("#campoValidarDctoUsuario").val();
-            datos["contrasena"]     = $("#contenedorValidarDescuento").find("#campoValidarDctoPassword").val();
-            datos["dcto_maximo"]    = $("#contenedorValidarDescuento").find("#idDcto").val();
-            datos["fila"]           = $("#contenedorValidarDescuento").find("#idFila").val();
+            datos["usuario"]        = $contenedorValidarDescuento.find("#campoValidarDctoUsuario").val();
+            datos["contrasena"]     = $contenedorValidarDescuento.find("#campoValidarDctoPassword").val();
+            datos["dcto_maximo"]    = $contenedorValidarDescuento.find("#idDcto").val();
+            datos["fila"]           = $contenedorValidarDescuento.find("#idFila").val();
             
             $.ajax({
                 type:"POST",
@@ -644,7 +691,6 @@ $(document).ready(function(){
             
         }
         
-             
     });
     
     /**
@@ -749,138 +795,25 @@ $(document).ready(function(){
     
     /*Funcion que es lanzada sobre el evento selected del plugin autocomplete sobre el
      *campo de seleccionar articulos en una factura, esto para el precio de venta*/
-    $("#articuloFactura").bind( "autocompleteselect", function( event, ui) {   
-        $("#BoxOverlayTransparente").css("display","block");
+    $("#articuloFactura").bind( "autocompleteselect", function( event, ui) {  
+        /**
+         * Hubo un conflicto con el plugin de jquery y el lector del codigo de barras. El conflicto
+         * se daba porque para agregar el item con el lector se capturaba el evento con la tecla enter,
+         * y el autocomplete de jquery utiliza la tecla enter, asi que para solucionar esto, en este metodo
+         * agregamos un atributo llamado autocompletable al campo de articuloFactura para saber si el evento 
+         * keypress se lanza usando el plugin autocomplete. Asi mismo en el codigo encargado de capturar el
+         * evento keypress lanzado por el codigo de barras se agregó un delay y un condicional para saber
+         * si el evento venia del autocomplete o del lector.
+         */
+        $(this).attr("autocompletable", "true");
         
-        if($("#contenedorInfoArticulo").is(":visible")){
-            $("#contenedorInfoArticulo").slideUp("fast");
-            
-        }        
+        agregarItemListaArticulo(ui.item);
         
-        var descuento = $("#campoDescuentoListadoArticulos").val();
+        var that = $(this);
         
-        var bodega      = $("#idBodegaGeneral").val();           
-        var articulo    = ui.item.label;
-        var precio      = parseDouble(ui.item.value);
-        var id          = parseInt(ui.item.id, 10);
-        var iva         = parseDouble(ui.item.iva);
-               
-        var subtotal    = precio;
-        
-        if(descuento != ''){
-            descuento   = parseDouble(descuento);
-            
-            subtotal    = ( descuento * precio ) / 100;
-            subtotal    = precio - subtotal;
-            
-        } else {
-            descuento = 0;
-            
-        }         
-            
-        var existeEnListado = false;
-        
-        var idFila = '';
-        
-        $(".filaArticuloVenta").each(function(){
-            idFila = $(this).attr("cod");
-            
-            if(idFila == id){
-                existeEnListado = true;
-            }
-            
-        });
-            
-        if(existeEnListado){
-            Sexy.confirm("<p class=margin5>El articulo que deseas agregar ya se encuentra en el listado. Esta seguro de querer agregar otro?</span> </p>", {
-                onComplete: function(returnvalue){ 
-                    if(!returnvalue){
-                        $("#BoxOverlayTransparente").css("display","none"); 
-                        $("#articuloFactura").val("");
-                        $("#articuloFactura").focus();                          
-                        return;
-                    } else {
-                        
-                        contadorArticuloVenta ++;
-
-                        var datos = new Array();//arreglo con la informacion del articulo para armar la fila
-
-                        datos['contadorArticuloVenta']  = contadorArticuloVenta;
-                        datos['id']                     = parseInt(id, 10);
-                        datos['iva']                    = iva;
-                        datos['precio']                 = parseDouble(precio);
-                        datos['subtotal']               = parseDouble(subtotal);
-                        datos['bodega']                 = parseInt(bodega, 10);
-                        datos['articulo']               = articulo;
-                        datos['descuento']              = descuento;                           
-
-
-                        $("#tablaListaArticulosFactura").find("#thead").after(generarFilaArticulo(datos));
-                        armarCadenaDatosArticulos();
-
-                        setTimeout(function(){
-                            calcularTotalFactura();
-                            $("#articuloFactura").val("");
-                            $("#articuloFactura").focus();
-                        }, 250);    
-
-                        $("#BoxOverlayTransparente").css("display","none");      
-
-                        $('*').tooltip({
-                            track: true,
-                            delay: 0,
-                            showURL: false
-                        });
-
-                        return false;                        
-                        
-                        
-                        
-                    }
-                        
-                }
-            });
-            
-            $("#BoxOverlayTransparente").css("display","none");     
-            
-        } else {
-            
-            contadorArticuloVenta ++;
-            
-            var datos = new Array();//arreglo con la informacion del articulo para armar la fila
-            
-            datos['contadorArticuloVenta']  = contadorArticuloVenta;
-            datos['id']                     = parseInt(id, 10);
-            datos['iva']                    = iva;
-            datos['precio']                 = parseDouble(precio);
-            datos['subtotal']               = parseDouble(subtotal);
-            datos['bodega']                 = parseInt(bodega, 10);
-            datos['articulo']               = articulo;
-            datos['descuento']              = descuento;                           
-
-             
-            $("#tablaListaArticulosFactura").find("#thead").after(generarFilaArticulo(datos));
-            armarCadenaDatosArticulos();
-
-            setTimeout(function(){
-                calcularTotalFactura();
-                $("#articuloFactura").val("");
-                $("#articuloFactura").focus();
-            }, 250);    
-  
-            $("#BoxOverlayTransparente").css("display","none");      
-            
-            $('*').tooltip({
-                track: true,
-                delay: 0,
-                showURL: false
-            });
-
-            return false;            
-            
-            
-        }
-
+        setTimeout(function(){
+            that.attr("autocompletable", "");
+        }, 200);
         
     });   
         
@@ -1258,6 +1191,14 @@ $(document).ready(function(){
         
     });    
     
+    //codigo para deterner la funcion por defecto de la tecla enter sobre un formulario
+    $("#formaVentasMercancias").find("input").on("keypress", function(e){
+        var tecla = (document.all) ? e.keyCode : e.which; 
+        if (tecla == "13") {
+            e.preventDefault();
+            return false;
+        }
+    });
 
 
     //funcion que se encarga de ir calculando el subtotal a medida que se va ingresando el precio del articulo
@@ -1268,8 +1209,6 @@ $(document).ready(function(){
         var descuento   = padre.find(".descuentoGeneralArticuloVenta");
         
         var precio      = $(this).val();
-        
-        console.log(precio);
 
         if(precio == ''){precio = 0;}
         
@@ -1685,22 +1624,12 @@ function buscarFactura(modulo){
 // FINALIZAR LA FACTURA DE VENTA
 $("#botonFinalizarFactura").bind("click", function(e){
     e.preventDefault();
-    
-    /**
-     * Verificar que se haya escogido un medio de pago
-     **/
-//    var medioPago = $("#listaMedioPago").val();
-    
+    //bloquear el boton finalizar factura (para que solo se muestre la ventana modal una vez)
+    $boton = $(this);
+    $boton.attr("disabled", "disabled"); 
+
     var cantArticulosVenta = $(".filaArticuloVenta");
     
-//    if(medioPago == 'Seleccionar...'){
-//        Sexy.alert('Debes seleccionar un medio de pago', 
-//            {onComplete: function(){ 
-//                    $("#listaMedioPago").focus();
-//                    return;
-//            }});
-//    } else 
-
     var total = $("#totalFactura").val();
         
     if(cantArticulosVenta.length <= 0){
@@ -1708,12 +1637,15 @@ $("#botonFinalizarFactura").bind("click", function(e){
         * Verificar que hayan articulos en la factura
         **/
         Sexy.alert("Debes al menos ingresar un articulo para generar una venta");
+        $boton.removeAttr("disabled");
         return;        
     } else if (total <= 0) {
         /**
         * Verificar que la factura tenga vaores adecuados
         **/
-        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");        
+        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");     
+        $boton.removeAttr("disabled");
+        return;
         
     } else{
         /**
@@ -1731,6 +1663,11 @@ $("#botonFinalizarFactura").bind("click", function(e){
             dataType:"json",
             success:procesaRespuesta
         });
+        
+        setTimeout(function(){
+            $boton.removeAttr("disabled");
+        },2000);
+    
         return false;        
     }    
  
@@ -2174,3 +2111,142 @@ function resetFactura(){
     guardarFacturaTemporal();    
 }
 
+
+/**
+ * Funcion encargada de crear el objeto "articulo" para ser agregado a la lista
+ * 
+ * @param object _obj   objeto que contiene toda la informacion del articulo, i.e=
+ *                      Object { id="9291", iva="17", label="14224 :: +ESPEJO AKT EVO II # 10 JUE (M)", value="1500"}
+ * @returns false para terminar la ejecucion
+ */
+function agregarItemListaArticulo(_obj) {
+    $("#BoxOverlayTransparente").css("display","block");
+        
+        if($("#contenedorInfoArticulo").is(":visible")){
+            $("#contenedorInfoArticulo").slideUp("fast");
+            
+        }      
+        
+        if (typeof(_obj) == "undefined") {
+            $("#BoxOverlayTransparente").css("display","none");
+            return;
+        }
+        
+        var descuento = $("#campoDescuentoListadoArticulos").val();
+        
+        var bodega      = $("#idBodegaGeneral").val();           
+        var articulo    = _obj.label;
+        var precio      = parseDouble(_obj.value);
+        var id          = parseInt(_obj.id, 10);
+        var iva         = parseDouble(_obj.iva);
+               
+        var subtotal    = precio;
+        
+        if(descuento != ''){
+            descuento   = parseDouble(descuento);
+            
+            subtotal    = ( descuento * precio ) / 100;
+            subtotal    = precio - subtotal;
+            
+        } else {
+            descuento = 0;
+            
+        }         
+            
+        var existeEnListado = false;
+        
+        var idFila = '';
+        
+        $(".filaArticuloVenta").each(function(){
+            idFila = $(this).attr("cod");
+            
+            if(idFila == id){
+                existeEnListado = true;
+            }
+            
+        });
+            
+        if(existeEnListado){
+            Sexy.confirm("<p class=margin5>El articulo que deseas agregar ya se encuentra en el listado. Esta seguro de querer agregar otro?</span> </p>", {
+                onComplete: function(returnvalue){ 
+                    if(!returnvalue){
+                        $("#BoxOverlayTransparente").css("display","none"); 
+                        $("#articuloFactura").val("");
+                        $("#articuloFactura").focus();                          
+                        return;
+                    } else {
+                        
+                        contadorArticuloVenta ++;
+
+                        var datos = new Array();//arreglo con la informacion del articulo para armar la fila
+
+                        datos['contadorArticuloVenta']  = contadorArticuloVenta;
+                        datos['id']                     = parseInt(id, 10);
+                        datos['iva']                    = iva;
+                        datos['precio']                 = parseDouble(precio);
+                        datos['subtotal']               = parseDouble(subtotal);
+                        datos['bodega']                 = parseInt(bodega, 10);
+                        datos['articulo']               = articulo;
+                        datos['descuento']              = descuento;                           
+
+                        $("#tablaListaArticulosFactura").find("#thead").after(generarFilaArticulo(datos));
+                        armarCadenaDatosArticulos();
+
+                        setTimeout(function(){
+                            calcularTotalFactura();
+                            $("#articuloFactura").val("");
+                            $("#articuloFactura").focus();
+                        }, 250);    
+
+                        $("#BoxOverlayTransparente").css("display","none");      
+
+                        $('*').tooltip({
+                            track: true,
+                            delay: 0,
+                            showURL: false
+                        });
+
+                        return false;                        
+                        
+                    }
+                        
+                }
+            });
+            
+            $("#BoxOverlayTransparente").css("display","none");     
+            
+        } else {
+            contadorArticuloVenta ++;
+            
+            var datos = new Array();//arreglo con la informacion del articulo para armar la fila
+            
+            datos['contadorArticuloVenta']  = contadorArticuloVenta;
+            datos['id']                     = parseInt(id, 10);
+            datos['iva']                    = iva;
+            datos['precio']                 = parseDouble(precio);
+            datos['subtotal']               = parseDouble(subtotal);
+            datos['bodega']                 = parseInt(bodega, 10);
+            datos['articulo']               = articulo;
+            datos['descuento']              = descuento;                           
+
+            $("#tablaListaArticulosFactura").find("#thead").after(generarFilaArticulo(datos));
+            armarCadenaDatosArticulos();
+
+            setTimeout(function(){
+                calcularTotalFactura();
+                $("#articuloFactura").val("");
+                $("#articuloFactura").focus();
+            }, 250);    
+  
+            $("#BoxOverlayTransparente").css("display","none");      
+            
+            $('*').tooltip({
+                track: true,
+                delay: 0,
+                showURL: false
+            });
+
+            return false;            
+            
+        }
+}

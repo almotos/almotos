@@ -43,7 +43,7 @@ if (!empty($idFactura)) {
     $tituloBloque   = $textos->id('MODULO_ACTUAL') . ' :: ' . $textos->id('CREAR_COTIZACION');
 
 } elseif (!empty($idFactTemp)) {
-    $objeto     = new FacturaVenta(); /* creacion del objeto */
+    $objeto     = new FacturaTemporalVenta(); /* creacion del objeto */
     
     $objeto->cargarFacturaTemporal($idFactTemp);
     
@@ -226,7 +226,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $listaBodegas   = array();
     
-    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');
+    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id != "0"', '', 'nombre ASC');
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {
@@ -236,7 +236,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $listaCajas = array();
     
-    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');
+    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id != "0"', '', 'nombre ASC');
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {
@@ -248,7 +248,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     $selectorCajas      = HTML::listaDesplegable('datos[id_caja]', $listaCajas, '', 'selectChosen', 'selectorCaja', '', array(), '');
 
-    $idBodegaPrincipal  = $sql->obtenerValor('bodegas', 'id', 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" ANd principal = "1"');
+    $idBodegaPrincipal  = $sql->obtenerValor('bodegas', 'id', 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND principal = "1"');
 
 //    $selectorSedes = HTML::listaDesplegable('datos[sede]', $listaSedes, $sesion_usuarioSesion->sede->id, '', 'selectorSedes', $textos->id('SELECCIONAR') . '...', array(), '');
     $selectorBodega     = HTML::listaDesplegable('datos[bodega]', $listaBodegas, $idBodegaPrincipal, 'selectChosen', 'selectorBodegas', '', array(), '');
@@ -475,7 +475,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     $formaValidarDcto .= HTML::campoTexto('datos[usuario]', 25, 255, '', '', 'campoValidarDctoUsuario', array());
     $formaValidarDcto .= HTML::parrafo($textos->id('CONTRASENA'), 'negrilla margenSuperior');
     $formaValidarDcto .= HTML::campoClave('datos[contrasena]', 25, 255, '', '', 'campoValidarDctoPassword', array());
-    $formaValidarDcto .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'directo', '', 'btnValidarDcto'), 'margenSuperior');
+    $formaValidarDcto .= HTML::parrafo(HTML::frase($textos->id('ACEPTAR'), 'estiloEnlace', 'btnValidarDcto', ''), 'margenSuperior');
     $formaValidarDcto .= HTML::parrafo('', 'oculto subtitulo negrilla margenSuperior', 'textoInfoDcto');
    
     $botonCerrar        = HTML::contenedor('X', 'cerrarContenedorValidarDcto');
@@ -517,7 +517,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
     //$codigo .= HTML::parrafo($linea6, '');
 
-    $codigo = HTML::forma($destino, $codigo, 'P', true);
+    $codigo = HTML::forma($destino, $codigo, 'P', true, "formaVentasMercancias");
 
     $contenido .= HTML::bloque('bloqueContenidoPrincipal', $tituloBloque, $codigo, '', 'overflowVisible');
     

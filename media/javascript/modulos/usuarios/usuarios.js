@@ -10,9 +10,9 @@ $(document).ready(function(){
     
     
 
-    $("#full").click(function(){
+    /*$("#full").click(function(){
         $("#contenedorAyudaUsuario").slideUp("slow");
-    });
+    });*/
 
         
     $("#campoAgregarUsuario").live("keyup", function(){

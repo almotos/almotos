@@ -17,7 +17,7 @@ $objeto = new Componentes(); /* creacion del objeto */
 $excluidas = array('0'); //items excluidos en la consulta
 $item = '';
 $contenido = '';
-$contenido .= HTML::contenedor(HTML::contenedor($textos->id('AYUDA_MODULO'), 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
+$contenido .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
 
 //campo oculto del cual el javascript sacara el nombre del modulo actual ->para??
 $item .= HTML::campoOculto('nombreModulo', ucwords(strtolower($modulo->nombre)), 'nombreModulo');
@@ -42,14 +42,10 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
     $botonAdicionar = HTML::contenedor(HTML::botonAdicionarItem($objeto->urlBase, $textos->id('ADICIONAR_ITEM')), 'flotanteDerecha margenInferior', 'botonAdicionar' . ucwords(strtolower($modulo->nombre)) . '');
 }
 
-
 /* campo de texto para seleccionar cuantos registros traer en la consulta */
 $campoNumRegistros = '';
 $campoNumRegistros .= HTML::frase($textos->id('NUMERO_FILAS'), 'margenIzquierdaDoble medioMargenDerecha');
 $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/' . $modulo->url . '/move'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
-
-
-
 
 /**
  * Boton que carga la ventana modal para realizar la busqueda
@@ -63,7 +59,6 @@ $buscador = HTML::contenedor($buscador, 'flotanteDerecha', 'botonBuscar' . ucwor
 $contenedorNotificaciones = HTML::contenedor('', 'contenedorNotificaciones', 'contenedorNotificaciones');
 $botonesSuperiores = HTML::contenedor($buscador . $botonAdicionar . $campoNumRegistros . $contenedorNotificaciones, '', 'botonesSuperioresModulo');
 
-
 /**
  * Verifico que se haya iniciado una sesion y que tenga permisos para ver el modulo
  * */
@@ -71,10 +66,8 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Declaracion del arreglo lista... y carga de datos en él
     $arregloItems = $objeto->listar($registroInicial, $registros, $excluidas, '');
 
-
     $datosPaginacion = array($objeto->registros, $registroInicial, $registros, $pagina);
     $item .= $objeto->generarTabla($arregloItems, $datosPaginacion);
-
 
     $codigo = HTML::contenedor($botonesSuperiores . '<br>' . $item, 'listaItem', 'listaItem');
     $contenido .= HTML::bloque('bloqueContenidoPrincipal', $tituloBloque, $codigo, '', 'overflowVisible');
@@ -83,4 +76,3 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 }
 
 Plantilla::$etiquetas['BLOQUE_CENTRAL'] = $contenido;
-?>

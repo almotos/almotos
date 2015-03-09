@@ -190,7 +190,7 @@ $(document).ready(function(){
          **/
          $("#imagenAdicionarVariosArticulos").live("click", function(){
                 $("#BoxOverlayTransparente").css("display","block");
-                
+
                 var bodega = $("#idBodegaGeneral").val();
                 
                 var descuento = $("#campoDescuentoListadoArticulos").val();
@@ -224,8 +224,8 @@ $(document).ready(function(){
                             articulo = articulo[0];
                             
                         var cantidad = $(this).find(".campo-cantidad-articulo").val();
-                        
-                        var precio   = $(this).attr("atributo_6");
+                              
+                        var precio   = $(this).attr("atributo_4");
                         
                         precio  = (precio != '') ? parseDouble(precio) : precio  = 0;
                         
@@ -238,23 +238,34 @@ $(document).ready(function(){
                         var iva = $(this).attr("atributo_5");
                         
 //                        var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
-                          var valPredIva = iva;
-                              valPredIva = parseInt(valPredIva);
-                        
+                        var valPredIva = iva;
+                            valPredIva = parseInt(valPredIva); 
+   
                         var subtotal = precio;
-                        
+                       
                         if(descuento != ''){
                             subtotal =  precio * ( descuento / 100 );
                             subtotal =  parseDouble(precio - subtotal);
-                        }     
+                        }    
+                                              
+                        //validar si el proveedor va a vender con iva
+                        if ($("#regimenProveedor").val() != 1) {
+                            subtotal += (subtotal * (valPredIva / 100));
+            
+                        }
                         
+                        subtotal = subtotal * cantidad;
+                     
                         var precioVenta = 0;                        
                             
                         if(precio != '' && ganancia_venta != ''){
-                            var cobroIva = precio * ( valPredIva / 100 ); 
-                            var ganancia = precio * ( ganancia_venta / 100 ); 
+                            var cobroIva  = precio * ( valPredIva / 100 ); 
+                            var precioIva = parseDouble (precio + cobroIva);
+                            var ganancia  = precioIva * ( ganancia_venta / 100 ); 
                             
-                            precioVenta = parseDouble(precio + cobroIva + ganancia);
+                            //hack
+                            precioVenta = parseDouble(precioIva + ganancia);
+                            //precioVenta = parseDouble(precio + ganancia);
                             
                         } else if(precio != '' && ganancia_venta == ''){
                             var cobroIva = precio * ( valPredIva / 100 ); 
@@ -264,8 +275,8 @@ $(document).ready(function(){
                         } else {
                             precioVenta = 0;
                             
-                        }                      
-                        
+                        } 
+
                         //se verifica que el articulo que se quiere ingresar no se
                         //encuentra ya en el listado  //creo que se puede remplazar por el largo de $(".filaArticuloCompra").has('[cod=id]')
                         var existeEnListado = false;
@@ -317,8 +328,8 @@ $(document).ready(function(){
                     $("#BoxOverlayTransparente").css("display","none");
                     return false;            
 
+            });  
 
-            });    
      
     //Codigo que se encarga de verificar que se escriban las letras correctas en el cmpo selector del patron
     //de busqueda, y a su vez, determina a que modulo se debe ir para listar
@@ -481,41 +492,46 @@ $(document).ready(function(){
     
     
     //Evento enter sobre el campo de agregar articulos
-    //Evento enter sobre el campo de agregar articulos
+    //Utilizado por el lector del codigo de barras
     $("#articuloFactura").on("keyup", function(e){
         e.preventDefault();
         var tecla = (document.all) ? e.keyCode : e.which; 
         
         if (tecla == "13") {
-               
-            var id          = $(this).val();
-            
-            if (id == "") {
-                return;
-            }
-            
-            var idBodega    = $("#selectorBodegas").val();
-            var destino     = "/ajax/articulos/listarArticulosCompra?extra="+idBodega+"&term="+id;
-            
-            $.ajax({
-                type:"POST",
-                url: destino,
-                dataType:"json",
-                data: {},
-                success:function(data) {
-                    setTimeout(function(){
-                        $("ul.ui-autocomplete").css("display", "none"); 
-                    },250);   
-                    
-                    if (data.id != "")
-                        return false;
-                    
-                        agregarItemListaArticulo(data[0]);
-                        
+            var that = $(this);
+            setTimeout(function(){
+
+                if (that.attr("autocompletable") !== "true") {
+                    var id          = that.val();
+
+                    if (id == "") {
+                        return;
+                    }
+
+                    var idBodega    = $("#selectorBodegas").val();
+                    var destino     = "/ajax/articulos/listarArticulosCompra?extra="+idBodega+"&term="+id;
+
+                    $.ajax({
+                        type:"POST",
+                        url: destino,
+                        dataType:"json",
+                        data: {},
+                        success:function(data) {
+                            setTimeout(function(){
+                                $("ul.ui-autocomplete").css("display", "none"); 
+                            },250);   
+
+                            if (data.id == ""){
+                                return false;
+                            }
+
+                            agregarItemListaArticulo(data[0]);
+
+                        }
+                    });
                 }
-            });
-            
-            
+
+            }, 75);
         }
     });
     
@@ -594,7 +610,7 @@ $(document).ready(function(){
                     $(".campoIva").hide("fast");
                     
                 }
-                
+                $("#regimenProveedor").val(respuesta.regimen);
                 //si se cambia de proveedor se deben eliminar todos los articulos de la lista
                 resetFactura();
             }
@@ -606,7 +622,24 @@ $(document).ready(function(){
     /*Funcion que es lanzada sobre el evento selected del plugin autocomplete sobre el
      *campo de seleccionar articulos en una factura, esto para el precio de venta*/
     $("#articuloFactura").bind("autocompleteselect", function( event, ui) { 
+        /**
+         * Hubo un conflicto con el plugin de jquery y el lector del codigo de barras. El conflicto
+         * se daba porque para agregar el item con el lector se capturaba el evento con la tecla enter,
+         * y el autocomplete de jquery utiliza la tecla enter, asi que para solucionar esto, en este metodo
+         * agregamos un atributo llamado autocompletable al campo de articuloFactura para saber si el evento 
+         * keypress se lanza usando el plugin autocomplete. Asi mismo en el codigo encargado de capturar el
+         * evento keypress lanzado por el codigo de barras se agregó un delay y un condicional para saber
+         * si el evento venia del autocomplete o del lector.
+         */
+        $(this).attr("autocompletable", "true");
+        
         agregarItemListaArticulo(ui.item);
+        
+        var that = $(this);
+        
+        setTimeout(function(){
+            that.attr("autocompletable", "");
+        }, 200);
     
     });   
         
@@ -1046,6 +1079,8 @@ $(document).ready(function(){
         
         var descuento     = padre.find(".descuentoGeneralArticuloCompra").val();//capturo el descuento que tenga el articulo
         
+        var iva = padre.attr("iva");
+        
         if (descuento != '') {descuento = parseDouble(descuento);}//casting a entero
         
         var cantidad    = 0;
@@ -1066,6 +1101,11 @@ $(document).ready(function(){
             subtotal = cantidad * precio;
 
         }
+        
+        //validar si el proveedor va a vender con iva
+        if ($("#regimenProveedor").val() != 1) {
+            subtotal += (subtotal * (iva / 100));
+        }       
 
         campoSubtotal.val(subtotal); 
         
@@ -1089,7 +1129,7 @@ $(document).ready(function(){
      *funcion que se encarga de ir calculando el subtotal a medida que se va ingresando el precio del articulo
      **/
     $(".precioUnitarioArticuloCompra").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
-        
+
         var padre    = $(this).parents("tr.filaArticuloCompra");//capturar el padre <tr>
         
         var cantidad = padre.find(".cantidadArticuloCompra").val();
@@ -1105,15 +1145,16 @@ $(document).ready(function(){
         var porcenGanan  = padre.find(".campoPorcentajeGanancia").val();
         if (porcenGanan != '') {porcenGanan = parseDouble(porcenGanan);}  
    
-        var campoPrecioVenta = padre.find(".campoPrecioVentaArticulo");
+        //var campoPrecioVenta = padre.find(".campoPrecioVentaArticulo");
       
         var precio      = 0;
         var subtotal    = 0;
-        var precioVenta = 0;
+        //var precioVenta = 0;
         
         //var valPredIva = $("#valorIva").val();
-        var valPredIva = padre.attr("iva");
+        var iva = padre.attr("iva");
         
+
         precio = $(this).val();
         
         if(precio == ''){precio = 0;}
@@ -1131,23 +1172,16 @@ $(document).ready(function(){
 
         }
         
-        precioVenta = precio + (precio* (valPredIva / 100));
+        //validar si el proveedor va a vender con iva
+        if ($("#regimenProveedor").val() != 1) {
+            subtotal += (subtotal * (iva / 100));
+        } 
 
-        if (porcenGanan !== '' || porcenGanan !== 0 || porcenGanan !== '0') {//si no hay porcentaje de ganancia               
-            precioVenta = precioVenta + ( (porcenGanan * precio) / 100);//se hace el calculo aplicando el porcentaje
-
-        }                
-
-        campoSubtotal.val(parseDouble(subtotal)); //asigno el precio al subtotal
+        campoSubtotal.val(subtotal); 
         
-        campoPrecioVenta.val(parseDouble(precioVenta)); //asigno el precio al campo precio de venta
-        
-        padre.attr("precio_venta", parseDouble(precioVenta));//asigno el valor del precio de venta al atributo "precio_venta" del <p> padre
-        
-        padre.attr("subtotal", parseDouble(subtotal)); //le pongo al <p> padre el subtotal, pues es recorriendo todas las filas <p> y tomando este atributo con lo que se calcula el total
+        padre.attr("subtotal", parseDouble(subtotal));
 
         calcularTotalFactura();
-
 
     }).live("blur", function(e) {
         var valor = $(this).val();
@@ -1158,7 +1192,7 @@ $(document).ready(function(){
             verificarFormatoNumeroDecimal($(this));
         }
         
-    });      
+    });   
     
     /**
      * Funciones que se encargan de bloquear el boton derecho de los campos de texto
@@ -1224,42 +1258,45 @@ $(document).ready(function(){
         
     });  
     
-    
-    $("#campoIva").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
-
-        var total       = 0;
-        var subtotal    = 0;
-
-        subtotal = parseDouble($("#oculto_iva").val());
-
-        total = subtotal;
-
-        if (total > 0) {
-            var iva = $(this).val();
-            if (iva === '') { iva = 0; }
-
-            total = total + parseDouble(iva); 
- 
-        } else {
-            total = "0";
-        }
-        
-        total = parseDouble(total);
-        
-        $("#campoTotal").html("<span class='prefijo_numero'>$</span>"+total);
-        
-        $("#totalFactura").val(total);
-        
-        guardarFacturaTemporal();
-         
-    }).live("blur", function(e) {
-        var valor = $(this).val();
-        
-        if (isNaN(valor) && !isFinite(valor)) {
-            mostrarErrorCampo($(this));
-        }
-        
-    });      
+    /**
+     * documentado porque el campo esta como readonly, entonces no es necesaria esta funcionalidad, si los
+     * requerimientos cambias, se desdocumenta
+     */
+//    $("#campoIva").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
+//
+//        var total       = 0;
+//        var subtotal    = 0;
+//
+//        subtotal = parseDouble($("#oculto_iva").val());
+//
+//        total = subtotal;
+//
+//        if (total > 0) {
+//            var iva = $(this).val();
+//            if (iva === '') { iva = 0; }
+//
+//            total = total + parseDouble(iva); 
+// 
+//        } else {
+//            total = "0";
+//        }
+//        
+//        total = parseDouble(total);
+//        
+//        $("#campoTotal").html("<span class='prefijo_numero'>$</span>"+total);
+//        
+//        $("#totalFactura").val(total);
+//        
+//        guardarFacturaTemporal();
+//         
+//    }).live("blur", function(e) {
+//        var valor = $(this).val();
+//        
+//        if (isNaN(valor) && !isFinite(valor)) {
+//            mostrarErrorCampo($(this));
+//        }
+//        
+//    });      
     
     
     // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento1
@@ -1324,7 +1361,7 @@ $(document).ready(function(){
     });  
     
         
-    // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento1
+    // funcion que se encarga de ir calculando el total si se escribe en el campo id= descuento2
     $("#campoDescuento2").live("keypress", function(e){verificarTecla(e, "numeros");}).live("keyup change", function(e){
         
         var total = 0;
@@ -1455,13 +1492,15 @@ $("#botonFinalizarFactura").bind("click", function(e){
       
     if(cantArticulosCompra.length <= 0){
         Sexy.alert("Debes al menos ingresar un articulo para generar una compra");
+        $boton.removeAttr("disabled");
         return;        
         
     } else if (total <= 0) {
         /**
         * Verificar que la factura tenga vaores adecuados
         **/
-        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");         
+        Sexy.alert("El total de la factura debe de ser mayor a 0 para poder facturar");   
+        $boton.removeAttr("disabled");
         return; 
     }
 
@@ -1552,9 +1591,6 @@ function guardarFacturaTemporal(){
     
 }
 
-
-
-
 /**
  * Funcion que se encarga de calcular el subtotal de una fila cuando se coloca un descuento
  * ya sea el gral, o un descuento a una fila en particular
@@ -1574,6 +1610,8 @@ function calcularSubtotalCampoDescuento(obj, e, borrarCampoDesGen){
     var campoSubtotal = padre.find(".subtotalArticuloCompra");//capturo el objDOM campo del subtotal
     
     var cantidad      = padre.find(".cantidadArticuloCompra");//capturo el objDOM cantidad
+    
+    var iva = padre.attr("iva");
   
     var descuento = 0;
     
@@ -1592,9 +1630,16 @@ function calcularSubtotalCampoDescuento(obj, e, borrarCampoDesGen){
         
     } else{
         precio = precio - ((precio * descuento) / 100);
+        //subtotal_con_descuentos = valor resultante de aplicar el descuento al precio unitario
+        padre.attr("subtotal_con_descuentos", parseDouble(precio));
         subtotal = cantidad.val() * precio;
         
     }
+    
+    //validar si el proveedor va a vender con iva
+    if ($("#regimenProveedor").val() != 1) {
+        subtotal += (subtotal * (iva / 100));
+    }    
 
     campoSubtotal.val(parseDouble(subtotal));   
     
@@ -1604,57 +1649,58 @@ function calcularSubtotalCampoDescuento(obj, e, borrarCampoDesGen){
         
 }
 
-
-
-
 /**
  * Funcion que se encarga de calcular el valor de la ganancia de un articulo de una fila cuando se coloca un porcentaje de ganancia
+ * borrarCampoGanGen = booleano que determina si hay que borrar el campo de ganancia general
  */
 function calcularGananciaArticulo(obj, e, borrarCampoGanGen){
     
-    var padre        = obj.parents("tr.filaArticuloCompra");//capturo el objDOM <p> padre
+    var padre           = obj.parents("tr.filaArticuloCompra");//capturo el objDOM <p> padre
     
-    var precio_venta = padre.find(".precioVentaArticulo");//capturo el objDOM precio de venta
+    var precio          = padre.attr("precio");//capturo el precio unitario (el precio base sobre el que se esta trabajando)
     
-    var precio       = padre.find(".precioUnitarioArticuloCompra").val();//capturo el precio unitario
+    var iva             = parseDouble( padre.attr("iva") );
     
+    var $precioVenta    = padre.find(".precioVentaArticulo");//capturo el objDOM precio de venta
+    
+    
+ 
     if(precio == ''){precio = 0;}
-    
     precio = parseDouble(precio);
     
     var precioVenta        = 0;
     
+    //calculo el porcentaje de ganancia
     var porcentajeGanancia = 0;
-
-    porcentajeGanancia = obj.val();
+    porcentajeGanancia     = obj.val();
 
     if(porcentajeGanancia == ''){porcentajeGanancia = 0;}
-
     porcentajeGanancia = parseDouble(porcentajeGanancia);
-
-    var iva = parseDouble( padre.attr("iva") );
 
     //var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
     var valPredIva = iva;
-        valPredIva = parseInt(valPredIva);    
+        valPredIva = parseInt(valPredIva);   
+        
+    var subtotal = precio;
+    
+    //validar si el proveedor va a vender con iva
+    if ($("#regimenProveedor").val() != 1) {
+        subtotal += (subtotal * (iva / 100));
+    }     
 
-    if(precio != '' && porcentajeGanancia != ''){
-        var cobroIva = precio * ( valPredIva / 100 ); 
-        var ganancia = precio * ( porcentajeGanancia / 100 ); 
+    if(subtotal != '' && porcentajeGanancia != ''){
+        var ganancia = subtotal * ( porcentajeGanancia / 100 ); 
+        precioVenta = parseDouble(subtotal +  ganancia);
 
-        precioVenta = parseDouble(precio + cobroIva + ganancia);
-
-    } else if(precio != '' && porcentajeGanancia == ''){
-        var cobroIva = precio * ( valPredIva / 100 ); 
-
-        precioVenta = parseDouble(precio + cobroIva);
+    } else if(subtotal != '' && porcentajeGanancia == ''){
+        precioVenta = parseDouble(subtotal);
 
     } else {
         precioVenta = 0;
 
-    }     
+    }         
 
-    precio_venta.val(parseDouble(precioVenta));
+    $precioVenta.val(parseDouble(precioVenta));
 
     if(borrarCampoGanGen){
         $(".campoGananciaListadoArticulos").val("");
@@ -1662,6 +1708,7 @@ function calcularGananciaArticulo(obj, e, borrarCampoGanGen){
    
     padre.attr("precio_venta", parseDouble(precioVenta));
     armarCadenaDatosArticulos();
+    guardarFacturaTemporal();
     
 }
 
@@ -1673,18 +1720,18 @@ function calcularGananciaArticuloPorcentaje(obj, e, borrarCampoGanGen){
     
     var padre               = obj.parents("tr.filaArticuloCompra");
     
-    var porcentaje_ganancia = padre.find(".porcentajeGanancia");
+    var $porcentajeGanancia = padre.find(".porcentajeGanancia");
     
-    var precio              = padre.find(".precioUnitarioArticuloCompra").val();
+    var iva                 = parseDouble( padre.attr("iva") );
     
-    if (precio == '') {precio = 0;}
+    var subtotal            = padre.attr("subtotal");
     
-    precio = parseDouble(precio);    
+    if (subtotal == '') {subtotal = 0;}
+    
+    subtotal = parseDouble(subtotal);    
  
     var precioVenta        = 0;
-    var porcentajeGanancia = 0;
-    
-    var iva = parseDouble( padre.attr("iva") );
+    var porcentajeGanancia = 0;    
 
     //var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
     var valPredIva = iva;
@@ -1694,31 +1741,29 @@ function calcularGananciaArticuloPorcentaje(obj, e, borrarCampoGanGen){
 
     if(precioVenta == ''){precioVenta = 0;}
 
-    precioVenta = parseDouble(precioVenta);
-    
-    precioVenta = precioVenta - (precio * (valPredIva / 100));
+    precioVenta = parseDouble(precioVenta);    
 
     if(parseDouble(precioVenta) < 0){
         return;
 
-    } else if(precio == 0){
+    } else if(subtotal == 0){
         porcentajeGanancia = 0;
         
     } else{
         //calcular el porcentaje de ganancia
-        porcentajeGanancia =  precioVenta - precio ;
+        porcentajeGanancia =  precioVenta - subtotal ;
         porcentajeGanancia =  porcentajeGanancia * 100 ;
-        porcentajeGanancia =  porcentajeGanancia / precio ;
+        porcentajeGanancia =  porcentajeGanancia / subtotal ;
 
     }
 
-    porcentaje_ganancia.val("");
+    $porcentajeGanancia.val("");
     if(borrarCampoGanGen){
         $(".campoGananciaListadoArticulos").val("");
     }
         
     if(porcentajeGanancia > 0){
-        porcentaje_ganancia.val(parseDouble(porcentajeGanancia));
+        $porcentajeGanancia.val(parseDouble(porcentajeGanancia));
     }
 
     padre.attr("precio_venta", parseDouble(precioVenta));
@@ -1748,8 +1793,8 @@ function calcularTotalFactura(){
     
     //colocar el valor al iva
     if ($("#campoIva").is(":visible")) {
-        //var valIva = (total * parseDouble($("#valorIva").val()) ) / 100;
-        //$("#campoIva").val(valIva);
+        sumarIva();
+        
     }
 
 
@@ -1801,14 +1846,20 @@ function sumarIva(){
         $("tr.filaArticuloCompra").each(function(){
            var _iva   = parseInt($(this).attr("iva"));
            //queda pendiente si se saca es el subtotal (ya con descuentos) o el precio
-           var precio = parseDouble($(this).attr("precio"));
+           var precioTemp = ($(this).attr("subtotal_con_descuentos") != 0) ? $(this).attr("subtotal_con_descuentos") : $(this).attr("precio");
+           var precio = parseDouble(precioTemp);
            
-           var _ivaArticulo = precio - (precio / (1 + (_iva/100)) );
-           
+           var cantidad = parseDouble($(this).attr("cantidad"));
+     
+           //Cambio para no mostrar el iva incluido en el precio del arituclo
+           //var _ivaArticulo = precio - (precio / (1 + (_iva/100)) );
+         
+           var _ivaArticulo = cantidad * (precio * (_iva/100));
+                      
            valIva += _ivaArticulo;
-           
-           valIva = parseDouble(valIva);
-           
+         
+           //valIva = parseDouble(valIva) * cantidad;
+        
         });
         
     }
@@ -1817,6 +1868,16 @@ function sumarIva(){
     
 }
 
+function sumarPrecioVenta(precio, porcenGanan) {
+    var precioVenta = precio; //+ (precio* (valPredIva / 100));
+
+    if (porcenGanan !== '' || porcenGanan !== 0 || porcenGanan !== '0') {//si  hay porcentaje de ganancia               
+        precioVenta = precioVenta + ( (porcenGanan * precio) / 100);//se hace el calculo aplicando el porcentaje
+
+    }  
+    
+    return precioVenta;
+}
 
 ////funcion que se encarga de sumar el valor del iva al total de la factura
 //function sumarRetecree(retecree, total){
@@ -1864,7 +1925,13 @@ function armarCadenaDatosArticulos(){
     $("#cadenaArticulosPrecios").val(cadenaDatosArticulos);
 }
 
-
+/**
+ * Funcion encargada de armar el html para agregar una fila a la lista de articulos
+ * 
+ * @param array datos contiene toda la informacion del articulo
+ * @param boolean disabledPrecioVenta si TRUE agrega un identificador a la fila, que inhabilita los campos precio de venta y % ganancia
+ * @returns {String} codigo html que representa una fila de la tabla del listado de articulos
+ */
 function generarFilaArticulo(datos, disabledPrecioVenta){
     
             //funciones y validaciones que se dan si un articulo ya existe en el listado
@@ -1882,7 +1949,7 @@ function generarFilaArticulo(datos, disabledPrecioVenta){
             }
     
             var fila =  "";
-                fila += "<tr id='fila_"+datos['contadorArticuloCompra']+"' cod='"+datos['id']+"' iva='"+datos['iva']+"'  cantidad = '1' descuento = '0' precio_venta = '"+datos['precioVenta']+"' bodega = '"+datos['bodega']+"' precio='"+datos['precio']+"'  subtotal = '"+datos['subtotal']+"' class='filaArticuloCompra'>";
+                fila += "<tr id='fila_"+datos['contadorArticuloCompra']+"' cod='"+datos['id']+"' iva='"+datos['iva']+"'  cantidad = '1' descuento = '0' precio_venta = '"+datos['precioVenta']+"' bodega = '"+datos['bodega']+"' precio='"+datos['precio']+"'  subtotal = '"+datos['subtotal']+"' subtotal_con_descuentos='0' class='filaArticuloCompra'>";
                     fila += "   <td><input type='text' disabled  id='articuloFactura_"+datos['contadorArticuloCompra']+"' value='"+datos['articulo']+"' ayuda='"+datos['articulo']+"' class='campoDescripcionArticulo medioMargenSuperior' maxlength='255' size='50' name='' /></td>";
                     fila += "   <td><input class=' soloNumeros cantidadArticuloCompra campoCantidadArticulo valorMinimo' size='3' valor_minimo = '1' value = '"+cantidad+"'/></td>";
                     fila += "   <td><input class=' soloNumeros descuentoGeneralArticuloCompra campoDescuentoArticulo campoPorcentaje rangoNumeros' rango='1-99' value = '"+datos['descuento']+"' size='3' maxlength='2' /></td>";
@@ -1899,12 +1966,11 @@ function generarFilaArticulo(datos, disabledPrecioVenta){
             return fila;
 }
 
-
 /**
  * Funcion encargada de crear el objeto "articulo" para ser agregado a la lista
  * 
  * @param object _obj   objeto que contiene toda la informacion del articulo, i.e=
- *                      Object { id="9291", iva="17", label="14224 :: +ESPEJO AKT EVO II # 10 JUE (M)", más...}
+ *                      Object { id="9291", iva="17", label="14224 :: +ESPEJO AKT EVO II # 10 JUE (M)", value="1500"}
  * @returns false para terminar la ejecucion
  */
 function agregarItemListaArticulo(_obj) {
@@ -1915,23 +1981,28 @@ function agregarItemListaArticulo(_obj) {
             $("#contenedorInfoArticulo").slideUp("fast");
         }        
         
+        if (typeof(_obj) == "undefined") {
+            $("#BoxOverlayTransparente").css("display","none");
+            return;
+        }
+        
         var articulo = _obj.label;//nombre del articulo, viene en la respuesta
         
         var bodega = $("#idBodegaGeneral").val();
         
+        var id          = _obj.id;//id del articulo
+        
+        var iva         = _obj.iva;//iva del articulo        
+        
         var precio = _obj.value;//precio del articulo
-        if(precio !== '' || precio !== '0' || precio !== 0 && precio !== null){   
+        if(precio !== '' || precio !== '0' || precio !== 0 && precio !== null){             
             precio = parseDouble(precio);
             
         } else {
             precio = 0;
             
-        }
-            
-        var id          = _obj.id;//id del articulo
-        
-        var iva         = _obj.iva;//iva del articulo
-        
+        }  
+
         var descuento = $("#campoDescuentoListadoArticulos").val();//capturo el campo del descuento general
             
         var subtotal = precio;//por base el subtotal es el mismo precio
@@ -1941,7 +2012,12 @@ function agregarItemListaArticulo(_obj) {
             var subtotal1 = ( descuento * precio ) / 100;//aplico dicho descuento
             subtotal      = precio - subtotal1;
         } 
-        
+                      
+        //validar si el proveedor va a vender con iva
+        if ($("#regimenProveedor").val() != 1) {
+            subtotal += (subtotal * (iva / 100));
+        } 
+
         var ganancia_venta = $("#campoGananciaListadoArticulos").val();//capturo el valor del campo % total ganancia factura
         if(ganancia_venta != ''){
             ganancia_venta = parseDouble(ganancia_venta);
@@ -1952,13 +2028,16 @@ function agregarItemListaArticulo(_obj) {
         //var valPredIva = (iva != 0) ? iva : $("#valorIva").val();
         var valPredIva =  iva;
         
-        if (precio != '' && precio != '0' && precio != 0 && ganancia_venta != '') {//si el articulo tiene precio, y se ha introducido un % de ganancia sobre el articulo
-            precioVenta = ( precio + ( (precio *  ganancia_venta) / 100)) + ( (precio *  valPredIva) / 100) ;//aplico ese porcentaje de ganancia sobre el precio de venta
+        //hack para quitar el iva de los calculos de precio de venta
+        var valPredIva2 = 0;
+        
+        if (subtotal != '' && subtotal != '0' && subtotal != 0 && ganancia_venta != '') {//si el articulo tiene subtotal, y se ha introducido un % de ganancia sobre el articulo
+            precioVenta = ( subtotal + ( (subtotal *  ganancia_venta) / 100)) + ( (subtotal *  valPredIva2) / 100) ;//aplico ese porcentaje de ganancia sobre el subtotal de venta
             
-        } else if (precio != '' && precio != '0' && precio != 0 && ganancia_venta == '') {//si no hay porcentaje de ganancia escrito, se toma el predeterminado
+        } else if (subtotal != '' && subtotal != '0' && subtotal != 0 && ganancia_venta == '') {//si no hay porcentaje de ganancia escrito, se toma el predeterminado
             var porcPredGanancia = $("#porcPredGanancia").val();
             porcPredGanancia     = parseDouble(porcPredGanancia);            
-            precioVenta          = (precio + ( (precio *  porcPredGanancia) / 100) ) + ( (precio *  valPredIva) / 100);
+            precioVenta          = (subtotal + ( (subtotal *  porcPredGanancia) / 100) ) + ( (subtotal *  valPredIva2) / 100);
             
         } else {
             precioVenta = '0';//sino este sigue siendo cero, esto para no modificar ese valor en la BD, pues antes de introducirlo, se verificará que no sea 0

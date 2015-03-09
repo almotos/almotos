@@ -125,6 +125,11 @@
     
     $(".ui-dialog #contenedorTablaRegistros #tablaRegistros .cabeceraTabla .cantidad").html('Cantidad');
     
+    $(".ui-dialog #contenedorTablaRegistros #tablaRegistros #campoCantidadArticulo").live("click", function(e){
+        e.stopPropagation();
+        $(this).focus();
+    });
+    
 //    //call the addFields function
 //    //agregarCamposCantidad();
 //    

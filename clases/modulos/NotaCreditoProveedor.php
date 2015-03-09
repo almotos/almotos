@@ -146,7 +146,6 @@ class NotaCreditoProveedor {
 
             $condicion = 'ncp.id = "' . $id . '"';
 
-
             $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
 
             if ($sql->filasDevueltas) {
@@ -201,6 +200,8 @@ class NotaCreditoProveedor {
                     
                 }
                 
+                $this->factura = new FacturaCompra($this->idFactura);
+                
             }
             
         }
@@ -218,8 +219,6 @@ class NotaCreditoProveedor {
      */
     public function adicionar($datos){
         global $sql, $archivo_nota_digital;
-
-
         //almaceno en nuevas variables los datos que serán eliminados del arreglo
         $nuevasCantidades       = $datos['nueva_cantidad'];
         $datos['archivo']       = '';
@@ -254,9 +253,8 @@ class NotaCreditoProveedor {
             
         }
         
-        $inventario = new Inventario();
-        
         if($datos['inventario_modificado']){ //si se marcó la opción de modificar de las cantidades del inventario
+            $inventario = new Inventario();
             
             foreach($nuevasCantidades as $key => $value){
                 
@@ -265,77 +263,65 @@ class NotaCreditoProveedor {
                 $cantidadActual     = $arr_1[0];
                 $idArticulo         = $arr_1[1];
                 $idBodega           = $arr_1[2];
+                $idArticuloFactura  = $arr_1[3];
                 $nuevaCantidad      = $value;
                 
+                if ($cantidadActual == $nuevaCantidad) {
+                    continue;
+                }
 
-                /**
-                 * verificar cambios en cantidades para asi mismo modificar el inventario
-                 * solo se modificarian datos en una nota credito cuando la nueva cantidad ingresada 
-                 * sea menor a la cantidad existente en la factura, ya que una nota credito se puede 
-                 * generar solo por exceso en la facturacion de parte del proveedor al cliente
-                 */
+                $queryInv = FALSE;
+                
                  if ($nuevaCantidad < $cantidadActual){
-                     
-                    $descontar = $inventario->descontar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($descontar){
-   
-                        $datos_amncp = array(
-                                            "id_nota_credito_proveedor" => $idNotaCredito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ncp", $datos_amncp);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
-                        $sql->cancelarTransaccion();
-                        return false;
-                        
-                    }
-                    
+                     $cantidadAModificar = $cantidadActual - $nuevaCantidad;
+                     $queryInv = $inventario->descontar($idArticulo, $cantidadAModificar, $idBodega);
+
                 } else {
-                    $aumentar = $inventario->adicionar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($aumentar){
-                           
-                        $datos_amncp = array(
-                                            "id_nota_credito_proveedor" => $idNotaCredito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ncp", $datos_amncp);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
-                        $sql->cancelarTransaccion();
-                        return false;
-                        
-                    }                    
+                    //Revisar si en una nota credito hay la posibilidad que la cantidad del articulo sea mayor a la existente
+                    $cantidadAModificar = $nuevaCantidad - $cantidadActual;
+                    $queryInv = $inventario->adicionar($idArticulo, $cantidadAModificar, $idBodega);    
                     
                 }
                 
+                if($queryInv){
+                    $datos_amncp = array(
+                                        "id_nota_credito_proveedor"  => $idNotaCredito,
+                                        "id_articulo_factura_compra" => $idArticuloFactura,
+                                        "id_articulo"                => $idArticulo,
+                                        "cantidad_anterior"          => $cantidadActual,
+                                        "cantidad_nueva"             => $nuevaCantidad,
+                                        "fecha"                      => date("Y-m-d H:i:s"),
+                                        );
+
+                    $query = $sql->insertar("articulos_modificados_ncp", $datos_amncp);
+
+                    if(!$query){
+                        $sql->cancelarTransaccion();
+                        return false;
+                    }
+
+                } else {
+                    $sql->cancelarTransaccion();
+                    return false;
+
+                }              
+                
             }
+        }
+        
+        $contabilidadCompras = new ContabilidadCompras();
+        
+        $contabilizarNCP = $contabilidadCompras->contabilizarNCP($idNotaCredito);
+        
+        if (!$contabilizarNCP) {
+            $sql->cancelarTransaccion();
+            return false;
         }
         
         $sql->finalizarTransaccion();
         return true;
         
     }
-
-  
 
     /**
      *
@@ -375,7 +361,6 @@ class NotaCreditoProveedor {
         }
         
     }
-    
     
     /**
      * Cargar los datos de una nota
@@ -442,6 +427,15 @@ class NotaCreditoProveedor {
 
         if (!$validarFormato) {
             $configuracionRuta = $configuracion["RUTAS"]["media"] . "/" . $configuracion["RUTAS"]["archivos"] . '/'.$tipo.'/';
+            
+            if (!is_file($configuracionRuta)) {
+                mkdir($configuracionRuta, 7777);
+            }
+            
+            if (!is_writable($configuracionRuta)) {
+                chmod($configuracionRuta, 7777);
+            }
+            
             $recurso = Archivo::subirArchivoAlServidor($archivo, $configuracionRuta);
             
             if ($recurso) {
@@ -491,6 +485,61 @@ class NotaCreditoProveedor {
         }
         
     }   
-
     
+    /**
+     * Verifica si un articulo fue modificado en una nota credito previa y devuelve la cantidad
+     * real del articulo despues de aplicar dicha nota.
+     * 
+     * @global type $sql
+     * @param type $idArticuloFactura = id del registro en la tabla articulos_factura_compra
+     * @return int|boolean devuelve la cantidad actual del articulo o FALSE si no hay una nota credito previa
+     */
+    public static function verificarNotaPrevia($idArticuloFactura) {
+        global $sql;
+
+        $datos = array();
+
+        $tabla          = "articulos_modificados_ndp";
+        $columna        = array("cantidad_nueva", "fecha");
+        $condicion      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden          = "id DESC";
+
+        $consulta = $sql->seleccionar($tabla, $columna , $condicion, "", $orden, 0, 1);
+
+        if ($sql->filasDevueltas == 1) {
+            $datos[] = $sql->filaEnObjeto($consulta);
+
+        }      
+
+        $tabla1          = "articulos_modificados_ncp";
+        $columna1        = array("cantidad_nueva", "fecha");
+        $condicion1      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden1          = "id DESC";
+
+        $consulta1 = $sql->seleccionar($tabla1, $columna1 , $condicion1, "", $orden1, 0, 1);    
+
+        if ($sql->filasDevueltas == 1) {
+            $datos[] = $sql->filaEnObjeto($consulta1);
+
+        }        
+        
+        if (empty($datos[0]) && empty($datos[1])) {
+            return false;
+            
+        } else if (!empty($datos[0]) && empty($datos[1])) {
+            return $datos[0]->cantidad_nueva;
+            
+        } else if (empty($datos[0]) && !empty($datos[1])) {
+            return $datos[1]->cantidad_nueva;
+            
+        } else {
+            if (strtotime($datos[0]->fecha) > strtotime($datos[1]->fecha)) {
+                return $datos[0]->cantidad_nueva;
+            } else {
+                return $datos[1]->cantidad_nueva;
+            }
+        }
+
+    } 
+
 }  

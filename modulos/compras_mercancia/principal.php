@@ -47,7 +47,7 @@ if (!empty($idFactura)) {
     $tituloBloque   = $textos->id('MODULO_ACTUAL') . ' :: ' . $textos->id('CREAR_ORDEN_COMPRA');
 
 } elseif (!empty($idFactTemp)) {
-    $objeto     = new FacturaCompra(); /* creacion del objeto */
+    $objeto     = new FacturaTemporalCompra(); /* creacion del objeto */
     
     $objeto->cargarFacturaTemporal($idFactTemp);
     
@@ -80,13 +80,15 @@ if ($objeto->idProveedor) {
 //obtener el regimen de la empresa
 $regimenEmpresa = $sesion_configuracionGlobal->empresa->regimen;
 
-//capturar el regimen del proveedor
-$regimenProveedor = '';
+//si no es una edicion, o una factura a partir de una orden de compra, o una factura a partir de una factura temporal
+//la variable ($objeto->idProveedor) va a estar vacia, y el id de proveedor por defecto será "1"
+$proveedorPorDefecto = "1";
 
-if ($objeto->idProveedor) {
-    $regimenProveedor = $sql->obtenerValor("proveedores", 'regimen', 'id = "'.$objeto->idProveedor.'"');
+$idProv = ($objeto->idProveedor) ? $objeto->idProveedor : $proveedorPorDefecto;
+        
+$regimenProveedor = $sql->obtenerValor("proveedores", 'regimen', 'id = "'.$idProv.'"');
 
-}
+$regimenProveedor = (empty($regimenProveedor)) ? "1" : $regimenProveedor;
 
 $cantidadDecimales = $sesion_configuracionGlobal->cantidadDecimales;
 
@@ -136,7 +138,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las cajas existentes en el sistema
     $listaProveedores = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
 
-    $idDelProveedor = '1'; //determinar si no viene ningun dato para el cliente que sea el base
+    $idDelProveedor = $proveedorPorDefecto; //determinar si no viene ningun dato para el cliente que sea el base
     
     if (!empty($objeto->idProveedor)) {
         $idDelProveedor = $objeto->idProveedor;
@@ -171,8 +173,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     }
 
     $linea1 .= HTML::campoTexto('datos[fecha_factura]', 9, 12, $fechaFactura, 'campoObligatorio fechaAntigua campoCalendario', '', array()+$tutorial["4"], $textos->id('AYUDA_FECHA_FACTURA'));
-    $linea1 .= HTML::frase($fechaFact[1], 'margenIzquierda negrilla');
-
+    $linea1 .= HTML::frase( isset($fechaFact[1]) ? $fechaFact[1] : "", 'margenIzquierda negrilla');
 
     $linea1 .= HTML::campoOculto('datos[es_orden_compra]', '', 'esOrdenDeCompra'); //Segun se ingrese o se quite el numero de factura de proveedor, este campo va a determinar si solo puede ser una orden de compra
     $linea1 .= HTML::campoOculto('datos[es_modificacion]', $forma_idFactura, 'esModificacion'); //el valor de este campo determina si se trata de la edicion de una factura
@@ -205,7 +206,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las bodegas existentes en el sistema
     $listaBodegas   = array();//arreglo que almacenará el listado de bodegas y será pasado como parametro al metodo HTML::listaDesplegable
     
-    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');//consulto las bodegas de la sede actual del usuario
+    $consulta       = $sql->seleccionar(array('bodegas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '" AND id != "0"', '', 'nombre ASC');//consulto las bodegas de la sede actual del usuario
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {//recorro las respuesta, y voy guardandolas en el arreglo
@@ -217,7 +218,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     //Selecciono las cajas existentes en el sistema
     $listaCajas = array();//arreglo que almacenará el listado de cajas y será pasado como parametro al metodo HTML::listaDesplegable
     
-    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"', '', 'nombre ASC');
+    $consulta = $sql->seleccionar(array('cajas'), array('id', 'nombre'), 'id_sede = "' . $sesion_usuarioSesion->sede->id . '"  AND id != "0"', '', 'nombre ASC');
     
     if ($sql->filasDevueltas) {
         while ($dato = $sql->filaEnObjeto($consulta)) {//recorro las respuesta, y voy guardandolas en el arreglo
@@ -238,7 +239,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
 
 //    $linea2 .= HTML::frase($textos->id('SEDE').': ', 'margenIzquierdaDoble');
 //    $linea2 .= HTML::frase($sesion_usuarioSesion->sede->nombre, 'subtitulo negrilla');
-    $linea2 .= HTML::frase($textos->id('BODEGA'), '');
+    $linea2  = HTML::frase($textos->id('BODEGA'), '');
     $linea2 .= $selectorBodega;
     $linea2 .= HTML::campoOculto('datos[id_bodega]', (int)$idBodegaPrincipal, 'idBodegaGeneral');//campo oculto en el DOM que almacena el idBodegaPrincipal. Este es usado por javascript para ciertas funciones
     $linea2 .= HTML::frase($textos->id('CAJA') . ': ', 'margenIzquierda');
@@ -280,9 +281,11 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     $filas = array();
     $opcionesFilas = array();    
     
+
+    $cadenaListadoDeArticulos   = '';
+    
     if (!empty($objeto->listaArticulos)) {
         $codigoLista                = '';
-        $cadenaListadoDeArticulos   = '';
         $counter                    = 0;
         
         
@@ -314,8 +317,16 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
             } else {//si no, calculo el porcentaje de ganancia
                 $porcPredGanancia = (($precioVenta - $article->precio) * 100) / $article->precio; 
                 
-                if ($objeto->iva > 0){
-                    $porcPredGanancia  -= $article->iva;
+                if ($regimenProveedor != "1" && $article->iva > 0) { //se compra con iva
+                    //$pv1 = precio de venta 1, variable temporal que almacena el precio unitario mas el iva
+                    $pv1 = $article->precio + ($article->precio * ($article->iva / 100));
+                    $article->subtotal = $pv1;
+                    $diffPv_Pv1        = $precioVenta - $pv1;
+                    $porcPredGanancia  = ($diffPv_Pv1 / $pv1) * 100;
+                    
+                } else {
+                    $diffPv_Pv1       = $precioVenta - $article->precio;
+                    $porcPredGanancia = ($diffPv_Pv1 / $article->precio) * 100;
                 }
                                 
             }
@@ -336,6 +347,10 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
                 'class'         => "filaArticuloCompra",
                 'id'            => 'fila_'.$counter,
             );
+            
+            if ($article->descuento > 0 && $article->precio > 0) {
+                $opciones['subtotal_con_descuento'] =  ($article->precio - ($article->precio * ($article->descuento/100)));
+            }
 
             $cod = array();
             //Armo el parrafo con los campos del listado de articulos de compra
@@ -435,12 +450,14 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
         $claseCampoNumFac = 'oculto';
         
     }
+    
+    //var_dump($objeto);
 
     $linea4 .= HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . 'eliminar.png', 'imagenEliminarTodosArticulos flotanteDerecha', 'imagenEliminarTodosArticulos', array('ayuda' => 'Eliminar todos los <br>articulos de la lista')+$tutorial["16"]);
 
     $codigo .= HTML::parrafo($linea4, 'linea4');
     
-    $linea5 .= HTML::frase($textos->id('OBSERVACIONES'), '');
+    $linea5  = HTML::frase($textos->id('OBSERVACIONES'), '');
     $linea5 .= HTML::campoTexto('datos[observaciones]', 35, 250, $objeto->observaciones, '', 'campoObservaciones', array()+$tutorial["22"]); 
     
     $valorIva = ($objeto->iva == '') ? 0 : $objeto->iva;
@@ -448,7 +465,7 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($modulo->id
     $clase = ($regimenProveedor == "1") ? "oculto" : "";
    
     $linea5 .= HTML::frase($textos->id('IVA'), 'margenIzquierda campoIva '.$clase);
-    $linea5 .= HTML::campoTexto('datos[iva]', 8, 10, $valorIva, 'campoDinero campoIva '.$clase, 'campoIva', array()+$tutorial["23"]);
+    $linea5 .= HTML::campoTexto('datos[iva]', 8, 10, $valorIva, 'campoDinero campoIva '.$clase, 'campoIva', array("readonly" => "readonly")+$tutorial["23"]);
     
     $linea5 .= HTML::frase($textos->id('TOTAL'), 'margenIzquierdaTriple margenSuperiorDoble margenInferiorDoble masGrande2');
 

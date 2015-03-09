@@ -1,0 +1,60 @@
+﻿Modulo: Tipos de compra.
+
+Descripción:  Módulo encargado de gestionar la información de los tipos de compra que se encuentran registradas en el sistema. A través de este módulo se gestionan actividades como el ingreso de nuevos tipos de compra, la modificación de los tipos de compra existentes en el sistema,la eliminación de los tipos de compra con previa revisión de la integridad refrencial de la Base de datos. Este modulo permite realizar acciones como las siguientes:
+
+-Gestionar la información de los tipos de compra.
+-Agregar una cuenta contable.
+-Activar o desactivar la compra.
+-Elegir si la compra es principal o secundaria.
+-Adiccionar Desde la ventana modal "agregar cuenta contable" una cuenta sin necesidad de abandonar el modulo tipos de compra.
+
+Clases: TipoCompra.
+
+Tablas relacionadas al modulo: 
+
+fom_tipos_compra: almacena la información de los tipo de compra.
+fom_cuentas_tipo_compra: almacena la información de las cuentas que aplican para el tipo de compra.
+fom_plan_contable: almacena la informacion de los planes contables.
+fom_asientos_contables: almacena la informacion de los asientos contables.
+
+Estructura relacional:
+
+Un plan contable tiene  1..*  tipo de compra.
+Un asiento contable tiene 1..* cuentas (plan contable).
+
+tipo_compra_cuenta_afectada -> cuentas
+cuentas_tipo_compra -> cuentas
+
+Ayuda:
+
+Agregar un tipo de compra: Haga clic en el boton “Agregar tipo de compra” ubicado en la parte superior izquierda de la pantalla.  Se desplegara una ventana modal con los campos pertenecientes al formulario que contiene los datos para ingresar un tipo de compra. Ingrese los datos correspondientes a cada campo y haga caso de las ayudas existentes en el formulario (iconos con signo de interrogacion). Una vez ingresados los datos haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del tipo de compra sera almacenada en el sistema.
+
+Modificar un tipo de compra: Haga clic derecho sobre la fila de la tabla correspondiente al tipo de compra que desea modificar, se mostrara un menu con diferentes opciones, haga clic en “Editar”. Se desplegara una ventana modal con los datos pertenecientes al tipo de compra a ser modificado. Modifique los datos que desea y haga clic en el boton “Aceptar” ubicado en la esquina inferior izquierda de la ventana. Si algun dato de los ingresados no es correcto, el sistema se lo notificara. Si todos los datos son correctos la informacion del tipo de compra sera modificada y almacenada en el sistema.
+
+Eliminar un tipo de compra: Haga clic derecho sobre la fila de la tabla correspondiente al tipo de compra que desea eliminar, se mostrara un menu con diferentes opciones, haga clic en “Borrar”. Se desplegara una ventana modal con el formulario de confirmacion de eliminacion del tipo de compra. Si desea cancelar esta opcion, simplemente cierre esta ventana de confirmacion haciendo clic sobre la “X” ubicada en la esquina superior derecha de la ventana, en caso contrario clic en el boton “Aceptar” para confirmar la eliminacion de la informacion de este tipo de compra.
+
+Consultar un tipo de compra: Haga clic derecho sobre la fila de la tabla correspondiente al tipo de compra que desea consultar, se mostrara un menu con diferentes opciones, haga clic en “Consultar”.  Se desplegara una ventana modal con los datos pertenecientes al tipo de compra.
+
+Agregar cuenta contable: Haga clic derecho sobre la fila de la tabla correspondiente al tipo de compra que desea agregarle una cuenta contable, se mostrara un menu con diferentes opciones, haga clic en “Agregar cuenta contable”.  Se desplegara una ventana modal con el formulario para llevar a cabo dicha acción, debe ingresar la informacion basica de la cuenta, con la funcionalidad de agregar una cuenta al modulo plan contable sin necesidad de abandonar el actual modulo, Por favor siga los pasos en orden y haga uso de las ayudas.
+
+Pruebas de usuario realizadas al modulo: 
+
+1) Ingresar tipo de compra: clic en el boton “agregar tipo de compra”, se despliega la ventana modal. Se ingresan los datos del tipo de compra, cuenta y tipo de cuenta. (Funcionando perfecto, se ingresa un tipo de compra al sistema con los datos adecuados)
+
+1.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. (Funcionando perfectamente, el sistema no permite el ingreso de los datos hasta que todos los datos son los adecuados)
+
+1.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar una cuenta contable directamente desde el formulario de “agregar cuenta contable”. (Funcionando perfectamente, es posible agregar datos a otros modulos sin abandonar el formulario de ingreso de datos).
+
+2) Modificar tipo de compra: clic derecho sobre la fila del tipo de compra que desea modificar, luego hacer clic en “editar”, se despliega la ventana modal con el formulario que contiene los campos con los datos informativos del tipo de compra a ser modificado. Se modifican algunos datos del tipo de compra y se hace clic en aceptar. (Funcionando perfecto)
+
+2.1) se validan los campos obligatorios como no vacios y que los campos  autocompletables o de un tipo de dato especifico tengan un valor adecuado. Tambien se valida que no existan ya tipos de compra registrados con un mismo nombre al cual se desea modificar.. (Funcionando perfectamente, el sistema no permite la modificacion de los datos hasta que todos los datos son los adecuados)
+
+2.2)Validacion de entrada de datos de modulos externos, ejemplo, poder agregar una cuenta directamente desde el formulario de “modificar tipo de compra”. (Funcionando perfectamente, es posible agregar datos a otro modulo sin abandonar el formulario de modificacion de datos).
+
+3.0) Eliminar: clic derecho sobre la fila del tipo de compra que desea eliminar, luego hacer clic en “Borrar”, se despliega la ventana modal con el formulario de confirmacion de eliminacion.(Funciona perfectamente).
+
+3.1) Se cierra esta ventana modal, no debe suceder nada. (funcionando perfectamente, se cancela el proceso de eliminacion).
+
+3.2) Se confirma la eliminacion. Se deben eliminar de las tablas fom_tipos_compras, todos los registros asociados a este tipo de compra. Ademas de esto se debe verificar la integridad referencial de los registros de otras tablas relacionadas indirectamente a este tipo de compra(existentes actualmente en el sistema) como por ejemplo: plan_contable, asientos_contables, etc. En caso de tener relaciones en alguna de estas tablas, el sistema debera notificar al usuario de dicha situacion.
+
+4)Agregar cuenta contable: clic derecho sobre la fila de la tabla correspondiente al tipo de compra que desea agregarle una cuenta contable, se debe mostrar un menu con diferentes opciones, haga clic en “Agregar cuenta contable”. Se debe desplegar una ventana modal con el formulario para llevar a cabo dicha acción, debe ingresar la informacion basica de la cuenta, con la funcionalidad de agregar una cuenta al modulo plan contable sin necesidad de abandonar el actual modulo, Por favor siga los pasos en orden y haga uso de las ayudas.(funcionando perfectamente permite agregar cuentas sin abandonar el actual modulo).

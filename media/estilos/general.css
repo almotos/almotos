@@ -80,6 +80,9 @@ a:hover{
 
 }
 
+.overflowAuto{
+    overflow: auto;
+}
 
 #indicadorEspera div {
     background: #eee url('imagenes/indicador-espera.gif') no-repeat scroll 10px 50%;
@@ -384,6 +387,10 @@ a:hover{
 
 .letraAzul{
     color: #2E64FE;
+}
+
+.letraGrisClara{
+    color: #A4A4A4 !important;
 }
 
 #informacionPersonalUsuario {

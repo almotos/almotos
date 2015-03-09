@@ -75,7 +75,7 @@ if (isset($url_accion)) {
  */
 function cosultarItem($id) {
     global $textos, $sql, $sesion_configuracionGlobal;
-
+    
     if (!isset($id) || (isset($id) && !$sql->existeItem('facturas_compras', 'id', $id))) {
         $respuesta              = array();
         $respuesta['error']     = true;
@@ -84,23 +84,23 @@ function cosultarItem($id) {
         Servidor::enviarJSON($respuesta);
         return NULL;
     }
-
+    
     $objeto     = new FacturaCompra($id);
     $respuesta  = array();
-    
+
     $codigo = '';
 
     $codigo .= HTML::campoOculto('id', $id);
 
     $codigo1  = HTML::parrafo($textos->id('PROVEEDOR') . ': ' . HTML::frase($objeto->proveedor->nombre, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_PROVEEDOR') . ': ' . HTML::frase($objeto->numeroFacturaProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('MODO_PAGO') . ': ' . HTML::frase($textos->id('MODO_PAGO' . $objeto->modoPago), 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo('', 'negrilla margenSuperior');
 
-    if ($objeto->modoPago == '2') {
+    if ($objeto->fechaVtoFactura != '') {
         $codigo2 = HTML::parrafo($textos->id('FECHA_VENCIMIENTO') . ': ' . HTML::frase($objeto->fechaVtoFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     }
     
@@ -108,17 +108,28 @@ function cosultarItem($id) {
     
     $codigo2 .= HTML::parrafo($textos->id('SEDE') . ': ' . HTML::frase($objeto->sede, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($textos->id('VALOR_FLETE') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->valorFlete, '$'), 'sinNegrilla'), 'negrilla margenSuperior');
+    
+    if (count($objeto->arregloRetenciones) > 0 ) {
+        $codigo2 .= HTML::parrafo($textos->id('RETENCIONES'), 'negrilla margenSuperior');
+        foreach ($objeto->arregloRetenciones as $key => $valor) {
+            $codigo2 .= HTML::parrafo($key . ': ' . HTML::frase('$'.Recursos::formatearNumero($valor, '$'), 'sinNegrilla'), 'margenIzquierda');
+        }
+    
+    }
+    
     $codigo2 .= HTML::parrafo($textos->id('CAJA') . ': ' . HTML::frase($objeto->caja, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
-
+    
+    if ($objeto->observaciones != ""){
+        $codigo2 .= HTML::parrafo($textos->id('OBSERVACIONES') . ': ' . HTML::frase($objeto->observaciones, 'sinNegrilla'), 'negrilla margenSuperior');
+    }
+    
     //verificar el identificador escogido para los articulos en la configuracion global y usarlo para mostrar los datos
     $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
     
     $arrayIdArticulo     = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));        
 
-
     $datosTabla = array(
-        HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
+        //HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
         HTML::frase($textos->id('ARTICULO'),    'negrilla margenIzquierda'),
         HTML::frase($textos->id('CANTIDAD'),    'negrilla margenIzquierda'),
         HTML::frase($textos->id('DESCUENTO'),   'negrilla margenIzquierda'),
@@ -134,7 +145,7 @@ function cosultarItem($id) {
 
         $object = new stdClass();
 
-        $object->plu            = $article->$idPrincipalArticulo;
+        //$object->plu            = $article->$idPrincipalArticulo;
         $object->articulo       = $article->articulo;
         $object->cantidad       = $article->cantidad;  
         $object->descuento      = $article->descuento; 
@@ -143,8 +154,7 @@ function cosultarItem($id) {
         
         if (strlen($object->articulo) > 80) {
             $object->articulo = substr($object->articulo, 0, 80) . '.';
-        }        
-        
+        }          
         
         if ($object->descuento == 0 || $object->descuento == '0') {
             $object->subtotal = $object->cantidad * $object->precio;
@@ -154,18 +164,10 @@ function cosultarItem($id) {
         $object->descuento  = Recursos::formatearNumero($object->descuento, '%', '0');
         $object->precio     = '$' . Recursos::formatearNumero($object->precio, '$');
         
-//        $subtotalFactura += $object->subtotal;
-
         $object->subtotal = '$' . Recursos::formatearNumero($object->subtotal, '$');
 
         $listaArticulos[] = $object;
     }
-
-//    $subtotalFactura += $objeto->valorFlete;
-    
-//    $impuestoIva = ($subtotalFactura * $objeto->iva) / 100;
-
-//    $subtotalFactura += $impuestoIva;
 
     $idTabla                    = 'tablaListaArticulosConsulta';
     $clasesColumnas             = array('', '', '', '', '');
@@ -174,33 +176,30 @@ function cosultarItem($id) {
     $clase                      = 'tablaListaArticulosConsulta';
     $contenedorListaArticles    = HTML::tabla($datosTabla, $listaArticulos, $clase, $idTabla, $clasesColumnas, $clasesFilas, $opciones);
 
+    if ($objeto->iva != "") {
+        $codigo4  = HTML::parrafo($textos->id('IVA') . '$ '.HTML::frase($objeto->iva, 'sinNegrilla'), 'negrilla margenSuperior');
+    }
 
-    $codigo4  = HTML::parrafo($textos->id('IVA') . '$ '.HTML::frase($objeto->iva . '$ ', 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo4 .= HTML::parrafo($textos->id('DESCUENTOS') . ': ', 'negrilla margenSuperior letraVerde');
-
-    $totalFactura = $objeto->subtotal;
+    $totalFactura = $objeto->subtotal - $objeto->totalRetenciones;
 
     if (!empty($objeto->concepto1) && !empty($objeto->descuento1)) {
-
+        $codigo4 .= HTML::parrafo($textos->id('DESCUENTOS') . ': ', 'negrilla margenSuperior letraVerde');
+        
         $pesosDcto1 = ($totalFactura * $objeto->descuento1) / 100;
-        
 //        $totalFactura = $totalFactura - $pesosDcto1;
-        
         $codigo4 .= HTML::parrafo($objeto->concepto1 . ': ' . HTML::frase($objeto->descuento1 . '%', 'sinNegrilla') . HTML::frase('$' . Recursos::formatearNumero($pesosDcto1, '$'), 'sinNegrilla margenIzquierdaDoble'), 'negrilla margenSuperior');
     }
 
     if (!empty($objeto->concepto2) && !empty($objeto->descuento2)) {
         $pesosDcto2 = ($totalFactura * $objeto->descuento2) / 100;
-        
 //        $totalFactura = $totalFactura - $pesosDcto2;
-        
         $codigo4 .= HTML::parrafo($objeto->concepto2 . ': ' . HTML::frase($objeto->descuento2 . '%', 'sinNegrilla') . HTML::frase('$' . Recursos::formatearNumero($pesosDcto2, '$'), 'sinNegrilla margenIzquierdaDoble'), 'negrilla margenSuperior');
     }
 
     $codigo5  = HTML::parrafo($textos->id('SUBTOTAL') . ': $' . HTML::frase(Recursos::formatearNumero($objeto->subtotal, '$'), 'sinNegrilla titulo'), 'negrilla margenSuperior');
     $codigo5 .= HTML::parrafo('', 'negrilla margenSuperior');
     $codigo5 .= HTML::parrafo('', 'negrilla margenSuperior');
-    $codigo5 .= HTML::parrafo($textos->id('TOTAL') . '$' . HTML::frase(Recursos::formatearNumero($objeto->total, '$'), 'sinNegrilla letraAzul grande'), 'negrilla margenSuperior titulo');
+    $codigo5 .= HTML::parrafo($textos->id('TOTAL') . '$' . HTML::frase(Recursos::formatearNumero($totalFactura, '$'), 'sinNegrilla letraAzul grande'), 'negrilla margenSuperior titulo');
     $codigo5 .= HTML::parrafo($objeto->facturaDigital, 'negrilla margenSuperior');
 
     $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo');
@@ -210,8 +209,7 @@ function cosultarItem($id) {
     $contenedor5 = HTML::contenedor($codigo5, 'contenedorDerecho');
 
     $pestana1 = $contenedor1 . $contenedor2 . $contenedor3 . $contenedor4 . $contenedor5;
-    
-    
+
     /**
      * NOTAS CREDITO DE LA FACTURA
      */
@@ -315,7 +313,22 @@ function cosultarItem($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function modificarItem($id) {
-    global $textos, $sql, $configuracion;
+    global $textos, $sql, $configuracion, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeModificar = Perfil::verificarPermisosModificacion($modulo->nombre);
+    
+    if(!$puedeModificar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('facturas_compras', 'id', $id))) {
         $respuesta = array();
@@ -336,7 +349,7 @@ function modificarItem($id) {
 
     $codigo1  = HTML::parrafo($textos->id('NUMERO_FACTURA') . HTML::frase($objeto->idFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('PROVEEDOR') . ': ' . HTML::frase($objeto->proveedor->nombre, 'sinNegrilla'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->idProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($textos->id('NIT') . ': ' . HTML::frase($objeto->nitProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('FECHA_FACTURA') . ': ' . HTML::frase($objeto->fechaFactura, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('NUMERO_FACTURA_PROVEEDOR') . ': ' . HTML::frase($objeto->numeroFacturaProveedor, 'sinNegrilla'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($textos->id('USUARIO_QUE_FACTURA') . ': ' . HTML::frase($objeto->usuario, 'sinNegrilla'), 'negrilla margenSuperior');
@@ -618,15 +631,35 @@ function eliminarNotaDebitoDigital($id) {
  * @param array $datos      = arreglo con la informacion a adicionar
  */
 function eliminarItem($id, $confirmado, $dialogo) {
-    global $textos;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeEliminar = Perfil::verificarPermisosEliminacion($modulo->nombre);    
+    
+    if(!$puedeEliminar && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     $objeto     = new FacturaCompra($id);
     $destino    = '/ajax' . $objeto->urlBase . '/delete';
     $respuesta  = array();
 
     if (!$confirmado) {
+        //query para verificar si se activa o se inactiva la factura dependiendo del estado
+        $activo = $sql->obtenerValor('facturas_compras', 'activo', 'id = "' . $id . '"');
+        
+        $pregunta = ($activo == "1") ? 'CONFIRMAR_INACTIVACION' : 'CONFIRMAR_ACTIVACION';
+        
         $titulo  = HTML::frase($objeto->idFactura, 'negrilla');
-        $titulo1 = str_replace('%1', $titulo, $textos->id('CONFIRMAR_INACTIVACION'));
+        $titulo1 = str_replace('%1', $titulo, $textos->id($pregunta));
         $codigo  = HTML::campoOculto('procesar', 'true');
         $codigo .= HTML::campoOculto('id', $id);
         $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
@@ -638,7 +671,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
         $respuesta['generar']   = true;
         $respuesta['codigo']    = $codigo1;
         $respuesta['destino']   = '#cuadroDialogo';
-        $respuesta['titulo']    = HTML::parrafo($textos->id('ELIMINAR_ITEM'), 'letraBlanca negrilla subtitulo');
+        $respuesta['titulo']    = HTML::parrafo($textos->id('ACTIVAR_INACTIVAR_ITEM'), 'letraBlanca negrilla subtitulo');
         $respuesta['ancho']     = 350;
         $respuesta['alto']      = 150;
         
@@ -651,7 +684,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
 
                 $estado     = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
 
-                $celdas     = array($objeto->id, $objeto->sede, $objeto->proveedor->nombre, $objeto->numeroFacturaProveedor, $objeto->usuario, $objeto->fechaFactura, $estado);
+                $celdas     = array($objeto->id, $objeto->sede, $objeto->proveedor->id_proveedor, $objeto->proveedor->nombre, $objeto->numeroFacturaProveedor, $objeto->usuario, $objeto->fechaFactura, $estado);
                 $celdas1    = HTML::crearFilaAModificar($celdas);
 
                 $respuesta['error']         = false;
@@ -929,7 +962,7 @@ function buscarFactura() {
  * @param int $cantidad         = cantidad a ser eliminada
  * @param string $cadenaItems   = cadena que tiene cada uno de los ides del objeto a ser eliminados, ejemplo se eliminan el objeto de id 1, 2, 3, la cadena sería (1,2,3)
  */
-function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
+/*function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     global $textos;
 
 
@@ -981,7 +1014,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
 
     Servidor::enviarJSON($respuesta);
     
-}
+}*/
 
 /**
  * Funcion que muestra la información de una nota credito
@@ -1004,8 +1037,7 @@ function consultarNotaCredito($id) {
     }
     
     $objeto     = new NotaCreditoProveedor($id);
-    
-
+   
     $respuesta = array();
 
     $codigo  = '';
@@ -1014,7 +1046,6 @@ function consultarNotaCredito($id) {
     $codigo1 .= HTML::parrafo($textos->id('CANTIDAD_DINERO_NOTA') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->montoNota, '$'), 'sinNegrilla subtitulo flotanteDerecha margenDerecha'), 'negrilla margenSuperiorDoble bordeInferior espacioInferior15 margenDerechaTriple');
     $codigo1 .= HTML::parrafo($textos->id('CANTIDAD_IVA_NOTA') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->ivaNota, '$'), 'sinNegrilla subtitulo flotanteDerecha margenDerecha'), 'negrilla margenSuperiorDoble bordeInferior espacioInferior15 margenDerechaTriple');
     $codigo1 .= HTML::parrafo($textos->id('CANTIDAD_TOTAL_NOTA') . ': ' . HTML::frase('$ '.Recursos::formatearNumero($objeto->totalNota, '$'), 'sinNegrilla subtitulo flotanteDerecha margenDerecha'), 'negrilla margenSuperiorDoble bordeInferior espacioInferior15 margenDerechaTriple');
-
 
     $codigo2 = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
     $codigo2 .= HTML::parrafo($objeto->conceptoNota, 'sinNegrilla subtitulo margenDerecha');
@@ -1026,14 +1057,12 @@ function consultarNotaCredito($id) {
     $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
     $arrayIdArticulo     = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));        
 
-
     $datosTabla = array(
         HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
         HTML::frase($textos->id('ARTICULO'), 'negrilla margenIzquierda'),
         HTML::frase($textos->id('CANTIDAD_ANTERIOR'), 'negrilla margenIzquierda'),
         HTML::frase($textos->id('CANTIDAD_NUEVA'), 'negrilla margenIzquierda'),
     );
-
 
     $listaArticulos = array();
     /**
@@ -1049,7 +1078,6 @@ function consultarNotaCredito($id) {
         $object->cantidadA   = $article->cantidadAnterior;
         $object->cantidadN   = $article->cantidadNueva;
 
-
         if (strlen($object->articulo) > 60) {
             $object->articulo = substr($object->articulo, 0, 60) . '.';
         }
@@ -1057,7 +1085,6 @@ function consultarNotaCredito($id) {
         $listaArticulos[] = $object;
     }
    
-
     $idTabla            = 'tablaListaArticulosConsulta';
     $clasesColumnas     = array('', '', '', '', '');
     $clasesFilas        = array('centrado', 'centrado', 'centrado', 'centrado', 'centrado', 'centrado');
@@ -1065,7 +1092,6 @@ function consultarNotaCredito($id) {
     $clase              = 'tablaListaArticulosConsulta';
 
     $contenedorListaArticles = HTML::tabla($datosTabla, $listaArticulos, $clase, $idTabla, $clasesColumnas, $clasesFilas, $opciones);
-
 
     $claseListaArticulos = 'oculto';
     
@@ -1075,19 +1101,26 @@ function consultarNotaCredito($id) {
 
     $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo margenInferiorDoble');
     $contenedor2 = HTML::contenedor($codigo2, 'contenedorDerecho margenInferiorDoble');
-    $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos '.$claseListaArticulos, 'contenedorListaArticulosNotaC');
+    $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos '.$claseListaArticulos, 'contenedorListaArticulosNota');
 
+    $codigo .= HTML::contenedor($contenedor1 . $contenedor2 . $contenedor3, "margenSuperior overflowAuto");
+    
+    /**
+     * Asientos contables de la nota
+     */  
+    $asientoContable = new AsientoContable();
+    
+    $tablaListaRegistroContable = $asientoContable->generarTablaRegistroContable("3", $id);
 
-    $codigo .= $contenedor1 . $contenedor2 . $contenedor3;
-
-
+    $codigo .= HTML::parrafo($textos->id("REGISTRO_CONTABLE"), "negrilla subtitulo letraAzul margenSuperior");
+    $codigo .= HTML::contenedor($tablaListaRegistroContable, "margenSuperior overflowAuto");
+    
     $respuesta['generar']       = true;
     $respuesta['codigo']        = $codigo;
     $respuesta['titulo']        = HTML::parrafo($textos->id('CONSULTAR_NOTA_CREDITO'), 'letraBlanca negrilla subtitulo');
     $respuesta['destino']       = '#cuadroDialogo';
     $respuesta['ancho']         = 800;
     $respuesta['alto']          = 570;
-
 
     Servidor::enviarJSON($respuesta);
     
@@ -1186,12 +1219,21 @@ function consultarNotaDebito($id) {
 
     $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo margenInferiorDoble');
     $contenedor2 = HTML::contenedor($codigo2, 'contenedorDerecho margenInferiorDoble');
-    $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos '.$claseListaArticulos, 'contenedorListaArticulosNotaC');
+    $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos '.$claseListaArticulos, 'contenedorListaArticulosNota');
 
 
-    $codigo .= $contenedor1 . $contenedor2 . $contenedor3;
+    $codigo .= HTML::contenedor($contenedor1 . $contenedor2 . $contenedor3, "margenSuperior overflowAuto");
+    
+    /**
+     * Asientos contables de la nota
+     */  
+    $asientoContable = new AsientoContable();
+    
+    $tablaListaRegistroContable = $asientoContable->generarTablaRegistroContable("4", $id);
 
-
+    $codigo .= HTML::parrafo($textos->id("REGISTRO_CONTABLE"), "negrilla subtitulo letraAzul margenSuperior");
+    $codigo .= HTML::contenedor($tablaListaRegistroContable, "margenSuperior overflowAuto");
+    
     $respuesta['generar']       = true;
     $respuesta['codigo']        = $codigo;
     $respuesta['titulo']        = HTML::parrafo($textos->id('CONSULTAR_NOTA_DEBITO'), 'letraBlanca negrilla subtitulo');
@@ -1205,13 +1247,28 @@ function consultarNotaDebito($id) {
 }
 
 /**
- * Funcion que genera el formulario para introducir una  una nota credito enviada por un proveedor sobre una factura de venta realizada
+ * Funcion que genera el formulario para introducir una nota credito enviada por un proveedor sobre una factura de compra realizada.
  * 
  * @global type $textos
  * @param type $id 
  */
 function adicionarNotaCredito($id, $datos = array()) {
-    global $textos, $sql, $configuracion, $sesion_configuracionGlobal;
+    global $textos, $sql, $configuracion, $sesion_configuracionGlobal, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarNotaCredito = Perfil::verificarPermisosBoton('botonAdicionarNotaCreditoCompra',$modulo->nombre);
+    
+    if(!$puedeAgregarNotaCredito && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('facturas_compras', 'id', $id))) {
         $respuesta                  = array();
@@ -1241,9 +1298,9 @@ function adicionarNotaCredito($id, $datos = array()) {
         $codigo1 .= HTML::parrafo($textos->id('AFECTAR_CANTIDADES_INVENTARIO') . HTML::campoChequeo('datos[inventario_modificado]', false, 'chkModInventario margenIzquierda', 'chkModInventario'), 'negrilla margenSuperior');
 
 
-        $codigo2 = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
+        $codigo2  = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
         $codigo2 .= HTML::areaTexto('datos[concepto_nota]', 4, 50, '', 'txtAreaConceptoNotaC campoObligatorio', 'txtAreaConceptoNotaC');
-        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, '', 'fechaAntigua campoCalendario', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
+        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, date('Y-m-d'), 'fechaAntigua campoCalendario campoObligatorio', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
         $codigo2 .= HTML::parrafo($textos->id('CARGAR_NOTA_DIGITAL'), 'negrilla margenSuperiorDoble');
         $codigo2 .= HTML::campoArchivo('nota_digital', 50, 255, '', $textos->id('AYUDA_CARGAR_NOTA_CREDITO'));
 
@@ -1256,7 +1313,7 @@ function adicionarNotaCredito($id, $datos = array()) {
             HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
             HTML::frase($textos->id('ARTICULO'), 'negrilla margenIzquierda'),
             HTML::frase($textos->id('CANTIDAD'), 'negrilla margenIzquierda'),
-            HTML::frase($textos->id('CANTIDAD_A_MODIFICAR'), 'negrilla margenIzquierdaDoble'),
+            HTML::frase($textos->id('CANTIDAD_NUEVA'), 'negrilla margenIzquierdaDoble'),
         );
 
 
@@ -1266,16 +1323,18 @@ function adicionarNotaCredito($id, $datos = array()) {
          * para ver el listado exacto de los articulos que se cargan ver la clase FacturaCompra 
          */
         foreach ($objeto->listaArticulos as $article) {
+            $idReg = (int) $article->id ;
+            
+            $cantidadReal = NotaCreditoProveedor::verificarNotaPrevia($idReg);
+            $cantidadReal = ($cantidadReal) ? $cantidadReal : $article->cantidad;   
+            
             //declaro un nuevo objeto vacio para poder armar la tabla
             $object = new stdClass();
             
             $object->plu        = $article->$idPrincipalArticulo;
             $object->articulo   = $article->articulo;
-            $object->cantidad   = $article->cantidad;
+            $object->cantidad   = $cantidadReal;
             
-            
-            $idReg = (int) $article->id ;
-
             if (strlen($object->articulo) > 60) {
                 $object->articulo = substr($object->articulo, 0, 60) . '.';
             }
@@ -1284,8 +1343,9 @@ function adicionarNotaCredito($id, $datos = array()) {
              * notese que en "valor" se concatena la cantidad del articulo, estos datos son usados 
              * en el metodo encargado de hacer el registro
              */
-            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega;
-            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $object->cantidad, 'margenIzquierdaDoble rangoNumeros', $idReg, array("rango" => "1-".$object->cantidad.""));
+            
+            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega . '_' .$idReg;
+            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $cantidadReal, 'margenIzquierdaDoble', $idReg, array("ayuda" => $textos->id("AYUDA_CANTIDAD_NUEVA")));
             $listaArticulos[] = $object;
         }
 
@@ -1298,18 +1358,14 @@ function adicionarNotaCredito($id, $datos = array()) {
         
         $contenedorListaArticles = HTML::tabla($datosTabla, $listaArticulos, $clase, $idTabla, $clasesColumnas, $clasesFilas, $opciones);
 
-
-
         $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo margenInferiorDoble');
         $contenedor2 = HTML::contenedor($codigo2, 'contenedorDerecho margenInferiorDoble');
-        $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos oculto', 'contenedorListaArticulosNotaC');
-
-
+        $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos oculto', 'contenedorListaArticulosNota');
+        
         $codigo .= $contenedor1 . $contenedor2 . $contenedor3;
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), ' margenSuperiorTriple', 'botonOk', 'botonOk'), 'margenSuperiorTriple');
         $codigo .= HTML::parrafo($textos->id('NOTA_CREDITO_ADICIONADA_A_FACTURA'), 'textoExitoso', 'textoExitoso');
         $codigo1 = HTML::forma($destino, $codigo, 'P');
-
 
         $respuesta['generar']       = true;
         $respuesta['cargarJs']      = true;
@@ -1369,7 +1425,22 @@ function adicionarNotaCredito($id, $datos = array()) {
  * @param type $id 
  */
 function adicionarNotaDebito($id, $datos) {
-    global $textos, $sql, $configuracion, $sesion_configuracionGlobal;
+    global $textos, $sql, $configuracion, $sesion_configuracionGlobal, $modulo, $sesion_usuarioSesion;
+    
+    /**
+    * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
+    */
+    $puedeAgregarNotaDebito = Perfil::verificarPermisosBoton('botonAdicionarNotaDebitoCompra',$modulo->nombre);
+    
+    if(!$puedeAgregarNotaDebito && $sesion_usuarioSesion->id != 0) {
+        $respuesta            = array();
+        $respuesta['error']   = true;
+        $respuesta['mensaje'] = $textos->id('ACCESO_DENEGADO');
+        
+        Servidor::enviarJSON($respuesta);
+        return FALSE;
+        
+    }
 
     if (!isset($id) || (isset($id) && !$sql->existeItem('facturas_compras', 'id', $id))) {
         $respuesta                  = array();
@@ -1398,10 +1469,9 @@ function adicionarNotaDebito($id, $datos) {
         $codigo1 .= HTML::parrafo($textos->id('CANTIDAD_TOTAL_NOTA') . ': ' . HTML::campoTexto('datos[total_nota]', 10, 15, '', 'flotanteDerecha campoObligatorio2 campoDinero letraNegra', 'campoTotalNota', array('disabled' => 'disabled')), 'negrilla margenSuperiorDoble bordeInferior espacioInferior15 margenDerechaTriple');
         $codigo1 .= HTML::parrafo($textos->id('AFECTAR_CANTIDADES_INVENTARIO') . HTML::campoChequeo('datos[inventario_modificado]', false, 'chkModInventario margenIzquierda', 'chkModInventario'), 'negrilla margenSuperior');
 
-
         $codigo2 = HTML::parrafo($textos->id('CONCEPTO_NOTA'), 'negrilla margenSuperior');
         $codigo2 .= HTML::areaTexto('datos[concepto_nota]', 4, 50, '', 'txtAreaConceptoNotaC campoObligatorio', 'txtAreaConceptoNotaC');
-        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, '', 'fechaAntigua campoCalendario', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
+        $codigo2 .= HTML::parrafo($textos->id('FECHA_NOTA') . HTML::campoTexto('datos[fecha_nota]', 12, 12, date("Y-m-d"), 'fechaAntigua campoCalendario', '', array('ayuda' => $textos->id('SELECCIONE_FECHA_NOTA'))), 'negrilla margenSuperior');
         $codigo2 .= HTML::parrafo($textos->id('CARGAR_NOTA_DIGITAL'), 'negrilla margenSuperiorDoble');
         $codigo2 .= HTML::campoArchivo('nota_digital', 50, 255, '', $textos->id('AYUDA_CARGAR_NOTA_DEBITO'));
 
@@ -1409,7 +1479,6 @@ function adicionarNotaDebito($id, $datos) {
         $idPrincipalArticulo = (string)$sesion_configuracionGlobal->idPrincipalArticulo;
         $arrayIdArticulo     = array('id' => $textos->id('ID_AUTOMATICO'), 'codigo_oem' => $textos->id('CODIGO_OEM'), 'plu_interno' => $textos->id('PLU'));        
         
-
         $datosTabla = array(
             HTML::frase($textos->id($arrayIdArticulo[$idPrincipalArticulo]), 'negrilla margenIzquierda'),
             HTML::frase($textos->id('ARTICULO'), 'negrilla margenIzquierda'),
@@ -1417,22 +1486,23 @@ function adicionarNotaDebito($id, $datos) {
             HTML::frase($textos->id('CANTIDAD_A_MODIFICAR'), 'negrilla margenIzquierdaDoble'),
         );
 
-
         $listaArticulos = array();
         /**
          * Recorro el listado de articulos, y voy creando objetos en vivo para agregar al arreglo de objetos
          * para ver el listado exacto de los articulos que se cargan ver la clase FacturaCompra 
          */
         foreach ($objeto->listaArticulos as $article) {
+            $idReg = (int) $article->id ;
+            
+            $cantidadReal = NotaDebitoProveedor::verificarNotaPrevia($idReg);
+            $cantidadReal = ($cantidadReal) ? $cantidadReal : $article->cantidad;     
+            
             //declaro un nuevo objeto vacio para poder armar la tabla
             $object = new stdClass();
             
             $object->plu        = $article->$idPrincipalArticulo;
             $object->articulo   = $article->articulo;
-            $object->cantidad   = $article->cantidad;
-            
-            
-            $idReg = (int) $article->id ;
+            $object->cantidad   = $cantidadReal;
 
             if (strlen($object->articulo) > 60) {
                 $object->articulo = substr($object->articulo, 0, 60) . '.';
@@ -1442,11 +1512,10 @@ function adicionarNotaDebito($id, $datos) {
              * notese que en "valor" se concatena la cantidad del articulo, estos datos son usados 
              * en el metodo encargado de hacer el registro
              */
-            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega;
-            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $object->cantidad, 'margenIzquierdaDoble rangoNumeros', $idReg, array("rango" => "1-".$object->cantidad.""));
+            $datosArticulo =  $object->cantidad . '_' . (int)$article->idArticulo . '_' . (int)$article->idBodega . '_' .$idReg;
+            $object->nuevaCantidad = HTML::campoTexto('datos[nueva_cantidad][' . $datosArticulo . ']', 5, 10, $object->cantidad, 'margenIzquierdaDoble', $idReg, array("ayuda" => $textos->id("AYUDA_CANTIDAD_NUEVA") ));
             $listaArticulos[] = $object;
         }
-
 
         $idTabla            = 'tablaListaArticulosConsulta';
         $clasesColumnas     = array('', '', '', '', '');
@@ -1458,18 +1527,16 @@ function adicionarNotaDebito($id, $datos) {
 
         $contenedor1 = HTML::contenedor($codigo1, 'contenedorIzquierdo margenInferiorDoble');
         $contenedor2 = HTML::contenedor($codigo2, 'contenedorDerecho margenInferiorDoble');
-        $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos oculto', 'contenedorListaArticulosNotaC');
-
+        $contenedor3 = HTML::contenedor($contenedorListaArticles, 'contenedorListadoArticulos oculto', 'contenedorListaArticulosNota');
 
         $codigo .= $contenedor1 . $contenedor2 . $contenedor3;
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), ' margenSuperiorTriple', 'botonOk', 'botonOk'), 'margenSuperiorTriple');
         $codigo .= HTML::parrafo($textos->id('NOTA_DEBITO_ADICIONADA_A_FACTURA'), 'textoExitoso', 'textoExitoso');
         $codigo1 = HTML::forma($destino, $codigo, 'P');
 
-
         $respuesta['generar']       = true;
         $respuesta['cargarJs']      = true;
-        $respuesta['archivoJs']     = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . '/modulos/facturas_compra/funcionesNotaCredito.js';
+        $respuesta['archivoJs']     = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . '/modulos/facturas_compra/funcionesNotaDebito.js';
         $respuesta['codigo']        = $codigo1;
         $respuesta['titulo']        = HTML::parrafo($textos->id('INGRESAR_NOTA_DEBITO'), 'letraBlanca negrilla subtitulo');
         $respuesta['destino']       = '#cuadroDialogo';
@@ -1477,7 +1544,6 @@ function adicionarNotaDebito($id, $datos) {
         $respuesta['alto']          = 570;
         
     } else {
-        
         $objeto     = new NotaDebitoProveedor($id);
 
         $respuesta['error'] = true;

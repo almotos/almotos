@@ -21,8 +21,6 @@ $(document).ready(function(){
     $("#eliminarNotaCreditoDigital").live("click", function(){
         var id = $(this).attr("idnota");
         
-        console.log(id);
-        
         $(this).parents("p").html('Nota digital eliminada');
         
         $.ajax({

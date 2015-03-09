@@ -70,13 +70,7 @@ class NotaCreditoCliente {
      * observaciones realizadas a la nota
      * @var entero
      */
-    public $conceptoNota;
-    
-    /**
-     * enlace al archivo digital que representa la nota
-     * @var string ruta absoluta al archivo digital de la nota
-     */
-    public $rutaNotaDigital;    
+    public $conceptoNota;  
     
     /**
      * determina si se modificaron las cantidades de los articulos en la factura de venta
@@ -111,7 +105,6 @@ class NotaCreditoCliente {
         }
     }
 
-
     /**
      * Cargar los datos de una nota
      * 
@@ -139,8 +132,6 @@ class NotaCreditoCliente {
 
             $condicion = 'ncc.id = "' . $id . '"';
 
-
-            $sql->depurar = true;
             $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
 
             if ($sql->filasDevueltas) {
@@ -200,9 +191,8 @@ class NotaCreditoCliente {
      * @param type $nuevas_cantidades 
      */
     public function adicionar($datos){
-        global $sql, $archivo_nota_digital;
-
-
+        global $sql;
+        
         //almaceno en nuevas variables los datos que serán eliminados del arreglo
         $nuevasCantidades       = $datos['nueva_cantidad'];
         $datos['archivo']       = '';
@@ -214,13 +204,7 @@ class NotaCreditoCliente {
         //elimino los datos del arreglo para que concuerde con los datos en la BD
         unset($datos['nueva_cantidad']);
         unset($datos['dialogo']);
-
-        //verifico si se ha cargado un soporte digital
-        if(isset($archivo_nota_digital) && !empty($archivo_nota_digital['tmp_name'])){//de ser cierto, lo guardo en el servidor
-            $archivo_digital = $this->cargarNotaDigital($archivo_nota_digital, 'nota_credito_cliente');            
-            $datos['archivo'] = $archivo_digital;//y agrego el campo para la insercion a la BD
-            
-        }      
+    
         //inserto los datos en la tabla
         $sql->iniciarTransaccion();
         
@@ -228,97 +212,79 @@ class NotaCreditoCliente {
         $idNotaCredito = $sql->ultimoId;
         
         if(!$insertarNota){//si falla la insercion de los datos en la tabla
-            if($archivo_digital) {
-                $this->eliminarNotaDigital('nota_credito_cliente', $archivo_digital);//elimino la nota del servidor
-            }
-            
             $sql->cancelarTransaccion();
             return false;
             
         }
         
-        $inventario = new Inventario();
-        
         if($datos['inventario_modificado']){ //si se marcó la opción de modificar de las cantidades del inventario
+            $inventario = new Inventario();
             
             foreach($nuevasCantidades as $key => $value){
                 
                 $arr_1 = explode('_', $key);
-                //$idArticuloFactura  = $arr_1[0];//identificador del registro en la tabla articulo factura venta
                 $cantidadActual     = $arr_1[0];
                 $idArticulo         = $arr_1[1];
                 $idBodega           = $arr_1[2];
+                $idArticuloFactura  = $arr_1[3];
                 $nuevaCantidad      = $value;
                 
-
-                /**
-                 * verificar cambios en cantidades para asi mismo modificar el inventario
-                 * solo se modificarian datos en una nota credito cuando la nueva cantidad ingresada 
-                 * sea menor a la cantidad existente en la factura, ya que una nota credito se puede 
-                 * generar solo por exceso en la facturacion de parte del cliente al cliente
-                 */
+                if ($cantidadActual == $nuevaCantidad) {
+                    continue;
+                }
+                
+                $queryInv = FALSE;
+                
                  if ($nuevaCantidad < $cantidadActual){
-                     
-                    $descontar = $inventario->descontar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($descontar){
-   
-                        $datos_amncc = array(
-                                            "id_nota_credito_cliente" => $idNotaCredito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ncc", $datos_amncc);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
-                        $sql->cancelarTransaccion();
-                        return false;
-                        
-                    }
-                    
+                     $cantidadAModificar = $cantidadActual - $nuevaCantidad;
+                     $queryInv = $inventario->adicionar($idArticulo, $cantidadAModificar, $idBodega);
+
                 } else {
-                    $aumentar = $inventario->adicionar($idArticulo, $nuevaCantidad, $idBodega);
-                    
-                    if($aumentar){
-                           
-                        $datos_amncc = array(
-                                            "id_nota_credito_cliente" => $idNotaCredito,
-                                            "id_articulo"               => $idArticulo,
-                                            "cantidad_anterior"         => $cantidadActual,
-                                            "cantidad_nueva"            => $nuevaCantidad
-                                            );
-                        
-                        $query = $sql->insertar("articulos_modificados_ncc", $datos_amncc);
-                        
-                        if(!$query){
-                            $sql->cancelarTransaccion();
-                            return false;
-                        }
-                        
-                    } else {
-                        $sql->cancelarTransaccion();
-                        return false;
-                        
-                    }                    
+                    //Revisar si en una nota credito hay la posibilidad que la cantidad del articulo sea mayor a la existente
+                    $cantidadAModificar = $nuevaCantidad - $cantidadActual;
+                    $queryInv = $inventario->descontar($idArticulo, $cantidadAModificar, $idBodega);    
                     
                 }
                 
+                if($queryInv){
+                    $datos_amncp = array(
+                                        "id_nota_credito_cliente"    => $idNotaCredito,
+                                        "id_articulo_factura_venta"  => $idArticuloFactura,
+                                        "id_articulo"                => $idArticulo,
+                                        "cantidad_anterior"          => $cantidadActual,
+                                        "cantidad_nueva"             => $nuevaCantidad,
+                                        "fecha"                      => date("Y-m-d H:i:s"),
+                                        );
+
+                    $query = $sql->insertar("articulos_modificados_ncc", $datos_amncp);
+
+                    if(!$query){
+                        $sql->cancelarTransaccion();
+                        return false;
+                    }
+
+                } else {
+                    $sql->cancelarTransaccion();
+                    return false;
+
+                }              
+                
             }
+        }
+        
+        $contabilidadVentas = new ContabilidadVentas();
+        
+        $contabilizarNCC = $contabilidadVentas->contabilizarNCC($idNotaCredito);
+        
+        if (!$contabilizarNCC) {
+            $sql->cancelarTransaccion();
+            return false;
         }
         
         $sql->finalizarTransaccion();
         return true;
         
     }
-
-  
 
     /**
      *
@@ -341,13 +307,8 @@ class NotaCreditoCliente {
         $consulta = $sql->eliminar('notas_credito_clientes', 'id = "' . $this->id . '"');
 
         if ($consulta) {            
-            $consulta = $sql->eliminar('articulos_modificados_ncc', 'id_factura = "' . $this->id . '"');
-            
-            if ($this->facturaDigital) {
-                $configuracionRuta = $configuracion['RUTAS']['media'] . '/' . $configuracion['RUTAS']['archivos'] . '/facturas_venta/' . $this->id;
-                Archivo::eliminarArchivoDelServidor(array($configuracionRuta));
-                
-            }
+            $consulta = $sql->eliminar('articulos_modificados_ncc', 'id_nota_credito_cliente = "' . $this->id . '"');
+
             $sql->finalizarTransaccion();
             return true;
             
@@ -407,73 +368,62 @@ class NotaCreditoCliente {
             
             
         }
-    }    
-
-    /**
-     * Metodo que se encarga de guardar el archivo digital de la nota enviada por el cliente
-     *
-     * @global type $sql
-     * @global type $configuracion
-     * @param type $archivo = archivo digital
-     * @param type $tipo = tipo de la nota, crédito o débito
-     * @return boolean 
-     */
-    public function cargarNotaDigital($archivo, $tipo) {
-        global $configuracion;
-
-        $validarFormato = Archivo::validarArchivo($archivo, $configuracion['VALIDACIONES']['notas_credito']);
-
-        if (!$validarFormato) {
-            $configuracionRuta = $configuracion["RUTAS"]["media"] . "/" . $configuracion["RUTAS"]["archivos"] . '/'.$tipo.'/';
-            $recurso = Archivo::subirArchivoAlServidor($archivo, $configuracionRuta);
-            
-            if ($recurso) {
-                return $recurso;
-                
-            } else {
-                return false;
-                
-            }
-            
-        } else {
-            return false;
-            
-        }
-        
     }
-
+    
     /**
-     * Metodo que se encarga de eliminar la nota digital
+     * Verifica si un articulo fue modificado en una nota credito previa y devuelve la cantidad
+     * real del articulo despues de aplicar dicha nota.
      * 
-     * @global objeto $sql objeto global de interacción con la BD
-     * @global array $configuracion arreglo global donde se almacenan los parametros de configuración
-     * @return boolean true or false dependiendo del exito de la operación
+     * @global type $sql
+     * @param type $idArticuloFactura = id del registro en la tabla articulos_factura_venta
+     * @return int|boolean devuelve la cantidad actual del articulo o FALSE si no hay una nota credito previa
      */
-    public function eliminarNotaDigital() {
+    public static function verificarNotaPrevia($idArticuloFactura) {
         global $sql;
 
-        $recurso = Archivo::eliminarArchivoDelServidor(array($this->rutaNotaDigital));
+        $datos = array();
+
+        $tabla          = "articulos_modificados_ndc";
+        $columna        = array("cantidad_nueva", "fecha");
+        $condicion      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden          = "id DESC";
+
+        $consulta = $sql->seleccionar($tabla, $columna , $condicion, "", $orden, 0, 1);
+
+        if ($sql->filasDevueltas == 1) {
+            $datos[] = $sql->filaEnObjeto($consulta);
+
+        }      
+
+        $tabla1          = "articulos_modificados_ncc";
+        $columna1        = array("cantidad_nueva", "fecha");
+        $condicion1      = "id_articulo_factura_compra = '".$idArticuloFactura."'";
+        $orden1          = "id DESC";
+
+        $consulta1 = $sql->seleccionar($tabla1, $columna1 , $condicion1, "", $orden1, 0, 1);    
+
+        if ($sql->filasDevueltas == 1) {
+            $datos[] = $sql->filaEnObjeto($consulta1);
+
+        }        
         
-        if ($recurso) {
-            $datosFactura = array('archivo' => '');
-            $consulta = $sql->modificar('notas_credito_clientes', $datosFactura, 'id = "' . $this->id . '"');
-            
-            if ($consulta) {
-                return true;
-                
-            } else {//espera tres sec y vuelve y lo intenta
-                sleep(3);
-                $sql->modificar('notas_credito_clientes', $datosFactura, 'id = "' . $this->id . '"');
-                return true;
-                
-            }
-            
-        } else {
+        if (empty($datos[0]) && empty($datos[1])) {
             return false;
             
+        } else if (!empty($datos[0]) && empty($datos[1])) {
+            return $datos[0]->cantidad_nueva;
+            
+        } else if (empty($datos[0]) && !empty($datos[1])) {
+            return $datos[1]->cantidad_nueva;
+            
+        } else {
+            if (strtotime($datos[0]->fecha) > strtotime($datos[1]->fecha)) {
+                return $datos[0]->cantidad_nueva;
+            } else {
+                return $datos[1]->cantidad_nueva;
+            }
         }
-        
-    }   
 
+    }    
     
 }  
