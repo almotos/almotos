@@ -2,11 +2,11 @@
 
 /**
  *
- * @package     FOLCS
+ * @package     FOM
  * @subpackage  Base
- * @author      Francisco J. Lozano B. <fjlozano@felinux.com.co>
+ * @author      Pablo Andrés Vélez Vidal
  * @license     http://www.gnu.org/licenses/gpl.txt
- * @copyright   Copyright (c) 2009 CENTRO CULTURAL COLOMBO AMERICANO
+ * @copyright   Copyright (c) 2015 Almotos
  * @version     0.1
  *
  **/

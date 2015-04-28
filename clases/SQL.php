@@ -100,8 +100,8 @@ class SQL {
     public $tiempo;
 
     /**
-     * Tiempo total empleado para las consultas realizadas (en segundos)
-     * @var flotante
+     * String que representa la cadena SQL
+     * @var string
      */
     public $sentenciaSql;
 
@@ -112,9 +112,10 @@ class SQL {
     public $depurar = false;
     
     /**
-     * Variable que determina si un dato que va a la BD debe ser filtrado, por defecto se pone en true y si un modulo
-     * determinado lo requiere, se pone en false antes del insert o del update, y al finalizar el inser o update, se debe
-     * poner nuevamente en true.
+     * Variable que determina si un dato que va a ser insertado en la BD debe ser filtrado, 
+     * por defecto se pone en true y si un modulo determinado lo requiere, se pone en false 
+     * antes del insert o del update, y al finalizar el inser o update, se debe poner nuevamente en true.
+     *
      * @var lógico
      */
     public $filtrarDatos = true;    
