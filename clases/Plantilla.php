@@ -338,17 +338,10 @@ class Plantilla {
     /*     * * Insertar código HTML con las opciones para el inicio de sesión del usuario ** */
 
     protected static function cargarUsuarioSesion() {
-        global $sesion_usuarioSesion, $textos, $sql;
+        global $sesion_usuarioSesion, $textos;
 
         /*         * * El usuario no ha iniciado sesión ** */
         if (!isset($sesion_usuarioSesion)) {
-
-            $sedesEmpresa = $sql->seleccionar(array('sedes_empresa'), array('id', 'nombre'), 'id NOT IN (0)', 'id', 'nombre ASC');
-            $sedes = array();
-            while ($objeto = $sql->filaEnObjeto($sedesEmpresa)) {
-                $sedes[$objeto->id] = $objeto->nombre;
-            }
-            $listaSedesEmpresa = HTML::listaDesplegable('datos[sede]', $sedes, '', '', 'listaSedesEmpresa');
 
             $formaUsuarioExistente = "";
             /*             * * Formulario para el inicio de sesión de usuarios existentes ** */
@@ -358,7 +351,6 @@ class Plantilla {
             $formaUsuarioExistente .= HTML::etiqueta($textos->id('CONTRASENA'));
             $formaUsuarioExistente .= HTML::parrafo(HTML::campoClave('contrasena', '12', 12), '');
 
-            $formaUsuarioExistente .= HTML::parrafo($listaSedesEmpresa, 'margenSuperior');
             $claseSlider = 'oculto estiloSlider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all';
             $formaUsuarioExistente .= HTML::parrafo($textos->id('DESLICE_LA_BARRA'), 'oculto negrilla margenSuperior', 'parrafoMensajeSlider');
             $formaUsuarioExistente .= HTML::parrafo("", "negrilla margenSuperior", "parrafoSlider");

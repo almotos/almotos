@@ -104,7 +104,9 @@ class CruceCuentas {
      * @param entero $id Código interno o identificador del tipo_compra en la base de datos
      */
     public function __construct($id = NULL) {
-        global $sql, $modulo;
+        global $modulo;
+        
+        $sqlGlobal = Factory::crearObjeto("SqlGlobal");
         
         $this->urlBase          = '/' . $modulo->url;
         $this->url              = $modulo->url;

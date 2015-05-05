@@ -18,6 +18,9 @@ if (isset($url_accion)) {
     switch ($url_accion) {
         case 'validate'             :   validarUsuario($forma_usuario, $forma_contrasena, $forma_datos);
                                         break;
+                                    
+        case 'validarSede'          :   validarSede($forma_datos);
+                                        break;                                    
         
         case 'logout'               :   cerrarSesion();
                                         break;
@@ -408,7 +411,7 @@ function adicionarItem($datos = array()) {
  * @param type $contrasena
  * @param type $datos 
  */
-function validarUsuario($usuario, $contrasena, $datos) {
+function validarUsuario($usuario, $contrasena) {
     global $textos;
 
     $respuesta = array();
@@ -427,21 +430,74 @@ function validarUsuario($usuario, $contrasena, $datos) {
             $respuesta['mensaje'] = $textos->id('ERROR_USUARIO_INVALIDO');
 
         } else {
-            $usuarioSesion = new Usuario($usuario);
-            $usuarioSesion->setSede($datos['sede']);
-            Sesion::registrar('usuarioSesion', $usuarioSesion);
+              $usuarioSesion = new Usuario($usuario);
+              Sesion::registrar('usuarioSesion', $usuarioSesion);
+              escogerSede();
             
-            //en caso que se determine la configuracion por sede, aqui habria que pasarle el id de la sede
-            $configuracionGlobal = new Configuracion('1');
-            Sesion::registrar('configuracionGlobal', $configuracionGlobal);            
-
-            $respuesta['error']   = NULL;
-            $respuesta['accion']  = 'redireccionar';
-            $respuesta['destino'] = $usuarioSesion->url;
         }
     }
+    
+}
 
+function escogerSede()
+{
+    global $sql, $textos, $sesion_usuarioSesion;
+    
+    $sedesEmpresa = $sql->seleccionar(array($sesion_usuarioSesion->idEmpresa.'_sedes_empresa'), array('id', 'nombre'), 'id NOT IN (0)', 'id', 'nombre ASC');
+
+    $sedes = array();
+
+    while ($objeto = $sql->filaEnObjeto($sedesEmpresa)) {
+        $sedes[$objeto->id] = $objeto->nombre;
+    }
+
+    $listaSedesEmpresa = HTML::listaDesplegable('datos[sede]', $sedes, '', '', 'listaSedesEmpresa');
+    
+    $codigo  = HTML::parrafo($textos->id('SELECCIONE_SEDE'), 'negrilla margenSuperior');
+    $codigo .= HTML::parrafo($listaSedesEmpresa, "margenSuperior margenInferior");
+    $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk'), 'margenSuperior');
+    $codigo .= HTML::parrafo($textos->id('REGISTRO_AGREGADO'), 'textoExitoso', 'textoExitoso');
+    $codigo1 = HTML::forma('/ajax/usuarios/validarSede', $codigo, 'P');
+
+    $respuesta['generar'] = true;
+    $respuesta['codigo'] = $codigo1;
+    $respuesta['titulo'] = HTML::parrafo($textos->id('SELECCIONAR_SEDE'), 'letraBlanca negrilla subtitulo');
+    $respuesta['destino'] = '#cuadroDialogo';
+    $respuesta['ancho'] = 450;
+    $respuesta['alto'] = 300;
+    
     Servidor::enviarJSON($respuesta);
+}
+
+/**
+ *
+ * @global type $textos
+ * @global type $sql
+ * @global type $sesion_ipUsuario
+ * @param type $usuario
+ * @param type $contrasena
+ * @param type $datos 
+ */
+function validarSede($datos) 
+{
+    global $sesion_usuarioSesion;
+
+    $respuesta = array();
+    $respuesta['error'] = true;
+    $respuesta['accion'] = 'insertar';
+
+    $sesion_usuarioSesion->setSede($datos['sede']);
+     
+    //en caso que se determine la configuracion por sede, aqui habria que pasarle el id de la sede
+    $configuracionGlobal = new Configuracion($sesion_usuarioSesion->idEmpresa);
+    Sesion::registrar('configuracionGlobal', $configuracionGlobal);            
+
+    $respuesta['error']   = NULL;
+    $respuesta['accion']  = 'redireccionar';
+    $respuesta['destino'] = $sesion_usuarioSesion->url;
+    
+    Servidor::enviarJSON($respuesta); 
+    
 }
 
 

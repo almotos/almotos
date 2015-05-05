@@ -487,7 +487,7 @@ $configuracion['VALIDACIONES'] = array(
  * Arreglo que determina que tablas son particulares a cada cliente
  **/
 $configuracion['TABLAS']['PARTICULARES'] = array(
-        'cuentas_operacion_negocio',
+        /*'cuentas_operacion_negocio',
         'articulos_cotizacion',
         'articulos_factura_compra',
         'articulos_factura_temporal_compra',
@@ -543,9 +543,9 @@ $configuracion['TABLAS']['PARTICULARES'] = array(
         'precios_articulo_bodega',
         'proveedores',
         'resoluciones',
-        'sedes_cliente',
+        'sedes_cliente',*/
         'sedes_empresa',
-        'sedes_proveedor',
+        /*'sedes_proveedor',
         'subgrupos',
         'tipos_compra',
         'tipos_documento',
@@ -553,7 +553,7 @@ $configuracion['TABLAS']['PARTICULARES'] = array(
         'tipos_unidades',
         'tipos_venta',
         'unidades',
-        'usuarios',
+        'usuarios',*/
     );
 
 /**

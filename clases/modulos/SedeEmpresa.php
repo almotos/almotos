@@ -125,9 +125,11 @@ class SedeEmpresa {
      */
     public $ordenInicial = NULL;       
 
-
-
-
+    /**
+     * Objeto empresa
+     * @var entero
+     */
+    public $empresa = NULL; 
 
     /**
      *
@@ -149,10 +151,6 @@ class SedeEmpresa {
             $this->cargar($id);
         }
     }
-
-
-
-
 
     /**
      *
@@ -200,9 +198,6 @@ class SedeEmpresa {
         }
     }
 
-
-
-
     /**
      *
      * Adicionar una sedeEmpresa
@@ -244,8 +239,6 @@ class SedeEmpresa {
             return NULL;
         }
     }
-
-
 
     /**
      *
@@ -378,7 +371,6 @@ class SedeEmpresa {
             $condicion = 's.id NOT IN ('.$excepcion.') AND ';
         }
 
-
         /*** Definir el orden de presentación de los datos ***/
         if(!isset($orden)){
             $orden = $this->ordenInicial;
@@ -409,9 +401,6 @@ class SedeEmpresa {
             'fechaCierre'       => 's.fecha_cierre',
             'activo'            => 's.activo'
         );
-
-     
-        
          
         if (!empty($condicionGlobal)) {
             
@@ -420,7 +409,6 @@ class SedeEmpresa {
         
         $condicion .= 's.id_ciudad = c.id';     
        
-
         if (is_null($this->registrosConsulta)) {
             $sql->seleccionar($tablas, $columnas, $condicion);
             $this->registrosConsulta = $sql->filasDevueltas;
@@ -442,16 +430,15 @@ class SedeEmpresa {
 
     }
     
-    
     public function generarTabla($arregloRegistros, $datosPaginacion = NULL){
         global $textos;
         //Declaracion de las columnas que se van a mostrar en la tabla
         $datosTabla = array(                      
-            HTML::parrafo( $textos->id('NOMBRE')               ,  'centrado' ) => 'nombre|s.nombre',
-            HTML::parrafo( $textos->id('DIRECCION')            ,  'centrado' ) => 'direccion|s.direccion',
-            HTML::parrafo( $textos->id('TELEFONO')             ,  'centrado' ) => 'telefono|s.telefono',
-            HTML::parrafo( $textos->id('CELULAR')              ,  'centrado' ) => 'celular|s.celular',
-            HTML::parrafo( $textos->id('EMAIL')                ,  'centrado' ) => 'email|s.email'
+            HTML::parrafo( $textos->id('NOMBRE')     ,  'centrado' ) => 'nombre|s.nombre',
+            HTML::parrafo( $textos->id('DIRECCION')  ,  'centrado' ) => 'direccion|s.direccion',
+            HTML::parrafo( $textos->id('TELEFONO')   ,  'centrado' ) => 'telefono|s.telefono',
+            HTML::parrafo( $textos->id('CELULAR')    ,  'centrado' ) => 'celular|s.celular',
+            HTML::parrafo( $textos->id('EMAIL')      ,  'centrado' ) => 'email|s.email'
             
         );        
         //ruta a donde se mandara la accion del doble click
@@ -460,7 +447,5 @@ class SedeEmpresa {
         return Recursos::generarTablaRegistros($arregloRegistros, $datosTabla, $rutaPaginador, $datosPaginacion).HTML::crearMenuBotonDerecho('SEDES_EMPRESA');
         
     }    
-    
-    
-    
+  
 }

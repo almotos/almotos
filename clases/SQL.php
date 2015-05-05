@@ -404,6 +404,8 @@ class SQL {
         }
 
         $columnas = implode(', ', $listaColumnas);
+        
+        self::verificarTablas(&$tablas);
 
         foreach ($tablas as $alias => $tabla) {
 
@@ -639,6 +641,50 @@ class SQL {
             return FALSE;
             
         }
+    }
+    
+    /**
+     * Funcion encargada de validar que una tabla es de uso global del sistema
+     * o particular a un cliente, ejemplo, las facturas de compra se almacenan en la
+     * tabla "facturas_compra", esta tabla DEBE ser particular a un cliente
+     * @param type $param
+     */
+    public static function verificarTablas($tablas)
+    {
+        global $sesion_usuarioSesion, $configuracion;
+        
+        if (!is_array($tablas)) {
+            $tablas = array($tablas);
+        }
+        
+        foreach ($tablas as $key => $value) {
+            if (in_array($value, $configuracion['TABLAS']['PARTICULARES'])) {
+                $tablas[$key] = $sesion_usuarioSesion->idEmpresa."_".$value;
+            }
+        }
+        
+        return true;
+        
+    }
+    
+    
+    /**
+     * Funcion encargada de validar que una tabla es de uso global del sistema
+     * o particular a un cliente, ejemplo, las facturas de compra se almacenan en la
+     * tabla "facturas_compra", esta tabla DEBE ser particular a un cliente
+     * @param type $param
+     */
+    public function verificarTabla($tabla)
+    {
+        global $sesion_usuarioSesion, $configuracion;
+        
+
+        if (in_array($tabla, $configuracion['TABLAS']['PARTICULARES'])) {
+            $tabla = $sesion_usuarioSesion->idEmpresa."_".$tabla;
+        }
+        
+        return $tabla;
+        
     }
 
 

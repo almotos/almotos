@@ -122,6 +122,9 @@ $textos = array(
     'REGIMEN_7'                         => 'Empresa del estado',
     'REGIMEN_8'                         => 'No responsable',
     
+    'SELECCIONAR_SEDE'                  => 'Seleccionar Sede',
+    'SELECCIONE_SEDE'                   => 'Seleccione Sede',
+    
     'VENCIMIENTO_FACTURA_COMPRA'        => 'Vencimiento Fact. Compra.',
     'VENCIMIENTO_FACTURA_VENTA'         => 'Vencimiento Fact. Venta.',
     

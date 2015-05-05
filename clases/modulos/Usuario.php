@@ -78,7 +78,7 @@ class Usuario {
      * @var entero
      */
     public $idModulo;
-
+    
     /**
      * Representación (objeto) de la persona con la cual está relacionada el usuario
      * @var objeto
@@ -174,6 +174,12 @@ class Usuario {
      * @var entero
      */
     public $ordenInicial = NULL;
+    
+    /**
+     * Id de la empresa a la que pertenece el usuario
+     * @var entero
+     */
+    public $idEmpresa;
 
     /**
      *
@@ -239,6 +245,7 @@ class Usuario {
                 'dctoMaximo'        => 'u.dcto_maximo',
                 'observaciones'     => 'u.observaciones',
                 'porcentajeGanancia' => 'u.porcentaje_ganancia',
+                'idEmpresa'          => 'u.id_empresa'
             );
 
             $condicion = "u.id_tipo = t.id AND u.id = '$id'";
