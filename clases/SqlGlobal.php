@@ -132,10 +132,6 @@ class SqlGlobal {
      */
     public $guardarBitacora = true;    
 
-
-
-
-
     /**
      *
      * Inicializar la clase estableciendo una conexión con el servidor de bases de datos MySQL
@@ -168,10 +164,6 @@ class SqlGlobal {
         $this->conectar();
     }
 
-
-
-
-
     /**
      *
      * Establecer una conexión con el servidor de bases de datos MySQL
@@ -190,10 +182,6 @@ class SqlGlobal {
         }
     }
 
-
-
-
-
     /**
      *
      * Finalizar una conexión con el servidor de bases de datos MySQL
@@ -210,9 +198,6 @@ class SqlGlobal {
             $cierre = mysqli_close($conexion);
         }
     }
-
-
-
 
     /**
      *
@@ -280,16 +265,6 @@ class SqlGlobal {
         return $this->resultado;
     }
 
-
-
-    public static function escribirTxt($texto){
-        $fecha = date("d/m/y H:i:s");
-        $fp = fopen("errores.txt","w");
-        fwrite($fp, "Fecha: $fecha -> \n Variable: $texto  " .PHP_EOL);
-        fclose($fp);
-    }
-    
-
     /**
      *
      * Convertir el recurso resultante de una consulta en un objeto
@@ -341,10 +316,6 @@ class SqlGlobal {
 	}        
         return $fila;
     }
-
-
-
-
 
    /**
      *
@@ -517,17 +488,14 @@ class SqlGlobal {
     }
 
 
-
-
-    /*** Verificar si un registro con un valor específico existe en una tabla ***/
-    /**
+    /** Verificar si un registro con un valor específico existe en una tabla 
      *
      * @param type $tabla
      * @param type $columna
      * @param type $valor
      * @param type $condicionExtra
      * @return type boolean
-     */
+     **/
     public function existeItem($tabla, $columna, $valor, $condicionExtra = "") {
         $tablas = array($tabla);
         $columnas = array($columna);
@@ -562,9 +530,6 @@ class SqlGlobal {
             return FALSE;
         }
     }
-
-
-
 
     /*** Realizar búsqueda y devolver filas coincidentes ???***/
     public function evaluarBusqueda($vistaBuscador, $vistaMenu) {
@@ -633,9 +598,6 @@ class SqlGlobal {
         return $condicionFinal;
     }
 
-
-
-
     /*** Devolver lista de elementos que coincidan con la búsqueda parcial del usuario para autocompletar ***/
     public function datosAutoCompletar($tabla, $patron) {
         $columnas = $this->obtenerColumnas($tabla);
@@ -660,7 +622,42 @@ class SqlGlobal {
         $lista = implode("\n", array_unique($lista));
         return $lista;
     }
+    
+    /**
+     *
+     * Inicializar una transaccion en la BD
+     * 
+     * @return  void
+     */
+    public function iniciarTransaccion()
+    {
+        $this->ejecutar("START TRANSACTION");
+    }    
+    
+    /**
+     *
+     * finalizar una transaccion en la BD
+     * 
+     * @return  void
+     */
+    public function finalizarTransaccion()
+    {
+        $this->ejecutar("COMMIT");
+    }   
+    
+    /**
+     *
+     * cancelar una transaccion en la BD
+     * 
+     * @return  void
+     */
+    public function cancelarTransaccion($textoError = "")
+    {
+        syslog(LOG_DEBUG, $textoError);
+        $this->ejecutar("ROLLBACK");
+        return false;
+    }       
 
 
 }
-?>
+

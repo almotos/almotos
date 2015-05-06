@@ -487,8 +487,8 @@ $configuracion['VALIDACIONES'] = array(
  * Arreglo que determina que tablas son particulares a cada cliente
  **/
 $configuracion['TABLAS']['PARTICULARES'] = array(
-        /*'cuentas_operacion_negocio',
-        'articulos_cotizacion',
+        'cuentas_operacion',
+        /*'articulos_cotizacion',
         'articulos_factura_compra',
         'articulos_factura_temporal_compra',
         'articulos_factura_venta',

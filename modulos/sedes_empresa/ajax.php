@@ -457,7 +457,7 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
 
     $item = '';
     $respuesta = array();
-    $objeto = new Ciudad();
+    $objeto = new SedeEmpresa();
 
     $registros = $configuracion['GENERAL']['registrosPorPagina'];
 

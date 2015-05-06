@@ -106,15 +106,15 @@ class CruceCuentas {
     public function __construct($id = NULL) {
         global $modulo;
         
-        $sqlGlobal = Factory::crearObjeto("SqlGlobal");
+        $this->sqlGlobal = Factory::crearObjeto("SqlGlobal");
         
         $this->urlBase          = '/' . $modulo->url;
         $this->url              = $modulo->url;
         $this->idModulo         = $modulo->id;
         //Saber el numero de registros
-        $this->registros        = $sql->obtenerValor('cruce_cuentas', 'COUNT(id)', 'id != "0" ');
+        $this->registros        = $this->sqlGlobal->obtenerValor('cruce_cuentas', 'COUNT(id)', 'id != "0" ');
         //Saber el numero de registros activos
-        $this->registrosActivos = $sql->obtenerValor('cruce_cuentas', 'COUNT(id)', 'activo = "1" AND id != "0" ');
+        $this->registrosActivos = $this->sqlGlobal->obtenerValor('cruce_cuentas', 'COUNT(id)', 'activo = "1" AND id != "0" ');
         //establecer el valor del campo predeterminado para organizar los listados
         $this->ordenInicial     = 'nombre';
 
@@ -129,41 +129,32 @@ class CruceCuentas {
      * @param entero $id Código interno o identificador del tipo_compra en la base de datos
      */
     public function cargar($id) {
-        global $sql;
-
-        if (isset($id) && $sql->existeItem('cruce_cuentas', 'id', intval($id))) {
+        
+        if (isset($id) && $this->sqlGlobal->existeItem('cruce_cuentas', 'id', intval($id))) {
 
             $tablas = array(
-                'tc' => 'cruce_cuentas'
+                'cc' => 'cruce_cuentas'
             );
 
             $columnas = array(
-                'id'            => 'tc.id',
-                'nombre'        => 'tc.nombre',
-                'tipo'          => 'tc.tipo',
-                'activo'        => 'tc.activo',
-                'descripcion'   => 'tc.descripcion',
-                'principal'     => 'tc.principal'
+                'id'            => 'cc.id',
+                'nombre'        => 'cc.nombre',
+                'codigo'        => 'cc.codigo',
+                'activo'        => 'cc.activo',
             );
 
-            $condicion = 'tc.id = "' . $id . '"';
+            $condicion = 'cc.id = "' . $id . '"';
 
-            $consulta = $sql->seleccionar($tablas, $columnas, $condicion);
+            $consulta = $this->sqlGlobal->seleccionar($tablas, $columnas, $condicion);
 
-            if ($sql->filasDevueltas) {
-                $fila = $sql->filaEnObjeto($consulta);
+            if ($this->sqlGlobal->filasDevueltas) {
+                $fila = $this->sqlGlobal->filaEnObjeto($consulta);
 
                 foreach ($fila as $propiedad => $valor) {
                     $this->$propiedad = $valor;
                 }
 
-                $this->url = $this->urlBase . '/' . $this->id;
-                
-                //verificar si el proveedor tiene cuentas bancarias, en caso de que tenga, hacer la consulta y armar la lista de objetos
-                $tablas2        = array('cp' => 'cuentas_tipo_compra', 'pc' => 'plan_contable');
-                $columnas2      = array('id' => 'cp.id', 'cuenta' => 'pc.nombre', 'codigoCuenta' => 'pc.codigo_contable', 'tipoCuenta' => 'cp.tipo');
-                $sql->depurar   = true;
-                $this->listaCuentas = $sql->seleccionar($tablas2, $columnas2, 'cp.id_cuenta = pc.id AND cp.id_tipo_compra = "' . $id . '"');                
+                $this->url = $this->urlBase . '/' . $this->id;               
                 
             }
         }
@@ -176,62 +167,37 @@ class CruceCuentas {
      * @return entero               Código interno o identificador del tipo_compra en la base de datos (NULL si hubo error)
      */
     public function adicionar($datos) {
-        global $sql;
-
         $datosItem = array();
 
-        $datosItem['nombre']        = $datos['nombre'];
-        $datosItem['descripcion']   = $datos['descripcion'];
-        $datosItem['tipo']          = $datos['tipo'];
+        $datosItem['nombre']    = $datos['nombre'];
+        $datosItem['codigo']    = $datos['codigo'];
 
-        if (isset($datos['activo'])) {
-            $datosItem['activo'] = '1';
+        $datosItem['activo'] = isset($datos['activo']) ? '1' : '0';
             
-        } else {
-            $datosItem['activo'] = '0';
-            
-        }
-        
-        $sql->iniciarTransaccion();
-        
-        if (isset($datos['principal'])) {
-            $datosItem['principal'] = '1';
-            $datosPrincipal         = array('principal' => '0');
-            
-            $modificar = $sql->modificar('cruce_cuentas', $datosPrincipal, 'principal = "1"');
-            
-            if(!$modificar){
-                $sql->cancelarTransaccion();
-            }
-            
-        } else {
-            $datosItem['principal'] = '0';
-            
-        }        
+        $this->sqlGlobal->iniciarTransaccion();     
 
-        $consulta = $sql->insertar('cruce_cuentas', $datosItem);
+        $consulta = $this->sqlGlobal->insertar('cruce_cuentas', $datosItem);
 
         if ($consulta) {
-            $idItem = $sql->ultimoId;
-            $sql->finalizarTransaccion();
+            $idItem = $this->sqlGlobal->ultimoId;
+            $this->sqlGlobal->finalizarTransaccion();
             return $idItem;
             
         } else {
-            $sql->cancelarTransaccion();
+            $this->sqlGlobal->cancelarTransaccion();
             return false;
             
-        }//fin del if($consulta)
+        }
         
     }
 
 
     /**
-     * Modificar un tipo_compra
-     * @param  arreglo $datos       Datos del tipo_compra a modificar
+     * Modificar un registro
+     * @param  arreglo $datos       Datos del registro a modificar
      * @return lógico               Indica si el procedimiento se pudo realizar correctamente o no
      */
     public function modificar($datos) {
-        global $sql;
 
         if (!isset($this->id)) {
             return NULL;
@@ -239,43 +205,21 @@ class CruceCuentas {
 
         $datosItem = array();
 
-        $datosItem['nombre']        = $datos['nombre'];
-        $datosItem['descripcion']   = $datos['descripcion'];
-        $datosItem['tipo']          = $datos['tipo'];
+        $datosItem['nombre']    = $datos['nombre'];
+        $datosItem['codigo']    = $datos['codigo'];
 
-        if (isset($datos['activo'])) {
-            $datosItem['activo'] = '1';
-            
-        } else {
-            $datosItem['activo'] = '0';
-            
-        }
+        $datosItem['activo'] = (isset($datos['activo'])) ? '1' : '0';
 
-        $sql->iniciarTransaccion();
+        $this->sqlGlobal->iniciarTransaccion();
         
-        if (isset($datos['principal'])) {
-            $datosItem['principal'] = '1';
-            $datosPrincipal         = array('principal' => '0');
-            
-            $modificar = $sql->modificar('cruce_cuentas', $datosPrincipal, 'principal = "1"');
-            
-            if(!$modificar){
-                $sql->cancelarTransaccion();
-            }            
-            
-        } else {
-            $datosItem['principal'] = '0';
-            
-        }        
-        
-        $consulta = $sql->modificar('cruce_cuentas', $datosItem, 'id = "' . $this->id . '" ');
+        $consulta = $this->sqlGlobal->modificar('cruce_cuentas', $datosItem, 'id = "' . $this->id . '" ');
         
         if ($consulta) {
-            $sql->finalizarTransaccion();
+            $this->sqlGlobal->finalizarTransaccion();
             return true;
             
         } else {
-            $sql->cancelarTransaccion();
+            $this->sqlGlobal->cancelarTransaccion();
             return false;
         }
 
@@ -288,7 +232,7 @@ class CruceCuentas {
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
 
-    public function eliminar() {
+    public function eliminar() { 
         global $sql, $textos;
 
         //arreglo que será devuelto como respuesta
@@ -302,11 +246,10 @@ class CruceCuentas {
         }
          
         //hago la validacion de la integridad referencial
-        $arreglo1 = array('tipo_compra_cuenta_afectada',   'id_tipo_compra    = "'.$this->id.'"', $textos->id('TIPO_COMPRA_CUENTA_AFECTADA'));//arreglo del que sale la info a consultar
-        $arreglo2 = array('cuentas_tipo_compra',           'id_tipo_compra    = "'.$this->id.'"', $textos->id('CUENTAS_TIPO_COMPRA'));//arreglo del que sale la info a consultar
-        
-        $arregloIntegridad  = array($arreglo1, $arreglo2);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
-        $integridad         = Recursos::verificarIntegridad($textos->id('TIPO_DE_COMPRA'), $arregloIntegridad);
+//        $arreglo1 = array('tipo_compra_cuenta_afectada',   'id_tipo_compra    = "'.$this->id.'"', $textos->id('TIPO_COMPRA_CUENTA_AFECTADA'));//arreglo del que sale la info a consultar
+//
+//        $arregloIntegridad  = array($arreglo1);//arreglo de arreglos para realizar las consultas de integridad referencial, (ver documentacion de metodo)
+//        $integridad         = Recursos::verificarIntegridad($textos->id('TIPO_OPERACION'), $arregloIntegridad);
 
         /**
          * si hay problemas con la integridad referencial, la variable integridad tiene como valor,
@@ -319,7 +262,7 @@ class CruceCuentas {
         }
               
         $sql->iniciarTransaccion();
-        $consulta = $sql->eliminar('cruce_cuentas', 'id = "' . $this->id . '"');
+        $consulta = $this->sqlGlobal->eliminar('cruce_cuentas', 'id = "' . $this->id . '"');
         
         if (!($consulta)) {
             $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);

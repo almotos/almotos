@@ -61,38 +61,33 @@ if (isset($url_accion)) {
 function cosultarItem($id) {
     global $textos, $sql;
 
-    $objeto         = new TipoCompra($id);
+    $objeto         = new CruceCuentas($id);
     $respuesta      = array();
 
     $codigo  = HTML::campoOculto('procesar', 'true');
     $codigo .= HTML::campoOculto('id', $id);
-    
-    $codigo1  = HTML::parrafo($textos->id('TIPO'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($textos->id('TIPO_'.$objeto->tipo), '', '');    
+     
     $codigo1 .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($objeto->nombre, '', '');
-    $codigo1 .= HTML::parrafo($textos->id('DESCRIPCION'), 'negrilla margenSuperior');
-    $codigo1 .= HTML::parrafo($objeto->descripcion, '', '');   
+    $codigo1 .= HTML::parrafo($objeto->nombre, 'medioMargenSuperior', '');
+    $codigo1 .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
+    $codigo1 .= HTML::parrafo($objeto->codigo, 'medioMargenSuperior', '');   
 
     $codigo1 .= HTML::parrafo($textos->id('ESTADO'), 'negrilla margenSuperior');
     $activo = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
-    $codigo1 .= HTML::parrafo($activo, '', '');
-    $principal = ($objeto->principal) ? HTML::parrafo($textos->id('PRINCIPAL'), 'activo margenSuperior') : HTML::parrafo($textos->id('SECUNDARIA'), 'inactivo margenSuperior');
-    $codigo1 .= HTML::parrafo($principal, '', '');    
+    $codigo1 .= HTML::parrafo($activo, 'medioMargenSuperior', ''); 
     
     $pestana1 = HTML::contenedor($codigo1, 'pestana1');
     
     if (!empty($objeto->listaCuentas)) {
         //crear los formularios con la info para las demas sedes
         $datosTablaCuentas = array(
-            HTML::parrafo($textos->id('CUENTA'), 'centrado')        => 'cuenta',
-            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')        => 'codigoCuenta',
-            HTML::parrafo($textos->id('TIPO'), 'centrado')          => 'tipoCuenta',
-            HTML::parrafo($textos->id('ELIMINAR'), 'centrado')      => 'botonEliminar',
+            HTML::parrafo($textos->id('CUENTA'), 'centrado')            => 'cuenta',
+            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')   => 'codigoCuenta',
+            HTML::parrafo($textos->id('TIPO'), 'centrado')              => 'tipoCuenta',
+            HTML::parrafo($textos->id('ELIMINAR'), 'centrado')          => 'botonEliminar',
         );
 
         $rutas = array(
-            'ruta_modificar'    => '/ajax/cruce_cuentas/modificarCuenta',
             'ruta_eliminar'     => '/ajax/cruce_cuentas/eliminarCuenta',
         );
 
@@ -114,7 +109,7 @@ function cosultarItem($id) {
     $pestana2 = HTML::contenedor($contenedorCuentas, 'pestana1');   
 
     $pestanas = array(
-        HTML::frase($textos->id('INFO_TIPO_COMPRA'), 'letraBlanca')    => $pestana1,
+        HTML::frase($textos->id('INFO_OPERACION_NEGOCIO'), 'letraBlanca')    => $pestana1,
         HTML::frase($textos->id('LISTA_CUENTAS'), 'letraBlanca')       => $pestana2
     );
 
@@ -138,7 +133,7 @@ function cosultarItem($id) {
  * @param type $datos
  */
 function adicionarItem($datos = array()) {
-    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    global $textos, $modulo, $sesion_usuarioSesion;
         
     /**
     * Verificar si el usuario que esta en la sesion tiene permisos para esta accion
@@ -155,27 +150,18 @@ function adicionarItem($datos = array()) {
         
     }
 
-    $objeto         = new TipoCompra();
+    $objeto         = new CruceCuentas();
     $destino        = '/ajax' . $objeto->urlBase . '/add';
     $respuesta      = array();
 
     if (empty($datos)) {
-        //creo una lista desplegable para el cruce de cuentas
-        $listaDesplegableTipo = HTML::listaDesplegable('datos[tipo]', array('1' => $textos->id('TIPO_1'), '2' => $textos->id('TIPO_2'), '3' => $textos->id('TIPO_3')), '', '', 'listaTipoGrupo', '', '', $textos->id('AYUDA_SELECCIONAR_TIPO'));
-
-//        //creo una lista desplegable para el tipo de categoria o modulo
-//        $listaDesplegableCategoria = HTML::listaDesplegable('datos[categoria]', array('1' => $textos->id('CATEGORIA_1'), '2' => $textos->id('CATEGORIA_2'), '3' => $textos->id('CATEGORIA_3')), '', '', 'listaTipoGrupo', '', '', $textos->id('AYUDA_SELECCIONAR_CATEGORIA'));
-        
         $codigo = HTML::campoOculto('procesar', 'true');
-        $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
-        $codigo .= HTML::parrafo($textos->id('TIPO'), 'negrilla margenSuperior');
-        $codigo .= $listaDesplegableTipo;          
+        $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');         
         $codigo .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
-        $codigo .= HTML::campoTexto('datos[nombre]', 40, 255);
-        $codigo .= HTML::parrafo($textos->id('DESCRIPCION'), 'negrilla margenSuperior');
-        $codigo .= HTML::areaTexto('datos[descripcion]', 5, 45);        
+        $codigo .= HTML::campoTexto('datos[nombre]', 40, 255);  
+        $codigo .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[codigo]', 40, 255);        
         $codigo .= HTML::parrafo(HTML::campoChequeo('datos[activo]', true) . $textos->id('ACTIVO'), 'margenSuperior');
-        $codigo .= HTML::parrafo(HTML::campoChequeo('datos[principal]', false) . $textos->id('PRINCIPAL'), 'margenSuperior');
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), '', '', ''), 'margenSuperior');        
         $codigo .= HTML::parrafo($textos->id('REGISTRO_AGREGADO'), 'textoExitoso', 'textoExitoso');
         $codigo1 = HTML::forma($destino, $codigo, 'P');
@@ -191,13 +177,13 @@ function adicionarItem($datos = array()) {
 
         $respuesta['error'] = true;
 
-        $existeNombre = $sql->existeItem('cruce_cuentas', 'nombre', $datos['nombre']);
+        $existeNombre = $objeto->sqlGlobal->existeItem('cruce_cuentas', 'nombre', $datos['nombre']);
 
-        if (empty($datos['tipo'])) {
-            $respuesta['mensaje'] = $textos->id('ERROR_FALTA_TIPO');
-            
-        } elseif (empty($datos['nombre'])) {
+        if (empty($datos['nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
+            
+        } elseif (empty($datos['codigo'])) {
+            $respuesta['mensaje'] = $textos->id('ERROR_FALTA_CODIGO');
             
         } elseif ($existeNombre) {
             $respuesta['mensaje'] = $textos->id('ERROR_EXISTE_NOMBRE');
@@ -207,14 +193,11 @@ function adicionarItem($datos = array()) {
             
             if ($idItem) {
                 /*                 * ************** Creo el nuevo item que se insertara via ajax *************** */
-                $objeto = new TipoCompra($idItem);
+                $objeto = new CruceCuentas($idItem);
 
                 $estado = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
                 
-                $principal = ($objeto->principal) ? HTML::frase($textos->id('PRINCIPAL'), 'activo') : HTML::frase($textos->id('SECUNDARIA'), 'inactivo');
-                
-                
-                $celdas     = array($objeto->nombre, $textos->id('TIPO_'.$objeto->tipo), $estado, $principal);
+                $celdas     = array($objeto->nombre, $objeto->codigo, $estado);
                 $claseFila  = '';
                 $idFila     = $idItem;
                 $celdas1    = HTML::crearNuevaFila($celdas, $claseFila, $idFila);
@@ -272,31 +255,20 @@ function modificarItem($id, $datos = array()) {
         
     }
 
-    $objeto     = new TipoCompra($id);
+    $objeto     = new CruceCuentas($id);
     $destino    = '/ajax' . $objeto->urlBase . '/edit';
     $respuesta  = array();
 
     if (empty($datos)) {
 
-        //creo una lista desplegable para el cruce de cuentas
-        $listaDesplegableTipo = HTML::listaDesplegable('datos[tipo]', array('1' => $textos->id('TIPO_1'), '2' => $textos->id('TIPO_2'), '3' => $textos->id('TIPO_3')), $objeto->tipo, '', 'listaTipoGrupo', '', '', $textos->id('AYUDA_SELECCIONAR_TIPO'));
-
-//        //creo una lista desplegable para el tipo de categoria o modulo
-//        $listaDesplegableCategoria = HTML::listaDesplegable('datos[categoria]', array('1' => $textos->id('CATEGORIA_1'), '2' => $textos->id('CATEGORIA_2'), '3' => $textos->id('CATEGORIA_3')), $objeto->categoria, '', 'listaTipoGrupo', '', '', $textos->id('AYUDA_SELECCIONAR_CATEGORIA'));
-
         $codigo = HTML::campoOculto('procesar', 'true');
         $codigo .= HTML::campoOculto('id', $id);
-        $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
-        $codigo .= HTML::parrafo($textos->id('TIPO'), 'negrilla margenSuperior');
-        $codigo .= $listaDesplegableTipo; 
-//        $codigo .= HTML::parrafo($textos->id('CATEGORIA'), 'negrilla margenSuperior');
-//        $codigo .= $listaDesplegableCategoria;           
+        $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');          
         $codigo .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
         $codigo .= HTML::campoTexto('datos[nombre]', 40, 255, $objeto->nombre);
-        $codigo .= HTML::parrafo($textos->id('DESCRIPCION'), 'negrilla margenSuperior');
-        $codigo .= HTML::areaTexto('datos[descripcion]', 5, 45, $objeto->descripcion);
+        $codigo .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[codigo]', 40, 255, $objeto->codigo);        
         $codigo .= HTML::parrafo(HTML::campoChequeo('datos[activo]', $objeto->activo) . $textos->id('ACTIVO'), 'margenSuperior');
-        $codigo .= HTML::parrafo(HTML::campoChequeo('datos[principal]', $objeto->principal) . $textos->id('PRINCIPAL'), 'margenSuperior');
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk'), 'margenSuperior');
         $codigo .= HTML::parrafo($textos->id('REGISTRO_MODIFICADO'), 'textoExitoso', 'textoExitoso');
         $codigo1 = HTML::forma($destino, $codigo, 'P');
@@ -314,11 +286,11 @@ function modificarItem($id, $datos = array()) {
 
         $existeNombre = $sql->existeItem('cruce_cuentas', 'nombre', $datos['nombre'], 'id != "' . $id . '" ');
 
-        if (empty($datos['tipo'])) {
-            $respuesta['mensaje'] = $textos->id('ERROR_FALTA_TIPO');
-            
-        } elseif (empty($datos['nombre'])) {
+        if (empty($datos['nombre'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_NOMBRE');
+            
+        } elseif (empty($datos['codigo'])) {
+            $respuesta['mensaje'] = $textos->id('ERROR_FALTA_CODIGO');
             
         } elseif ($existeNombre) {
             $respuesta['mensaje'] = $textos->id('ERROR_EXISTE_NOMBRE');
@@ -327,15 +299,12 @@ function modificarItem($id, $datos = array()) {
             $idItem = $objeto->modificar($datos);
             if ($idItem) {
                 /*                 * ************** Creo el nuevo item que se insertara via ajax *************** */
-                $objeto = new TipoCompra($id);
+                $objeto = new CruceCuentas($id);
 
                 $estado = ($objeto->activo) ? HTML::frase($textos->id('ACTIVO'), 'activo') : HTML::frase($textos->id('INACTIVO'), 'inactivo');
                 
-                $principal = ($objeto->principal) ? HTML::frase($textos->id('PRINCIPAL'), 'activo') : HTML::frase($textos->id('SECUNDARIA'), 'inactivo');
-                
-                $celdas = $celdas = array($objeto->nombre, $textos->id('TIPO_'.$objeto->tipo), $estado, $principal);
+                $celdas = $celdas = array($objeto->nombre, $objeto->codigo, $estado);
                 $celdas1 = HTML::crearFilaAModificar($celdas);
-                
 
                     $respuesta['error']         = false;
                     $respuesta['accion']        = 'insertar';
@@ -388,7 +357,7 @@ function eliminarItem($id, $confirmado, $dialogo) {
         
     }
     
-    $objeto     = new TipoCompra($id);
+    $objeto     = new CruceCuentas($id);
     $destino    = '/ajax' . $objeto->urlBase . '/delete';
     $respuesta  = array();
 
@@ -461,7 +430,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
     } else {
         $item       = '';
         $respuesta  = array();
-        $objeto     = new TipoCompra();
+        $objeto     = new CruceCuentas();
         
         $registros = $configuracion['GENERAL']['registrosPorPagina'];
         
@@ -478,7 +447,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
         $condicionales = $data[1];
 
         if ($condicionales == '') {
-            $condicion = '(g.nombre REGEXP "(' . implode("|", $palabras) . ')")';
+            $condicion = '(cc.nombre REGEXP "(' . implode("|", $palabras) . ')")';
         } else {
             $condicionales = explode('|', $condicionales);
 
@@ -493,7 +462,7 @@ function buscarItem($data, $cantidadRegistros = NULL) {
             $condicion .= ')';
         }
 
-        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'g.nombre');
+        $arregloItems = $objeto->listar($registroInicial, $registros, array('0'), $condicion, 'cc.nombre');
 
         if ($objeto->registrosConsulta) {//si la consulta trajo registros
             $datosPaginacion = array($objeto->registrosConsulta, $registroInicial, $registros, $pagina, $objeto->registrosConsulta);
@@ -505,13 +474,13 @@ function buscarItem($data, $cantidadRegistros = NULL) {
             $info = HTML::parrafo('Tu busqueda no trajo resultados, por favor intenta otra busqueda', 'textoErrorNotificaciones');
         }
 
-        $respuesta['error'] = false;
-        $respuesta['accion'] = 'insertar';
-        $respuesta['contenido'] = $item;
-        $respuesta['idContenedor'] = '#tablaRegistros';
-        $respuesta['idDestino'] = '#contenedorTablaRegistros';
-        $respuesta['paginarTabla'] = true;
-        $respuesta['info'] = $info;
+        $respuesta['error']         = false;
+        $respuesta['accion']        = 'insertar';
+        $respuesta['contenido']     = $item;
+        $respuesta['idContenedor']  = '#tablaRegistros';
+        $respuesta['idDestino']     = '#contenedorTablaRegistros';
+        $respuesta['paginarTabla']  = true;
+        $respuesta['info']          = $info;
     }
 
     Servidor::enviarJSON($respuesta);
@@ -531,7 +500,7 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
 
     $item = '';
     $respuesta = array();
-    $objeto = new TipoCompra();
+    $objeto = new CruceCuentas();
 
     $registros = $configuracion['GENERAL']['registrosPorPagina'];
     
@@ -566,7 +535,7 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
 
             $consultaGlobal = $condicion;
         } else {
-            $consultaGlobal = '(g.nombre REGEXP "(' . implode('|', $palabras) . ')" )';
+            $consultaGlobal = '(cc.nombre REGEXP "(' . implode('|', $palabras) . ')" )';
         }
     } else {
         $consultaGlobal = '';
@@ -597,12 +566,12 @@ function paginador($pagina, $orden = NULL, $nombreOrden = NULL, $consultaGlobal 
         $item .= $objeto->generarTabla($arregloItems, $datosPaginacion);
     }
 
-    $respuesta['error'] = false;
-    $respuesta['accion'] = 'insertar';
-    $respuesta['contenido'] = $item;
-    $respuesta['idContenedor'] = '#tablaRegistros';
-    $respuesta['idDestino'] = '#contenedorTablaRegistros';
-    $respuesta['paginarTabla'] = true;
+    $respuesta['error']         = false;
+    $respuesta['accion']        = 'insertar';
+    $respuesta['contenido']     = $item;
+    $respuesta['idContenedor']  = '#tablaRegistros';
+    $respuesta['idDestino']     = '#contenedorTablaRegistros';
+    $respuesta['paginarTabla']  = true;
 
     Servidor::enviarJSON($respuesta);
 }
@@ -689,7 +658,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
         );
       
         foreach ($arregloIds as $val) {
-            $objeto = new TipoCompra($val);
+            $objeto = new CruceCuentas($val);
             $eliminarVarios = $objeto->eliminar();
             
             if ($eliminarVarios['respuesta']) {
@@ -735,8 +704,6 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
     
 }
 
-
-
 /**
  * Función que carga el formulario para adicionar cuentas contables a un cruce de cuentas
  * 
@@ -780,7 +747,7 @@ function adicionarCuenta($id, $datos = array()) {
 
         $codigo = HTML::campoOculto('procesar', 'true');
         $codigo .= HTML::campoOculto('datos[dialogo]', '', 'idDialogo');
-        $codigo .= HTML::campoOculto('datos[id_tipo_compra]', $id, ''); //id del cruce de cuentas
+        $codigo .= HTML::campoOculto('datos[id_operacion]', $id, ''); //id del cruce de cuentas
 
         $arregloTipoCuenta = array(
             '1' => 'Credito',
@@ -792,6 +759,10 @@ function adicionarCuenta($id, $datos = array()) {
         $codigo .= HTML::campoTexto('datos[cuenta]', 40, 255, '', 'autocompletable campoObligatorio', 'campoNombreCuenta', array('title' => HTML::urlInterna('PLAN_CONTABLE', 0, true, 'listar')), $textos->id('AYUDA_USO_AUTOCOMPLETAR'), HTML::urlInterna('PLAN_CONTABLE', 0, true, 'add'), 'datos[id_cuenta]');
         $codigo .= HTML::parrafo($textos->id('TIPO_CUENTA'), 'negrilla margenSuperior');
         $codigo .= HTML::frase($listaTipoCuenta, '');
+        $codigo .= HTML::parrafo($textos->id('BASE_MIN_TOTAL_PESOS'), 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));   
+        $codigo .= HTML::parrafo($textos->id('BASE_MIN_TOTAL_PORCENTAJE'), 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));         
 
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk'), 'margenSuperior');
         $codigo .= HTML::parrafo($textos->id('REGISTRO_AGREGADO'), 'textoExitoso', 'textoExitoso');

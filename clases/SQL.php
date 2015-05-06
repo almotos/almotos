@@ -143,7 +143,8 @@ class SQL {
      * @return                      recurso
      *
      */
-    function __construct($servidor = '', $usuario = '', $contrasena = '', $nombre = '') {
+    function __construct($servidor = '', $usuario = '', $contrasena = '', $nombre = '')
+    {
         global $configuracion;
 
         if (empty($servidor) && empty($usuario) && empty($contrasena) && empty($nombre)) {
@@ -176,7 +177,8 @@ class SQL {
      * @return                      recurso
      *
      */
-    public function conectar() {
+    public function conectar()
+    {
         $this->conexion = new mysqli($this->servidor, $this->usuario, $this->contrasena, $this->baseDatos);
         if ($this->conexion->connect_errno) {
             echo 'Fallo al conectar a MySQL: (' . $this->conexion->connect_errno . ') ' . $this->conexion->connect_error;
@@ -191,8 +193,8 @@ class SQL {
      * @return                      lógico
      *
      */
-    public function desconectar($conexion = "") {
-
+    public function desconectar($conexion = "")
+    {
         if (empty($conexion)) {
             $cierre = $this->conexion->close();
             
@@ -210,7 +212,8 @@ class SQL {
      * @return                      recurso
      *
      */
-    public function ejecutar($consulta) {
+    public function ejecutar($consulta)
+    {
         global $modulo, $sesion_usuarioSesion;
 
         $this->consultas++;
@@ -273,7 +276,8 @@ class SQL {
      * 
      * @param type $texto 
      */
-    public static function escribirTxt($texto) {
+    public static function escribirTxt($texto)
+    {
         $fecha = date("d/m/y H:i:s");
         $fp = fopen("errores.txt", "w");
         fwrite($fp, "Fecha: $fecha -> \n Variable: $texto  " . PHP_EOL);
@@ -288,7 +292,8 @@ class SQL {
      * @return                      objeto
      *
      */
-    public function filaEnObjeto($resultado = NULL) {
+    public function filaEnObjeto($resultado = NULL)
+    {
 //        if (empty($resultado)) {
 //            $fila = $this->resultado->fetch_object();
 //        } else {
@@ -306,7 +311,8 @@ class SQL {
      * @return                      arreglo
      *
      */
-    public function filaEnArreglo($resultado = NULL) {
+    public function filaEnArreglo($resultado = NULL)
+    {
         if (empty($resultado)) {
             $fila = $this->resultado->fetch_array();
         } else {
@@ -323,7 +329,8 @@ class SQL {
      * @return                      arreglo
      *
      */
-    public function filaEnArregloAsoc($resultado = NULL) {
+    public function filaEnArregloAsoc($resultado = NULL)
+    {
         if (empty($resultado)) {
             $fila = $this->resultado->fetch_assoc();
         } else {
@@ -338,7 +345,8 @@ class SQL {
      * 
      * @return  void
      */
-    public function iniciarTransaccion() {
+    public function iniciarTransaccion()
+    {
         $this->ejecutar("START TRANSACTION");
     }    
     
@@ -348,7 +356,8 @@ class SQL {
      * 
      * @return  void
      */
-    public function finalizarTransaccion() {
+    public function finalizarTransaccion()
+    {
         $this->ejecutar("COMMIT");
     }   
     
@@ -358,7 +367,8 @@ class SQL {
      * 
      * @return  void
      */
-    public function cancelarTransaccion($textoError = "") {
+    public function cancelarTransaccion($textoError = "")
+    {
         syslog(LOG_DEBUG, $textoError);
         $this->ejecutar("ROLLBACK");
         return false;
@@ -377,7 +387,8 @@ class SQL {
      * 
      * @return recurso
      */
-    public function seleccionar($tablas, $columnas, $condicion = "", $agrupamiento = "", $ordenamiento = "", $filaInicial = NULL, $numeroFilas = NULL, $where = true) {
+    public function seleccionar($tablas, $columnas, $condicion = "", $agrupamiento = "", $ordenamiento = "", $filaInicial = NULL, $numeroFilas = NULL, $where = true) 
+    {
         $listaColumnas  = array();
         $listaTablas    = array();
         $limite         = "";
@@ -457,7 +468,11 @@ class SQL {
      * @param array $datos arreglo de datos a ser ingresados (key = nombre de la columna en la BD, value = valor a ser insertado)
      * @return boolean true or false dependiendo del exito de la operación 
      */
-    public function insertar($tabla, $datos) {
+    public function insertar($tabla, $datos) 
+    {
+        
+        self::verificarTabla(&$tabla);
+        
         $tabla = $this->prefijo . $tabla;
 
         if (is_array($datos) && count($datos) > 0) {
@@ -498,8 +513,11 @@ class SQL {
      * @param array $datos datos a ser insertados
      * @return boolean true or false dependiendo del exito de la operación
      */
-    public function reemplazar($tabla, $datos) {
-
+    public function reemplazar($tabla, $datos)
+    {
+        
+        self::verificarTabla(&$tabla);
+        
         $tabla = $this->prefijo . $tabla;
 
         if (is_array($datos) && count($datos) > 0) {
@@ -532,7 +550,11 @@ class SQL {
      * @param string $condicion condición que determina que registros van a ser modificados
      * @return boolean true or false dependiendo del exito de la operación 
      */
-    public function modificar($tabla, $datos, $condicion) {
+    public function modificar($tabla, $datos, $condicion) 
+    {
+        
+        self::verificarTabla(&$tabla);
+        
         $tabla = $this->prefijo . $tabla;
 
         if (is_array($datos) && count($datos) > 0) {
@@ -576,12 +598,17 @@ class SQL {
      * @return boolean true or false dependiendo del exito de la operación
      */
     public function eliminar($tabla, $condicion) {
+        global $sesion_usuarioSesion;
         
-        if ($tabla == "facturas_compras" || $tabla == "facturas_venta") {
+        self::verificarTabla(&$tabla);
+        
+        if ($tabla == $sesion_usuarioSesion->idEmpresa . "_facturas_compras" 
+                || $tabla == $sesion_usuarioSesion->idEmpresa . "_facturas_venta") {
             return false;
         }
         
         $tabla = $this->prefijo . $tabla;
+        
         $sentencia = "DELETE FROM $tabla WHERE $condicion";
 
         $resultado = $this->ejecutar($sentencia);
@@ -600,7 +627,11 @@ class SQL {
      */
     public function existeItem($tabla, $columna, $valor, $condicionExtra = "") {
         $tablas = array($tabla);
+        
+        self::verificarTablas(&$tablas);
+        
         $columnas = array($columna);
+        
         $condicion = "$columna = '$valor'";
 
         if (!empty($condicionExtra)) {
@@ -628,8 +659,11 @@ class SQL {
      */
     public function obtenerValor($tabla, $columna, $condicion) {
         $tablas = array($tabla);
+        
+        self::verificarTablas(&$tablas);
+        
         $columnas = array($columna);
-        //$this->depurar = true;
+        
         $consulta = $this->seleccionar($tablas, $columnas, $condicion);
 
         if ($this->filasDevueltas == 1) {
@@ -662,11 +696,10 @@ class SQL {
                 $tablas[$key] = $sesion_usuarioSesion->idEmpresa."_".$value;
             }
         }
-        
+
         return true;
-        
+
     }
-    
     
     /**
      * Funcion encargada de validar que una tabla es de uso global del sistema
@@ -678,7 +711,6 @@ class SQL {
     {
         global $sesion_usuarioSesion, $configuracion;
         
-
         if (in_array($tabla, $configuracion['TABLAS']['PARTICULARES'])) {
             $tabla = $sesion_usuarioSesion->idEmpresa."_".$tabla;
         }
@@ -686,6 +718,5 @@ class SQL {
         return $tabla;
         
     }
-
 
 }

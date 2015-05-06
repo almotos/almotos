@@ -17,6 +17,7 @@ $tituloBloque = $textos->id('MODULO_ACTUAL');
 $tituloBloque .= HTML::imagen($configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['imagenesEstilos'] . '/' . strtolower($modulo->url) . '.png', 'iconoModulo');
 $objeto = new SedeEmpresa(); /* creacion del objeto */
 $excluidas = array('0'); //items excluidos en la consulta
+
 $item = '';
 $contenido = '';
 $contenido .= HTML::contenedor(HTML::contenedor($modulo->documentacion, 'ui-corner-all'), 'ui-widget-shadow ui-corner-all oculto', 'contenedorAyudaUsuario');
@@ -46,7 +47,9 @@ if ((isset($sesion_usuarioSesion) && $puedeAgregar) || isset($sesion_usuarioSesi
 
 /* Formulario para eliminar un masivo de elementos */
 $puedeEliminarMasivo = Perfil::verificarPermisosBoton('botonEliminarMasivoSedes_empresa', $modulo->nombre);
+
 $botonEliminar = '';
+
 if ((isset($sesion_usuarioSesion) && $puedeEliminar) || isset($sesion_usuarioSesion) && $sesion_usuarioSesion->idTipo == 0) {
     $botonEliminar .= HTML::contenedor(HTML::boton('basura', $textos->id('ELIMINAR_MASIVO'), 'directo', '', 'botonBorrarMasivo', '', array('ruta' => '/ajax/' . $modulo->url . '/eliminarVarios')), 'flotanteDerecha margenInferior botonEliminarMasivo oculto', 'botonEliminarMasivo' . ucwords(strtolower($modulo->nombre)) . '');
 }
@@ -60,7 +63,6 @@ $campoNumRegistros = '';
 $campoNumRegistros .= HTML::frase($textos->id('NUMERO_FILAS'), 'margenIzquierdaDoble medioMargenDerecha');
 $campoNumRegistros .= HTML::campoTexto('cantidad_registros', 5, 5, $registros . ' ', 'soloNumerosEnter', 'campoNumeroRegistros', array('ruta' => '/ajax/' . $modulo->url . '/move'), $textos->id('AYUDA_SELECCIONAR_CANTIDAD_REGISTROS'));
 
-
 /**
  * Boton que carga la ventana modal para realizar la busqueda
  * */
@@ -72,7 +74,6 @@ $buscador = HTML::forma($destino, $buscador);
 $buscador = HTML::contenedor($buscador, 'flotanteDerecha', 'botonBuscar' . ucwords(strtolower($modulo->nombre)) . '');
 $contenedorNotificaciones = HTML::contenedor('', 'contenedorNotificaciones', 'contenedorNotificaciones');
 $botonesSuperiores = HTML::contenedor($buscador . $botonAdicionar . $botonEliminar . $chkMarcarFilas . $campoNumRegistros . $contenedorNotificaciones, '', 'botonesSuperioresModulo');
-
 
 /**
  * Verifico que se haya iniciado una sesion y que tenga permisos para ver el modulo
@@ -93,4 +94,5 @@ if ((isset($sesion_usuarioSesion) && Perfil::verificarPermisosModulo($objeto->id
 }
 
 Plantilla::$etiquetas['BLOQUE_CENTRAL'] = $contenido;
+
 ?>

@@ -16,6 +16,10 @@ $textos = array(
     'MODULO_ACTUAL'                             => 'Operaciones de Negocio - Cruzar cuentas con operacion',
     'AGREGAR_CUENTAS_AFECTADAS'                 => 'Agregar cuenta contable',
     'ADICIONAR_ITEM'                            => 'Adicionar',
+    'MODIFICAR_ITEM'                            => 'Modificar',
+    'ELIMINAR_ITEM'                             => 'Eliminar',
+    'CONSULTAR_ITEM'                            => 'Consultar',
+    'BUSCAR_ITEM'                               => 'Buscar',    
     
     /*Campos y labels*/
     'NOMBRE'                                    => 'Nombre',
@@ -41,9 +45,10 @@ $textos = array(
     'CUENTA_CONTABLE'                           => 'Cuenta contable',
     'ELIMINAR_CUENTA'                           => 'Eliminar cuenta',
     'CODIGO_CONTABLE'                           => 'Código contable',
-    'PRINCIPAL'                                 => 'Principal',
-    'SECUNDARIA'                                => 'Secundaria',
+    'INFO_OPERACION_NEGOCIO'                    => 'Info. Operación negocio',
     'CODIGO'                                    => 'Codigo',
+    'BASE_MIN_TOTAL_PESOS'                      => 'Base min. total pesos',
+    'BASE_MIN_TOTAL_PORCENTAJE'                 => 'Base min. total porcentaje',
     
     
     /*Errores*/
@@ -56,9 +61,9 @@ $textos = array(
     
     /*Ayuda*/
     'SELECCIONA_EL_TIPO'                        => 'Selecciona el tipo de grupo',
+    'AYUDA_BASE_MIN_TOTAL_PESOS'                => 'Base minima del total de la factura<br> en pesos para que esta cuenta<br>sea afectada.',
+    'AYUDA_BASE_MIN_TOTAL_PORCENTAJE'           => 'Base minima del total de la factura<br> en porcentaje para que esta cuenta<br>sea afectada.',    
     'AYUDA_SELECCIONAR_TIPO'                    => 'Selecciona el cruce de cuentas:<br>-Crédito<br>-Contado<br>-Mixto(Parte a crédito parte a contado)',
     'AYUDA_SELECCIONAR_CATEGORIA'               => 'Selecciona la categoria o módulo:<br>-Compras<br>-Ventas<br>-Ambos Modulos<br>Al cual va a pertenecer este cruce de cuentas',
     'AYUDA_MODULO'                              => '<p>*Para agregar un Item Click en el Boton Agregar o Ctrl+A </p><p>*Para buscar un Item Click en el Boton buscar o Ctrl+B </p><p>*Para Consultar - Editar - Eliminar un Item haga Click Derecho sobre la fila en que aparece.</p>*Para cerrar esta ventana presione Ctrl+H, o haga click en cualquier lugar <br>'
 );
-
-?>
