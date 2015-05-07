@@ -291,18 +291,18 @@ class Usuario {
      * @return entero               Código interno o identificador del usuario en la base de datos (-1 si el usuario está inactivo, NULL si hubo error)
      *
      */
-    public function validar($usuario, $contrasena) {
+    public function validar($usuario, $idEmpresa, $contrasena) {
         global $sql;
 
         if (is_string($usuario) && !preg_match("/[^a-z]/", $usuario) && is_string($contrasena) && !preg_match("/[^a-zA-Z0-9]/", $contrasena)) {
-            $consulta = $sql->seleccionar(array("usuarios"), array("id", "activo", "bloqueado"), "usuario='$usuario' AND contrasena='$contrasena'");
+            $consulta = $sql->seleccionar(array("usuarios"), array("id", "activo", "bloqueado"), "usuario='$usuario' AND contrasena='$contrasena' AND id_empresa='$idEmpresa'");
 
             if ($sql->filasDevueltas) {
                 $datos = $sql->filaEnObjeto($consulta);
                 /*                 * ******** Verifico si el usuario esta bloqueado y lo desbloqueo porque coinciden el usuario y la contraseña**************** */
                 if ($datos->bloqueado) {
                     $datosUser["bloqueado"] = '0';
-                    $consulta = $sql->modificar("usuarios", $datosUser, "usuario = '" . $usuario . "'");
+                    $consulta = $sql->modificar("usuarios", $datosUser, "usuario = '" . $usuario . "' AND contrasena = '" . $contrasena . "' AND id_empresa = '" . $idEmpresa . "'");
                 }
                 
                 if ($datos->activo) {

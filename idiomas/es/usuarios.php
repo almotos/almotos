@@ -98,15 +98,15 @@ $textos = array(
     'MIS_DATOS'                         => 'Mis datos',
     'CALENDARIO'                        => 'Calendario',
     
-    
     /********** ERRORES ************/
     
     'ERROR_FALTA_USUARIO'           => 'Por favor ingrese el usuario',
     'ERROR_CONTRASENA_REQUERIDA'        => 'Por favor ingrese la contraseña',
     'ERROR_CONTRASENA2_REQUERIDA'       => 'Por favor repita la contraseña',
-    'ERROR_USUARIO_INVALIDO'            => 'Usuario o contraseña invalida',
+    'ERROR_USUARIO_INVALIDO'            => 'Usuario, contraseña o id de empresa invalido',
     'ERROR_USUARIO_INACTIVO'            => 'Su usuario se encuentra inactivo',
     'ERROR_NOMBRE_REQUERIDO'            => 'Por favor ingrese su nombre',
+    'ERROR_ID_EMPRESA_REQUERIDA'        => 'Por favor, ingrese el id de la empresa',
     'ERROR_APELLIDOS_REQUERIDOS'        => 'Por favor ingrese su apellido',
     'ERROR_USUARIO_EXISTENTE'           => 'Ya existe ese usuario',
     'ERROR_CONTRASENAS_DIFERENTES'      => 'Las dos contraseñas ingresadas no coinciden',

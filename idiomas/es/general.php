@@ -182,6 +182,7 @@ $textos = array(
     'NUEVE'                             => 'Nueve',
     'DIEZ'                              => 'Diez',
     'ACCESO_DENEGADO'                   => 'Acceso denegado.',
+    'ID_EMPRESA'                        => 'Id empresa',
     /**
      *
      * Módulos

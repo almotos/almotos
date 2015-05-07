@@ -16,7 +16,7 @@
 if (isset($url_accion)) {
     
     switch ($url_accion) {
-        case 'validate'             :   validarUsuario($forma_usuario, $forma_contrasena, $forma_datos);
+        case 'validate'             :   validarUsuario($forma_usuario, $forma_id_empresa, $forma_contrasena, $forma_datos);
                                         break;
                                     
         case 'validarSede'          :   validarSede($forma_datos);
@@ -411,7 +411,7 @@ function adicionarItem($datos = array()) {
  * @param type $contrasena
  * @param type $datos 
  */
-function validarUsuario($usuario, $contrasena) {
+function validarUsuario($usuario, $idEmpresa, $contrasena) {
     global $textos;
 
     $respuesta = array();
@@ -421,21 +421,29 @@ function validarUsuario($usuario, $contrasena) {
 
     if (empty($usuario)) {
         $respuesta['mensaje'] = $textos->id('ERROR_USUARIO_REQUERIDO');
-    } elseif (empty($contrasena)) {
+        
+    } elseif (empty($idEmpresa)) {
+        $respuesta['mensaje'] = $textos->id('ERROR_ID_EMPRESA_REQUERIDA');
+        
+    }elseif (empty($contrasena)) {
         $respuesta['mensaje'] = $textos->id('ERROR_CONTRASENA_REQUERIDA');
+        
     } else {
-        $idExistente = Usuario::validar($usuario, $contrasena);
+        $idExistente = Usuario::validar($usuario, $idEmpresa, $contrasena);
 
         if (is_null($idExistente)) {
             $respuesta['mensaje'] = $textos->id('ERROR_USUARIO_INVALIDO');
 
         } else {
-              $usuarioSesion = new Usuario($usuario);
+              $usuarioSesion = new Usuario($idExistente);
               Sesion::registrar('usuarioSesion', $usuarioSesion);
               escogerSede();
+              return TRUE;
             
         }
     }
+    
+    Servidor::enviarJSON($respuesta);
     
 }
 

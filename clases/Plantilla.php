@@ -348,6 +348,9 @@ class Plantilla {
             $formaUsuarioExistente .= HTML::etiqueta($textos->id('USUARIO'));
             $formaUsuarioExistente .= HTML::parrafo(HTML::campoTexto('usuario', 12, 12, '', '', 'campoUsuario'), '');
 
+            $formaUsuarioExistente .= HTML::etiqueta($textos->id('ID_EMPRESA'));
+            $formaUsuarioExistente .= HTML::parrafo(HTML::campoTexto('id_empresa', 12, 12, '', 'soloNumeros', 'campoIdEmpresa'), '');            
+
             $formaUsuarioExistente .= HTML::etiqueta($textos->id('CONTRASENA'));
             $formaUsuarioExistente .= HTML::parrafo(HTML::campoClave('contrasena', '12', 12), '');
 
@@ -362,6 +365,7 @@ class Plantilla {
             $titulosPestana = array(
                 HTML::frase($textos->id('INICIAR_SESION'))
             );
+
             $contenidoPestana = array($formaUsuarioExistente1);
 
             self::$etiquetas['BLOQUE_SESION'] = HTML::contenedor(HTML::acordeon($titulosPestana, $contenidoPestana, 'pestanasInicioSesion', ""), "bloqueLogueo");
