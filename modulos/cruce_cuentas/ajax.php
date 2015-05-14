@@ -59,7 +59,7 @@ if (isset($url_accion)) {
  * @param int $id identificador del objeto que sera consultado
  */
 function cosultarItem($id) {
-    global $textos, $sql;
+    global $textos;
 
     $objeto         = new CruceCuentas($id);
     $respuesta      = array();
@@ -67,7 +67,7 @@ function cosultarItem($id) {
     $codigo  = HTML::campoOculto('procesar', 'true');
     $codigo .= HTML::campoOculto('id', $id);
      
-    $codigo1 .= HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
+    $codigo1  = HTML::parrafo($textos->id('NOMBRE'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($objeto->nombre, 'medioMargenSuperior', '');
     $codigo1 .= HTML::parrafo($textos->id('CODIGO'), 'negrilla margenSuperior');
     $codigo1 .= HTML::parrafo($objeto->codigo, 'medioMargenSuperior', '');   
@@ -81,10 +81,12 @@ function cosultarItem($id) {
     if (!empty($objeto->listaCuentas)) {
         //crear los formularios con la info para las demas sedes
         $datosTablaCuentas = array(
-            HTML::parrafo($textos->id('CUENTA'), 'centrado')            => 'cuenta',
-            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')   => 'codigoCuenta',
-            HTML::parrafo($textos->id('TIPO'), 'centrado')              => 'tipoCuenta',
-            HTML::parrafo($textos->id('ELIMINAR'), 'centrado')          => 'botonEliminar',
+            HTML::parrafo($textos->id('CUENTA'), 'centrado')                => 'nombreCuenta',
+            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')       => 'idCuenta',
+            HTML::parrafo($textos->id('TIPO'), 'centrado')                  => 'tipo',
+            HTML::parrafo($textos->id('BASE_TOTAL_PESOS'), 'centrado')      => 'baseTotalPesos',
+            HTML::parrafo($textos->id('PORCENTAJE_DEL_TOTAL'), 'centrado')  => 'baseTotalPorcentaje',
+            HTML::parrafo($textos->id('ELIMINAR'), 'centrado')              => 'botonEliminar',
         );
 
         $rutas = array(
@@ -93,9 +95,11 @@ function cosultarItem($id) {
 
         $listaCuentas = array();
         
-        while ($fila = $sql->filaEnObjeto($objeto->listaCuentas)) {
-            $fila->tipoCuenta       = $textos->id('TIPO_CUENTA_' . $fila->tipoCuenta);
-            $fila->botonEliminar    = HTML::contenedor('', 'eliminarRegistro');     
+        foreach ($objeto->listaCuentas as $fila) {
+            $fila->tipo                 = $textos->id('TIPO_CUENTA_' . $fila->tipo);
+            $fila->baseTotalPesos       = "$" . $fila->baseTotalPesos;
+            $fila->baseTotalPorcentaje  = $fila->baseTotalPorcentaje . "%";
+            $fila->botonEliminar        = HTML::contenedor('', 'eliminarRegistro');     
             
             $listaCuentas[] = $fila;
             
@@ -103,14 +107,24 @@ function cosultarItem($id) {
 
         $idTabla            = 'tablaCuentasContables';
         $estilosColumnas    = array();
-        $contenedorCuentas  = HTML::contenedor(Recursos::generarTablaRegistrosInterna($listaCuentas, $datosTablaCuentas, $rutas, $idTabla, $estilosColumnas), 'flotanteIzquierda margenDerecha');
+        $contenedorCuentas  = HTML::contenedor(Recursos::generarTablaRegistrosInterna($listaCuentas, $datosTablaCuentas, $rutas, $idTabla, $estilosColumnas), 'flotanteIzquierda margenDerecha margenInferiorDoble');
+        
+        $ayudaMinUvt = "* " . HTML::frase($textos->id('BASE_TOTAL_PESOS'), 'negrilla') . ": " . str_replace("<br>", "", $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));
+        $ayudaMinPor = "* " . HTML::frase($textos->id('BASE_TOTAL_PORCENTAJE'), 'negrilla') . ": " .  str_replace("<br>", "", $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));
+
+        $contenedorCuentas .= HTML::parrafo($ayudaMinUvt, '');
+        $contenedorCuentas .= HTML::parrafo($ayudaMinPor, 'margenSuperior');
+        
+        
+    } else {
+        $contenedorCuentas = HTML::parrafo($textos->id('SIN_CUENTAS_ASOCIADAS'), 'negrilla letraAzul subtitulo margenInferiorDoble');
     }
     
-    $pestana2 = HTML::contenedor($contenedorCuentas, 'pestana1');   
+    $pestana2  = HTML::contenedor($contenedorCuentas, 'pestana2 margenInferior');   
 
     $pestanas = array(
-        HTML::frase($textos->id('INFO_OPERACION_NEGOCIO'), 'letraBlanca')    => $pestana1,
-        HTML::frase($textos->id('LISTA_CUENTAS'), 'letraBlanca')       => $pestana2
+        HTML::frase($textos->id('INFO_OPERACION_NEGOCIO'), 'letraBlanca')   => $pestana1,
+        HTML::frase($textos->id('LISTA_CUENTAS'), 'letraBlanca')            => $pestana2
     );
 
     $codigo .= HTML::pestanas2('consultarTipoCompra', $pestanas); //al id concatenarle la fecha con segundos para que no haya problema
@@ -712,7 +726,7 @@ function eliminarVarios($confirmado, $cantidad, $cadenaItems) {
  * @param array $datos      = arreglo con los datos provenientes del formulario
  */
 function adicionarCuenta($id, $datos = array()) {
-    global $textos, $sql, $modulo, $sesion_usuarioSesion;
+    global $textos, $sql, $modulo, $sesion_usuarioSesion, $sesion_configuracionGlobal, $configuracion;
     
     $sqlGlobal = new SqlGlobal(); 
     /**
@@ -735,7 +749,6 @@ function adicionarCuenta($id, $datos = array()) {
 
     if (empty($datos)) {
         
-    
         if (empty($id) || (!$sqlGlobal->existeItem('cruce_cuentas', 'id', $id))) {
             $respuesta              = array();
             $respuesta['error']     = true;
@@ -759,33 +772,38 @@ function adicionarCuenta($id, $datos = array()) {
         $codigo .= HTML::campoTexto('datos[cuenta]', 40, 255, '', 'autocompletable campoObligatorio', 'campoNombreCuenta', array('title' => HTML::urlInterna('PLAN_CONTABLE', 0, true, 'listar')), $textos->id('AYUDA_USO_AUTOCOMPLETAR'), HTML::urlInterna('PLAN_CONTABLE', 0, true, 'add'), 'datos[id_cuenta]');
         $codigo .= HTML::parrafo($textos->id('TIPO_CUENTA'), 'negrilla margenSuperior');
         $codigo .= HTML::frase($listaTipoCuenta, '');
-        $codigo .= HTML::parrafo($textos->id('BASE_MIN_TOTAL_PESOS'), 'negrilla margenSuperior');
-        $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));   
-        $codigo .= HTML::parrafo($textos->id('BASE_MIN_TOTAL_PORCENTAJE'), 'negrilla margenSuperior');
-        $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));         
+        $codigo .= HTML::parrafo($textos->id('PORCENTAJE_DEL_TOTAL'), 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros campoObligatorio', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));        
+        $baseMinTotalUvt = str_replace("%1", $sesion_configuracionGlobal->valorUvt, $textos->id('BASE_MIN_TOTAL_PESOS'));
+        $codigo .= HTML::parrafo($baseMinTotalUvt, 'negrilla margenSuperior');
+        $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros', 'baseTotalUvt', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));            
 
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk'), 'margenSuperior');
         $codigo .= HTML::parrafo($textos->id('REGISTRO_AGREGADO'), 'textoExitoso', 'textoExitoso');
-        $codigo1 = HTML::forma($destino, $codigo, 'P');
+        $codigo1 = HTML::forma($destino, $codigo, 'P', '', 'formaAdicionarCuenta');
 
         $respuesta['generar']   = true;
         $respuesta['codigo']    = $codigo1;
+        $respuesta['cargarJs']  = true;
+        $respuesta['archivoJs'] = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . '/modulos/cruce_cuentas/funcionesAdicionarCuentaContable.js';
         $respuesta['titulo']    = HTML::parrafo($textos->id('ADICIONAR_CUENTA_CONTABLE'), 'letraBlanca negrilla subtitulo');
         $respuesta['destino']   = '#cuadroDialogo';
         $respuesta['ancho']     = 450;
         $respuesta['alto']      = 320;
         
     } else {
-
         $respuesta['error'] = true;
         
-        $cuentaExistente = $sql->existeItem("cuentas_tipo_compra", "id_cuenta", $datos['id_cuenta']);
+        $cuentaExistente = $sql->existeItem("cuentas_operacion", "id_cuenta", $datos['id_cuenta']);
 
         if (empty($datos['id_cuenta'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_CUENTA');
             
         } else if ($cuentaExistente) {
             $respuesta['mensaje'] = $textos->id('ERROR_CUENTA_EXISTENTE');
+            
+        }else if (empty($datos['base_total_pesos']) && empty($datos['base_total_porcentaje'])) {
+            $respuesta['mensaje'] = $textos->id('ERROR_FALTA_BASE_MININA');
             
         }  else {
             
@@ -795,7 +813,7 @@ function adicionarCuenta($id, $datos = array()) {
             unset($datos['dialogo']);
             unset($datos['cuenta']);
 
-            $consulta   = $sql->insertar('cuentas_tipo_compra', $datos);
+            $consulta   = $sql->insertar('cuentas_operacion', $datos);
             $idItem     = $sql->ultimoId;
 
             if ($consulta) {                
@@ -848,7 +866,7 @@ function eliminarcuenta($id, $confirmado, $dialogo) {
     $destino    = '/ajax/cruce_cuentas/eliminarCuenta';
     $respuesta  = array();
 
-    $idCuenta   = $sql->obtenerValor('cuentas_tipo_compra', 'id_cuenta', 'id = "' . $id . '"');
+    $idCuenta   = $sql->obtenerValor('cuentas_operacion', 'id_cuenta', 'id = "' . $id . '"');
     
     $cuenta     = $sql->obtenerValor('plan_contable', 'nombre', 'id = "' . $idCuenta . '"');
 
@@ -872,7 +890,7 @@ function eliminarcuenta($id, $confirmado, $dialogo) {
         
     } else {
 
-        $consulta = $sql->eliminar('cuentas_tipo_compra', 'id = "' . $id . '"');
+        $consulta = $sql->eliminar('cuentas_operacion', 'id = "' . $id . '"');
 
         if ($consulta) {
 

@@ -488,6 +488,7 @@ $configuracion['VALIDACIONES'] = array(
  **/
 $configuracion['TABLAS']['PARTICULARES'] = array(
         'cuentas_operacion',
+        'asientos_contables',
         /*'articulos_cotizacion',
         'articulos_factura_compra',
         'articulos_factura_temporal_compra',

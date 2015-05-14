@@ -106,6 +106,10 @@ class CruceCuentas {
     public function __construct($id = NULL) {
         global $modulo;
         
+        if (is_array($id)) {
+            $id = $id[0];
+        }
+        
         $this->sqlGlobal = Factory::crearObjeto("SqlGlobal");
         
         $this->urlBase          = '/' . $modulo->url;
@@ -153,11 +157,110 @@ class CruceCuentas {
                 foreach ($fila as $propiedad => $valor) {
                     $this->$propiedad = $valor;
                 }
+                
+                $this->listaCuentas = $this->cargarListaCuentas($id);
 
                 $this->url = $this->urlBase . '/' . $this->id;               
                 
             }
         }
+    }
+    
+    /**
+     * Cargar la lista de cuentas del cliente asociadas a la operación de negocio
+     * 
+     * @param  int $id              id de la operacion del negocio
+     * @return entero               Código interno o identificador del tipo_compra en la base de datos (NULL si hubo error)
+     */
+    public function cargarListaCuentas($id)
+    {
+        global $sql;
+        
+        $tablas = array(
+                        'co'    => 'cuentas_operacion', 
+                        'pc'    => 'plan_contable'
+                        );
+        
+        $columnas  = array(
+                        'id'                    => 'co.id', 
+                        'idCuenta'              => 'co.id_cuenta',
+                        'nombreCuenta'          => 'pc.nombre', 
+                        'tipo'                  => 'co.tipo', 
+                        'baseTotalPesos'        => 'co.base_total_pesos',
+                        'baseTotalPorcentaje'   => 'co.base_total_porcentaje',
+                        );
+        
+        $condicion = 'co.id_cuenta = pc.id AND co.id_operacion = "' . $id . '"';
+        
+        $resultado = $sql->seleccionar($tablas, $columnas, $condicion);
+        
+        $lista = array();
+        
+        if ($sql->filasDevueltas) {
+            while ($objeto = $sql->filaEnObjeto($resultado)) {
+                $lista[] = $objeto;
+            }
+        }
+        
+        return $lista;
+        
+    }
+    
+    /**
+     * Cargar la info de una cuenta contable
+     * 
+     * @param  int $id              id de la operacion del negocio
+     * @return entero               Código interno o identificador del tipo_compra en la base de datos (NULL si hubo error)
+     */
+    public function cargarCuenta($idCuenta)
+    {
+        if (!isset($idCuenta) || empty($this->listaCuentas) || !is_array($this->listaCuentas)) {
+            return FALSE;
+        }
+        
+        foreach ($this->listaCuentas as  $value) {
+            if($idCuenta == $value->id) {
+                return $value;
+            }
+        }
+        
+        return FALSE;
+        
+    }
+    
+    /**
+     * Eliminar un registro de las cuentas contables
+     * @param entero $id    Código interno o identificador de la cuenta asociada en la base de datos
+     * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
+     */
+
+    public function eliminarCuenta($idCuenta) { 
+        global $sql, $textos;
+
+        //arreglo que será devuelto como respuesta
+        $respuestaEliminar = array(
+            'respuesta' => false,
+            'mensaje'   => $textos->id('ERROR_DESCONOCIDO'),
+        );
+        
+        if (!isset($idCuenta)) {
+            return $respuestaEliminar;
+        }
+
+        $sql->iniciarTransaccion();
+        $consulta = $this->sqlGlobal->eliminar('cuentas_operacion', 'id = "' . $idCuenta . '"');
+        
+        if (!($consulta)) {
+            $sql->cancelarTransaccion("Fallo en el archivo " . __FILE__ . " en la linea " .  __LINE__);
+            return $respuestaEliminar;
+            
+        } else {
+            $sql->finalizarTransaccion();
+            //todo salió bien, se envia la respuesta positiva
+            $respuestaEliminar['respuesta'] = true;
+            return $respuestaEliminar;
+        }
+        
     }
 
 
@@ -166,7 +269,8 @@ class CruceCuentas {
      * @param  arreglo $datos       Datos del tipo_compra a adicionar
      * @return entero               Código interno o identificador del tipo_compra en la base de datos (NULL si hubo error)
      */
-    public function adicionar($datos) {
+    public function adicionar($datos)
+    {
         $datosItem = array();
 
         $datosItem['nombre']    = $datos['nombre'];
@@ -225,9 +329,8 @@ class CruceCuentas {
 
     }
 
-
     /**
-     * Eliminar un tipo_compra
+     * Eliminar un registro
      * @param entero $id    Código interno o identificador de un tipo_compra en la base de datos
      * @return lógico       Indica si el procedimiento se pudo realizar correctamente o no
      */
@@ -359,7 +462,6 @@ class CruceCuentas {
 
         return $lista;
     }
-
 
     /**
      * Metodo que arma la grilla para mostrarse desde la pagina principal

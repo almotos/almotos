@@ -17,15 +17,27 @@ class Factory
     public static function crearObjeto($clase, $params = array())
     {
         
-        switch ($clase) {
-            case "SqlGlobal":
-                return new SqlGlobal();
-
-                break;
-
-            default:
-                break;
+        if (empty($clase)) {
+            return FALSE;
         }
+        
+        if (empty($params)) {
+            $params = NULL;
+        }
+        
+        
+        
+        return new $clase($params);
+        
+//        switch ($clase) {
+//            case "SqlGlobal":
+//                return new $clase();
+//
+//                break;
+//
+//            default:
+//                break;
+//        }
         
     }
 }

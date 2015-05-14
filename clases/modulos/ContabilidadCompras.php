@@ -15,8 +15,14 @@ class ContabilidadCompras extends Contabilidad
 {
     public $idFacturaCompra;
     
+    private $idOperacion = '1';
+    
+    private $cruceCuentas = NULL;
+    
     public function __construct()
     {
+        $this->cruceCuentas = Factory::crearObjeto('CruceCuentas', array($this->idOperacion));
+        
         parent::__construct();
     }
     
@@ -31,6 +37,9 @@ class ContabilidadCompras extends Contabilidad
      */
     public function contabilizarFacturaCompra($idItem, $camposMediosPago = array()) 
     {
+
+        file_put_contents('/home/pvelez/logs/almotos.log', var_export($this->cruceCuentas, TRUE), FILE_APPEND);
+        
         $concepto    = 'Compra de mercancia';
         //tipo de comprobante 1 = factura de compra
         $comprobante = '1';

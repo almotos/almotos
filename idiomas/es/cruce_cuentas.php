@@ -47,8 +47,12 @@ $textos = array(
     'CODIGO_CONTABLE'                           => 'Código contable',
     'INFO_OPERACION_NEGOCIO'                    => 'Info. Operación negocio',
     'CODIGO'                                    => 'Codigo',
-    'BASE_MIN_TOTAL_PESOS'                      => 'Base min. total pesos',
-    'BASE_MIN_TOTAL_PORCENTAJE'                 => 'Base min. total porcentaje',
+    'BASE_MIN_TOTAL_PESOS'                      => 'Base min. total UVT &nbsp;<i>(Valor UVT: $ <span id="valorUvt">%1</span>)  &nbsp;&nbsp; Total Pesos: <span id="totalPesosUvt">$0</span></i>',
+    'PORCENTAJE_DEL_TOTAL'                      => 'Porcentaje del total.',
+    'BASE_TOTAL_PESOS'                          => 'Min. UVT ',
+    'BASE_TOTAL_PORCENTAJE'                     => 'Min. % ',
+    'PORCENTAJE_DEL_TOTAL'                      => '% del total',
+    'SIN_CUENTAS_ASOCIADAS'                     => 'Esta operacion de negocio no tiene cuentas asociadas. Haga click en <u><i>"Agregar cuenta contable"</u></i> y agregue las cuentas que desea que sean afectadas.',
     
     
     /*Errores*/
@@ -58,11 +62,12 @@ $textos = array(
     'ERROR_FALTA_CUENTA'                        => 'Error, falta cuenta',
     'ERROR_NO_EXISTE_CUENTA'                    => 'Error, no existe cuenta',
     'ERROR_CUENTA_EXISTENTE'                    => 'Error, cuenta ya agregada a este cruce de cuentas',
+    'ERROR_FALTA_BASE_MININA'                   => 'Error, debe seleccionar o la base minima en pesos o en %',
     
     /*Ayuda*/
     'SELECCIONA_EL_TIPO'                        => 'Selecciona el tipo de grupo',
-    'AYUDA_BASE_MIN_TOTAL_PESOS'                => 'Base minima del total de la factura<br> en pesos para que esta cuenta<br>sea afectada.',
-    'AYUDA_BASE_MIN_TOTAL_PORCENTAJE'           => 'Base minima del total de la factura<br> en porcentaje para que esta cuenta<br>sea afectada.',    
+    'AYUDA_BASE_MIN_TOTAL_PESOS'                => 'Base minima del total de la factura<br> en UVT para que esta cuenta<br> sea afectada.',
+    'AYUDA_BASE_MIN_TOTAL_PORCENTAJE'           => 'Porcentaje del valor total que<br> se va a guardar en esta<br> cuenta.',    
     'AYUDA_SELECCIONAR_TIPO'                    => 'Selecciona el cruce de cuentas:<br>-Crédito<br>-Contado<br>-Mixto(Parte a crédito parte a contado)',
     'AYUDA_SELECCIONAR_CATEGORIA'               => 'Selecciona la categoria o módulo:<br>-Compras<br>-Ventas<br>-Ambos Modulos<br>Al cual va a pertenecer este cruce de cuentas',
     'AYUDA_MODULO'                              => '<p>*Para agregar un Item Click en el Boton Agregar o Ctrl+A </p><p>*Para buscar un Item Click en el Boton buscar o Ctrl+B </p><p>*Para Consultar - Editar - Eliminar un Item haga Click Derecho sobre la fila en que aparece.</p>*Para cerrar esta ventana presione Ctrl+H, o haga click en cualquier lugar <br>'
