@@ -400,7 +400,6 @@ $configuracion["JAVASCRIPT"]["ARTICULOS"] = array(
 
 );
 
-
 /**
  * Rutas de archivos por modulos
  */

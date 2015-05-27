@@ -67,7 +67,7 @@ function adicionarItem($datos) {
     $continuar = validarDatosBasicosFactura($datos);
 
     if ($continuar) {
-        $datosFactura = array(
+        @$datosFactura = array(
             'datos[id_proveedor]'               => $datos['id_proveedor'],
             'datos[num_factura_proveedor]'      => $datos['num_factura_proveedor'],
             'datos[fecha_factura]'              => $datos['fecha_factura'],

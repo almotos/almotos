@@ -766,7 +766,18 @@ function adicionarCuenta($id, $datos = array()) {
             '1' => 'Credito',
             '2' => 'Debito'
         );
+        
         $listaTipoCuenta = HTML::listaDesplegable('datos[tipo]', $arregloTipoCuenta, '', '', 'listaTipoCuenta');
+        
+        $arregloMedioPago= array(
+            '0' => 'Seleccione...',
+            '1' => 'Efectivo',
+            '2' => 'Cheque',
+            '3' => 'Tarjeta',
+            '4' => 'Credito',
+        );
+        
+        $listaMedioPago = HTML::listaDesplegable('datos[id_medio_pago]', $arregloMedioPago, '', '', 'listaMedioPago');        
 
         $codigo .= HTML::parrafo($textos->id('CUENTA_CONTABLE'), 'negrilla margenSuperior');
         $codigo .= HTML::campoTexto('datos[cuenta]', 40, 255, '', 'autocompletable campoObligatorio', 'campoNombreCuenta', array('title' => HTML::urlInterna('PLAN_CONTABLE', 0, true, 'listar')), $textos->id('AYUDA_USO_AUTOCOMPLETAR'), HTML::urlInterna('PLAN_CONTABLE', 0, true, 'add'), 'datos[id_cuenta]');
@@ -776,7 +787,17 @@ function adicionarCuenta($id, $datos = array()) {
         $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros campoObligatorio', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));        
         $baseMinTotalUvt = str_replace("%1", $sesion_configuracionGlobal->valorUvt, $textos->id('BASE_MIN_TOTAL_PESOS'));
         $codigo .= HTML::parrafo($baseMinTotalUvt, 'negrilla margenSuperior');
-        $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros', 'baseTotalUvt', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));            
+        $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros margenInferior', 'baseTotalUvt', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));            
+        //impuestos
+        $codigo .= "<br>" . HTML::frase($textos->id('INCLUYE_ IMPUESTO'), 'negrilla margenSuperiorDoble');
+        $codigo .= HTML::campoChequeo('', false, '', 'checkImpuesto');
+        $codigo .= HTML::parrafo($textos->id('IMPUESTO'), 'negrilla margenSuperior oculto campoImpuesto');
+        $codigo .= HTML::campoTexto('datos[impuesto]', 40, 255, '', 'autocompletable oculto campoImpuesto margenInferior', '', array('title' => HTML::urlInterna('IMPUESTOS', 0, true, 'listar')), '', '', 'datos[id_impuesto]');
+        
+        //medio de pago
+        $codigo .= "<br>" . HTML::frase($textos->id('AFECTADA_POR_MEDIO_PAGO'), 'negrilla margenSuperiorDoble');
+        $codigo .= HTML::campoChequeo('', false, '', 'checkMedioPago');
+        $codigo .= "<br>" . HTML::frase($listaMedioPago, 'oculto campoMedioPago');
 
         $codigo .= HTML::parrafo(HTML::boton('chequeo', $textos->id('ACEPTAR'), 'botonOk', 'botonOk', 'botonOk'), 'margenSuperior');
         $codigo .= HTML::parrafo($textos->id('REGISTRO_AGREGADO'), 'textoExitoso', 'textoExitoso');
@@ -788,13 +809,25 @@ function adicionarCuenta($id, $datos = array()) {
         $respuesta['archivoJs'] = $configuracion['SERVIDOR']['media'] . $configuracion['RUTAS']['javascript'] . '/modulos/cruce_cuentas/funcionesAdicionarCuentaContable.js';
         $respuesta['titulo']    = HTML::parrafo($textos->id('ADICIONAR_CUENTA_CONTABLE'), 'letraBlanca negrilla subtitulo');
         $respuesta['destino']   = '#cuadroDialogo';
-        $respuesta['ancho']     = 450;
-        $respuesta['alto']      = 320;
+        $respuesta['ancho']     = 550;
+        $respuesta['alto']      = 400;
         
     } else {
         $respuesta['error'] = true;
         
         $cuentaExistente = $sql->existeItem("cuentas_operacion", "id_cuenta", $datos['id_cuenta']);
+        
+        $existeImpuesto     = NULL;
+        $cuentaConImpuesto  = NULL;
+        
+        if (!empty($datos['impuesto'])) {
+            $existeImpuesto = $sql->existeItem("impuestos", "nombre", $datos['impuesto']);
+            //verifica si a alguna cuenta de las que se asocian a esta operacion ya tiene este impuesto asociado
+            $cuentaConImpuesto = $sql->existeItem("cuentas_operacion", "id_impuesto", $datos['id_impuesto'], "id_operacion = {$datos['id_operacion']}");
+        }
+        
+        //verifica si a alguna cuenta de las que se asocian a esta operacion ya tiene el medio de pago que se esta seleccionando
+        $cuentaConMedioPago = $sql->existeItem("cuentas_operacion", "id_medio_pago", $datos['id_medio_pago'], "id_operacion = {$datos['id_operacion']}");        
 
         if (empty($datos['id_cuenta'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_CUENTA');
@@ -802,16 +835,25 @@ function adicionarCuenta($id, $datos = array()) {
         } else if ($cuentaExistente) {
             $respuesta['mensaje'] = $textos->id('ERROR_CUENTA_EXISTENTE');
             
-        }else if (empty($datos['base_total_pesos']) && empty($datos['base_total_porcentaje'])) {
+        } else if (!empty($datos['impuesto']) && $cuentaConImpuesto) {
+            $respuesta['mensaje'] = $textos->id('ERROR_YA_EXISTE_IMPUESTO_ASOCIADO');
+            
+        }  else if ($datos['id_medio_pago'] != '0' && $cuentaConMedioPago) {
+            $respuesta['mensaje'] = $textos->id('ERROR_YA_EXISTE_MEDIO_PAGO_ASOCIADO');
+            
+        } else if (!empty($datos['impuesto']) && !$existeImpuesto) {
+            $respuesta['mensaje'] = $textos->id('ERROR_NO_EXISTE_IMPUESTO');
+            
+        } else if (empty($datos['base_total_pesos']) && empty($datos['base_total_porcentaje'])) {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_BASE_MININA');
             
         }  else {
-            
             $dialogo            = $datos['dialogo'];
             $cuenta             = $datos['cuenta'];
             
             unset($datos['dialogo']);
             unset($datos['cuenta']);
+            unset($datos['impuesto']);
 
             $consulta   = $sql->insertar('cuentas_operacion', $datos);
             $idItem     = $sql->ultimoId;

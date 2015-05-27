@@ -53,7 +53,13 @@ $textos = array(
     'BASE_TOTAL_PORCENTAJE'                     => 'Min. % ',
     'PORCENTAJE_DEL_TOTAL'                      => '% del total',
     'SIN_CUENTAS_ASOCIADAS'                     => 'Esta operacion de negocio no tiene cuentas asociadas. Haga click en <u><i>"Agregar cuenta contable"</u></i> y agregue las cuentas que desea que sean afectadas.',
-    
+    'IMPUESTO'                                  => 'Impuesto',
+    'INCLUYE_ IMPUESTO'                         => 'Esta cuenta afecta impuestos?',
+    'AFECTADA_POR_MEDIO_PAGO'                   => 'Esta cuenta se afecta segun el medio de pago?',
+    'MEDIO_PAGO'                                => 'Medio de pago',
+    'ERROR_YA_EXISTE_IMPUESTO_ASOCIADO'         => 'El impuesto que has seleccionado ya esta asociado a una cuenta.',
+    'ERROR_YA_EXISTE_MEDIO_PAGO_ASOCIADO'       => 'El medio de pago que has seleccionado ya esta asociado a una cuenta.',
+    'ERROR_NO_EXISTE_IMPUESTO'                  => 'Error, debes seleccionar un impuesto de la lista autocompletable',
     
     /*Errores*/
     'ERROR_FALTA_CODIGO'                        => 'Error falta codigo',
@@ -66,6 +72,8 @@ $textos = array(
     
     /*Ayuda*/
     'SELECCIONA_EL_TIPO'                        => 'Selecciona el tipo de grupo',
+    'AYUDA_IMPUESTO'                            => 'Esta cuenta es de algun impuesto?',
+    'AYUDA_MEDIO_PAGO'                          => 'Determina si esta cuenta se debe afectar según el medio de pago',
     'AYUDA_BASE_MIN_TOTAL_PESOS'                => 'Base minima del total de la factura<br> en UVT para que esta cuenta<br> sea afectada.',
     'AYUDA_BASE_MIN_TOTAL_PORCENTAJE'           => 'Porcentaje del valor total que<br> se va a guardar en esta<br> cuenta.',    
     'AYUDA_SELECCIONAR_TIPO'                    => 'Selecciona el cruce de cuentas:<br>-Crédito<br>-Contado<br>-Mixto(Parte a crédito parte a contado)',

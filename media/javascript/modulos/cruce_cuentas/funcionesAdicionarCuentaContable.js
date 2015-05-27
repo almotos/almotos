@@ -28,4 +28,46 @@ function escucharCampoBaseUvt() {
     
 }
 
+//mostrar los campos de impuestos
+function escucharCheckImpuestos() {
+    this.forma = $("#formaAdicionarCuenta");
+    
+    var campo    = this.forma.find("input.campoImpuesto");
+    var texto    = this.forma.find("p.campoImpuesto");
+    
+    var check    = this.forma.find("input#checkImpuesto");
+    
+    check.click(function() {
+                            campo.val('');
+                            campo.toggleClass("oculto");
+                            texto.toggleClass("oculto");
+
+                        });
+    
+}
+
+
+//mostrar los campos de impuestos
+function escucharCheckMedioPago() {
+    this.forma = $("#formaAdicionarCuenta");
+    
+    var campo    = this.forma.find("span.campoMedioPago");
+    var texto    = this.forma.find("p.campoMedioPago");
+    
+    var check    = this.forma.find("input#checkMedioPago");
+    
+    check.click(function() {
+                            campo.toggleClass("oculto");
+                            texto.toggleClass("oculto");
+
+                        });
+    
+}
+
+
+
 escucharCampoBaseUvt();
+escucharCheckImpuestos();
+escucharCheckMedioPago();
+
+
