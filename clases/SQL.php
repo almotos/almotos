@@ -416,7 +416,7 @@ class SQL {
 
         $columnas = implode(', ', $listaColumnas);
         
-        self::verificarTablas(&$tablas);
+        self::verificarTablas($tablas);
 
         foreach ($tablas as $alias => $tabla) {
 
@@ -471,7 +471,7 @@ class SQL {
     public function insertar($tabla, $datos) 
     {
         
-        self::verificarTabla(&$tabla);
+        self::verificarTabla($tabla);
         
         $tabla = $this->prefijo . $tabla;
 
@@ -516,7 +516,7 @@ class SQL {
     public function reemplazar($tabla, $datos)
     {
         
-        self::verificarTabla(&$tabla);
+        self::verificarTabla($tabla);
         
         $tabla = $this->prefijo . $tabla;
 
@@ -553,7 +553,7 @@ class SQL {
     public function modificar($tabla, $datos, $condicion) 
     {
         
-        self::verificarTabla(&$tabla);
+        self::verificarTabla($tabla);
         
         $tabla = $this->prefijo . $tabla;
 
@@ -600,7 +600,7 @@ class SQL {
     public function eliminar($tabla, $condicion) {
         global $sesion_usuarioSesion;
         
-        self::verificarTabla(&$tabla);
+        self::verificarTabla($tabla);
         
         if ($tabla == $sesion_usuarioSesion->idEmpresa . "_facturas_compras" 
                 || $tabla == $sesion_usuarioSesion->idEmpresa . "_facturas_venta") {
@@ -628,7 +628,7 @@ class SQL {
     public function existeItem($tabla, $columna, $valor, $condicionExtra = "") {
         $tablas = array($tabla);
         
-        self::verificarTablas(&$tablas);
+        self::verificarTablas($tablas);
         
         $columnas = array($columna);
         
@@ -660,7 +660,7 @@ class SQL {
     public function obtenerValor($tabla, $columna, $condicion) {
         $tablas = array($tabla);
         
-        self::verificarTablas(&$tablas);
+        self::verificarTablas($tablas);
         
         $columnas = array($columna);
         
@@ -683,7 +683,7 @@ class SQL {
      * tabla "facturas_compra", esta tabla DEBE ser particular a un cliente
      * @param type $param
      */
-    public static function verificarTablas($tablas)
+    public static function verificarTablas(&$tablas)
     {
         global $sesion_usuarioSesion, $configuracion;
         
@@ -707,7 +707,7 @@ class SQL {
      * tabla "facturas_compra", esta tabla DEBE ser particular a un cliente
      * @param type $param
      */
-    public function verificarTabla($tabla)
+    public function verificarTabla(&$tabla)
     {
         global $sesion_usuarioSesion, $configuracion;
         
