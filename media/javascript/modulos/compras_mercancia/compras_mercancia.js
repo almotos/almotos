@@ -1334,8 +1334,8 @@ $(document).ready(function(){
             total = parseDouble(total);
             
             //pongo valor en el <span> subtotal , uso la variable total pero en realidad aun es el subtotal :)
-            $("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
-            $("#subtotal").val(total);         
+           //$("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
+           //$("#subtotal").val(total);         
             
             sumarIva(total);             
 
@@ -1398,8 +1398,8 @@ $(document).ready(function(){
             total = parseDouble(total);
             
             //pongo valor en el <span> subtotal
-            $("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
-            $("#subtotal").val(total);                  
+            //$("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
+            //$("#subtotal").val(total);                  
             
             sumarIva(total);                
 

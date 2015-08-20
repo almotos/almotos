@@ -181,21 +181,27 @@ function cosultarItem($id) {
 
     //si el regimen es diferente al regimen simplificado muestro el iva
     if ($regimenEmpresa != "1"){
-        $codigo4  = HTML::parrafo($textos->id('IVA') . '$ '.HTML::frase($objeto->iva . '$ ', 'sinNegrilla'), 'negrilla margenSuperior');
+        //$codigo4  = HTML::parrafo($textos->id('IVA') . '$ '.HTML::frase($objeto->iva . '$ ', 'sinNegrilla'), 'negrilla margenSuperior');
+        $codigo4  = HTML::parrafo($textos->id('IVA').HTML::frase('$'.$objeto->iva, 'sinNegrilla'), 'negrilla margenSuperior');
+
     }
         
-    $totalFactura = $objeto->subtotal - $objeto->totalRetenciones;
+    //$totalFactura = $objeto->subtotal - $objeto->totalRetenciones;
+     
+    $totalFactura = $objeto->subtotal;
 
     if (!empty($objeto->concepto1) && !empty($objeto->descuento1)) {
         $codigo4 .= HTML::parrafo($textos->id('DESCUENTOS') . ': ', 'negrilla margenSuperior letraVerde');
         
-        $pesosDcto1 = ($totalFactura * $objeto->descuento1) / 100;
-        $codigo4 .= HTML::parrafo($objeto->concepto1 . ': ' . HTML::frase($objeto->descuento1 . '%', 'sinNegrilla') . HTML::frase('$' . Recursos::formatearNumero($pesosDcto1, '$'), 'sinNegrilla margenIzquierdaDoble'), 'negrilla margenSuperior');
+        $pesosDcto1     = ($totalFactura * $objeto->descuento1) / 100;
+        $totalFactura   = $totalFactura - $pesosDcto1;
+        $codigo4       .= HTML::parrafo($objeto->concepto1 . ': ' . HTML::frase($objeto->descuento1 . '%', 'sinNegrilla') . HTML::frase('$' . Recursos::formatearNumero($pesosDcto1, '$'), 'sinNegrilla margenIzquierdaDoble'), 'negrilla margenSuperior');
     
     }
 
     if (!empty($objeto->concepto2) && !empty($objeto->descuento2)) {
         $pesosDcto2 = ($totalFactura * $objeto->descuento2) / 100;
+        $totalFactura   = $totalFactura - $pesosDcto2;
         $codigo4 .= HTML::parrafo($objeto->concepto2 . ': ' . HTML::frase($objeto->descuento2 . '%', 'sinNegrilla') . HTML::frase('$' . Recursos::formatearNumero($pesosDcto2, '$'), 'sinNegrilla margenIzquierdaDoble'), 'negrilla margenSuperior');
     
     }

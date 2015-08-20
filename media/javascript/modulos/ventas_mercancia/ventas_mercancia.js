@@ -1471,9 +1471,9 @@ $(document).ready(function(){
             total = parseDouble(total);
             
             //pongo valor en el <span> subtotal
-            $("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
-            $("#subtotal").val(total);             
-
+            //$("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
+            //$("#subtotal").val(total);             
+      
             sumarIva(total);  //estamos es sumando el iva despues de aplicarle los descuentos a la factura               
 
         } else {
@@ -1538,8 +1538,8 @@ $(document).ready(function(){
             total = parseDouble(total);
             
             //pongo valor en el <span> subtotal
-            $("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
-            $("#subtotal").val(total);      
+            //$("#campo_subtotal").html("<span class='prefijo_numero'>$</span>"+total);
+            //$("#subtotal").val(total);      
             
             
             sumarIva(total);              
@@ -1850,7 +1850,7 @@ function calcularTotalFactura(){
 function sumarFlete(flete, total){
     
     //determina si se va a cobrar iva por el flete y su valor
-    var porcentajeIvaFlete = $("#porcentajeIvaFleteVentas").val();
+    //var porcentajeIvaFlete = $("#porcentajeIvaFleteVentas").val();
     
     if(flete != 0 && flete != "0" && flete != ""){
         total = total + parseDouble(flete);
@@ -1876,15 +1876,15 @@ function sumarIva(){
 
         totalIva = parseDouble(totalIva);    
 
-        var valorFlete = parseDouble( $("#campoValorFlete").val() );
+       //var valorFlete = parseDouble( $("#campoValorFlete").val() );
 
-        if(valorFlete){
-            var porcentajeIvaFlete = $("#porcentajeIvaFleteVentas").val();
+        //if(valorFlete){
+            //var porcentajeIvaFlete = $("#porcentajeIvaFleteVentas").val();
             //como el iva va incluido se saca del valor total del flete segun su porcentaje
-            var totalIvaFlete = valorFlete / (1 + ((porcentajeIvaFlete/ 100)));
+            //var totalIvaFlete = valorFlete / (1 + ((porcentajeIvaFlete/ 100)));
                 
-            totalIva = totalIva + totalIvaFlete;
-        }     
+            //totalIva = totalIva + totalIvaFlete;
+       // }     
 
         $("#campoIva").val(parseDouble(totalIva));
         $("#campoOcultoIva").val(parseDouble(totalIva));
