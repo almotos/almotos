@@ -52,6 +52,7 @@ $textos = array(
     'BASE_TOTAL_PESOS'                          => 'Min. UVT ',
     'BASE_TOTAL_PORCENTAJE'                     => 'Min. % ',
     'PORCENTAJE_DEL_TOTAL'                      => '% del total',
+    'PORCENTAJE_DEL_SUBTOTAL'                   => '% del subtotal',
     'SIN_CUENTAS_ASOCIADAS'                     => 'Esta operacion de negocio no tiene cuentas asociadas. Haga click en <u><i>"Agregar cuenta contable"</u></i> y agregue las cuentas que desea que sean afectadas.',
     'IMPUESTO'                                  => 'Impuesto',
     'INCLUYE_ IMPUESTO'                         => 'Esta cuenta afecta impuestos?',

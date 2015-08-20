@@ -48,7 +48,8 @@ class ContabilidadCompras extends Contabilidad
                                     "retenciones"   => $factura->retenciones,
                                     "iva"           => $factura->iva,
                                     "fechaFactura"  => $factura->fechaFactura,
-                                    "total"         => $factura->total
+                                    "total"         => $factura->total,
+                                    "subtotal"      => $factura->subtotal,
                                     );
         
         $this->generarAsientosContablesFC($camposMediosPago, $concepto, $comprobante, $infoFactura);
@@ -57,18 +58,140 @@ class ContabilidadCompras extends Contabilidad
     
    public function generarAsientosContablesFC($camposMediosPago = array(), $concepto = 'Compra de mercancia', $comprobante= '1', $infoFactura = array())
     {
-        global $configuracion;
+        global $sesion_configuracionGlobal;
+        
+        $valorUvt = ($sesion_configuracionGlobal->valorUvt > 0) ? $sesion_configuracionGlobal->valorUvt : 1;
+
         //objetos necesarios
         $asientoContable    = new AsientoContable();        
+        
+        //armar el arreglo de arreglos para guardar los asientos contables
+        $asientosContables = array();
+        
+        foreach ($this->cruceCuentas->listaCuentas as $value) {
+            
+            //determinar que valor se va a usar como total, si el total o el subtotal
+            $valorTotal = ($value->tipoTotal == "1") ? $infoFactura['total'] : $infoFactura['subtotal'];
+            
+            //primero validar si el total de la factura es suficiente para afectar la cuenta
+            if ($value->baseTotalPesos > 0) {
+                $montoMinimo = $value->baseTotalPesos * $valorUvt;
+                
+                if ($montoMinimo < $valorTotal) {
+                    continue;
+                }
+
+            }
+
+            //afectar cuentas contables dependiendo de los medios de pago
+            if ($camposMediosPago["efectivo"] != "" && $value->idMedioPago == '1') {
+                $datosAsiento = array();
+                $datosAsiento['id_cuenta']         = $value->idCuenta;
+                $datosAsiento['comprobante']       = $comprobante;
+                $datosAsiento['num_comprobante']   = $infoFactura['id'];
+                $datosAsiento['fecha']             = $infoFactura['fechaFactura'];
+                $datosAsiento['concepto']          = $concepto;
+                $datosAsiento['credito']           = ($value->tipo == '1') ? $camposMediosPago["efectivo"] : '';
+                $datosAsiento['debito']            = ($value->tipo == '2') ? $camposMediosPago["efectivo"] : '';   
+                $asientosContables[]               = $datosAsiento;    
+                continue;
+
+            } else if ($camposMediosPago["cheque"] != "" && $value->idMedioPago == '2') {
+                $datosAsiento = array();
+                $datosAsiento['id_cuenta']         = $value->idCuenta;
+                $datosAsiento['comprobante']       = $comprobante;
+                $datosAsiento['num_comprobante']   = $infoFactura['id'];
+                $datosAsiento['fecha']             = $infoFactura['fechaFactura'];
+                $datosAsiento['concepto']          = $concepto;
+                $datosAsiento['credito']           = ($value->tipo == '1') ? $camposMediosPago["cheque"] : '';
+                $datosAsiento['debito']            = ($value->tipo == '2') ? $camposMediosPago["cheque"] : '';   
+                $asientosContables[]               = $datosAsiento;
+                continue;
+
+            } else if ($camposMediosPago["tarjeta"] != "" && $value->idMedioPago == '3') {
+                $datosAsiento = array();
+                $datosAsiento['id_cuenta']         = $value->idCuenta;
+                $datosAsiento['comprobante']       = $comprobante;
+                $datosAsiento['num_comprobante']   = $infoFactura['id'];
+                $datosAsiento['fecha']             = $infoFactura['fechaFactura'];
+                $datosAsiento['concepto']          = $concepto;
+                $datosAsiento['credito']           = ($value->tipo == '1') ? $camposMediosPago["tarjeta"] : '';
+                $datosAsiento['debito']            = ($value->tipo == '2') ? $camposMediosPago["tarjeta"] : '';   
+                $asientosContables[]               = $datosAsiento;
+                continue;
+
+            } else if ($camposMediosPago["credito"] != "" && $value->idMedioPago == '4') {
+                $datosAsiento = array();
+                $datosAsiento['id_cuenta']         = $value->idCuenta;
+                $datosAsiento['comprobante']       = $comprobante;
+                $datosAsiento['num_comprobante']   = $infoFactura['id'];
+                $datosAsiento['fecha']             = $infoFactura['fechaFactura'];
+                $datosAsiento['concepto']          = $concepto;
+                $datosAsiento['credito']           = ($value->tipo == '1') ? $camposMediosPago["credito"] : '';
+                $datosAsiento['debito']            = ($value->tipo == '2') ? $camposMediosPago["credito"] : '';   
+                $asientosContables[]               = $datosAsiento;
+                continue;
+
+            } else if (isset($infoFactura['iva']) && $infoFactura['iva'] > 0 && $value->id_impuesto == 1) {
+                $datosIva = array();
+                $datosIva['id_cuenta']         = $value->idCuenta;;
+                $datosIva['comprobante']       = $comprobante;
+                $datosIva['num_comprobante']   = $infoFactura['id'];
+                $datosIva['fecha']             = $infoFactura['fechaFactura'];
+                $datosIva['concepto']          = $concepto;
+                $datosIva['credito']           = ($value->tipo == '1') ? $infoFactura['iva'] : '';
+                $datosIva['debito']            = ($value->tipo == '2') ? $infoFactura['iva'] : '';     
+                $asientosContables[]           = $datosIva;  
+                continue;
+                
+            } else {
+                $total = ($valorTotal * $value->baseTotalPorcentaje) / 100;
+                
+                $datosAsiento = array();
+                $datosAsiento['id_cuenta']         = $value->idCuenta;
+                $datosAsiento['comprobante']       = $comprobante;
+                $datosAsiento['num_comprobante']   = $infoFactura['id'];
+                $datosAsiento['fecha']             = $infoFactura['fechaFactura'];
+                $datosAsiento['concepto']          = $concepto;
+                $datosAsiento['credito']           = ($value->tipo == '1') ? $total : '';
+                $datosAsiento['debito']            = ($value->tipo == '2') ? $total : '';   
+                $asientosContables[]               = $datosAsiento;
+                continue;
+                
+            }
+
+        }
+        
+        $arregloRetenciones = $this->generarAsientosRetencionesFC($infoFactura, $comprobante, $concepto);
+
+        if (is_array($arregloRetenciones) && !empty($arregloRetenciones)) {
+            syslog(LOG_DEBUG, "entro aqui hijueputa");
+            $asientosContables += $arregloRetenciones;
+        }
+        
+        if (is_array($asientosContables) && !empty($asientosContables)) {
+            //agregar cada uno de los asientos contables
+            foreach ($asientosContables as $asiento) {
+                $asientoContable->adicionar($asiento);
+            }
+        }
+
+        return true;   
+    }
+    
+    public function generarAsientosRetencionesFC($infoFactura, $comprobante, $concepto) 
+    {
+        global $configuracion;
+        
+        if (!isset($infoFactura['retenciones'])) {
+            return FALSE;
+        }
         
         //crear el arreglo con las retenciones a partir de la cadena guardada en la BD
         //del tipo idRetencion;valor|idRetencion;valor|
         $arregloRetenciones = array();
-        $arreglo            = array();
         //el ultimo pipe es retirado del string y se crea un arreglo dividiendo la cadena por pipe
-        if (isset($infoFactura['retenciones'])) {
-            $arreglo = explode('|', substr($infoFactura['retenciones'], 0, -1));
-        }
+        $arreglo = explode('|', substr($infoFactura['retenciones'], 0, -1));
         
         $totalRetenciones = 0;
         //recorrer el arreglo para generar los valores
@@ -82,70 +205,39 @@ class ContabilidadCompras extends Contabilidad
             }
         }
         
-        //armar el arreglo de arreglos para guardar los asientos contables
-        $asientosContables = array();
+        $asientosContablesRetenciones = array();
         
-        //iva de la compra
-        $_iva = (!empty($infoFactura['iva']) && $infoFactura['iva'] > 0) ? $infoFactura['iva'] : "0";
-                
-        //afectar cuentas contables dependiendo de los medios de pago
-        if ($camposMediosPago["efectivo"] != "") {
-
-        }
-        
-        if ($camposMediosPago["tarjeta"] != "") {
-
-        }
-        
-        if ($camposMediosPago["cheque"] != "") {
-
-        }
-        
-        if ($camposMediosPago["credito"] != "") {
-
-        }                      
-        
-        //iva
-        if (isset($infoFactura['iva']) && $infoFactura['iva'] > 0) {
-     
-        }
-        
-        /**
-         * generar los registros contables para cada una de las retenciones
-         */
-       /* foreach ($arregloRetenciones as $value) {
+        //generar los registros contables para cada una de las retenciones
+        foreach ($arregloRetenciones as $value) {
             $retencion = $configuracion["RETENCIONES"][$configuracion["GENERAL"]["idioma"]][$value["id"]];
             //aqui llega solo los impuestos que se retuvieron segun los regimenes del proveedor y comprador
-            
-            //si el impuesto es el iva teorico, se debe afectar tambien el iva descontable
-            if ($value["id"] == "5") {
- 
-            }
-            
-        } */    
-        
-        foreach ($this->cruceCuentas->listaCuentas as $value) {
-            $total = ($infoFactura['total'] * $value->baseTotalPorcentaje) / 100;
-            
             $datosRetencion = array();
-            $datosRetencion['id_cuenta']         = $value->idCuenta;
+            $datosRetencion['id_cuenta']         = $retencion["id_cuenta"];
             $datosRetencion['comprobante']       = $comprobante;
             $datosRetencion['num_comprobante']   = $infoFactura['id'];
             $datosRetencion['fecha']             = $infoFactura['fechaFactura'];
             $datosRetencion['concepto']          = $concepto;
-            $datosRetencion['credito']           = ($value->tipo == '1') ? $total : '';
-            $datosRetencion['debito']            = ($value->tipo == '2') ? $total : '';   
-            $asientosContables[]                 = $datosRetencion;
-
+            $datosRetencion['credito']           = $value["valor"];
+            $datosRetencion['debito']            = '';    
+            $asientosContablesRetenciones[]      = $datosRetencion;  
+            
+            //si el impuesto es el iva teorico, se debe afectar tambien el iva descontable
+            if ($value["id"] == "5") {
+                $datosRetencion = array();
+                $datosRetencion['id_cuenta']         = $retencion["id_cuenta2"];
+                $datosRetencion['comprobante']       = $comprobante;
+                $datosRetencion['num_comprobante']   = $infoFactura['id'];
+                $datosRetencion['fecha']             = $infoFactura['fechaFactura'];
+                $datosRetencion['concepto']          = $concepto;
+                $datosRetencion['credito']           = '';
+                $datosRetencion['debito']            = $value["valor"];    
+                $asientosContablesRetenciones[]      = $datosRetencion;  
+            }
+            
         }
         
-        //agregar cada uno de los asientos contables
-        foreach ($asientosContables as $asiento) {
-            $asientoContable->adicionar($asiento);
-        }
-        
-        return true;   
-    }
+        return $asientosContablesRetenciones;
+    }    
 
 //    public function generarAsientosContablesFC($camposMediosPago = array(), $concepto = 'Compra de mercancia', $comprobante= '1', $infoFactura = array())
 //    {
@@ -292,8 +384,8 @@ class ContabilidadCompras extends Contabilidad
 //        
 //        return true;   
 //    }
-    
-    /**
+
+        /**
      * Organizar los asientos contables para las notas de credito de un proveedor
      * e insertarlos en la base de datos
      * @param type $montoNota

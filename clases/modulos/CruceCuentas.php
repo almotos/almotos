@@ -186,8 +186,11 @@ class CruceCuentas {
                         'idCuenta'              => 'co.id_cuenta',
                         'nombreCuenta'          => 'pc.nombre', 
                         'tipo'                  => 'co.tipo', 
+                        'idImpuesto'            => 'co.id_impuesto',
+                        'idMedioPago'           => 'co.id_medio_pago',
                         'baseTotalPesos'        => 'co.base_total_pesos',
                         'baseTotalPorcentaje'   => 'co.base_total_porcentaje',
+                        'tipoTotal'             => 'co.tipo_total'
                         );
         
         $condicion = 'co.id_cuenta = pc.id AND co.id_operacion = "' . $id . '"';
