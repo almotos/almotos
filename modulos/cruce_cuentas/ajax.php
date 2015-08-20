@@ -82,7 +82,7 @@ function cosultarItem($id) {
         //crear los formularios con la info para las demas sedes
         $datosTablaCuentas = array(
             HTML::parrafo($textos->id('CUENTA'), 'centrado')                => 'nombreCuenta',
-            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')       => 'idCuenta',
+            HTML::parrafo($textos->id('CODIGO_CONTABLE'), 'centrado')       => 'codigo',
             HTML::parrafo($textos->id('TIPO'), 'centrado')                  => 'tipo',
             HTML::parrafo($textos->id('BASE_TOTAL_PESOS'), 'centrado')      => 'baseTotalPesos',
             HTML::parrafo($textos->id('PORCENTAJE_DEL_TOTAL'), 'centrado')  => 'baseTotalPorcentaje',
@@ -783,8 +783,17 @@ function adicionarCuenta($id, $datos = array()) {
         $codigo .= HTML::campoTexto('datos[cuenta]', 40, 255, '', 'autocompletable campoObligatorio', 'campoNombreCuenta', array('title' => HTML::urlInterna('PLAN_CONTABLE', 0, true, 'listar')), $textos->id('AYUDA_USO_AUTOCOMPLETAR'), HTML::urlInterna('PLAN_CONTABLE', 0, true, 'add'), 'datos[id_cuenta]');
         $codigo .= HTML::parrafo($textos->id('TIPO_CUENTA'), 'negrilla margenSuperior');
         $codigo .= HTML::frase($listaTipoCuenta, '');
-        $codigo .= HTML::parrafo($textos->id('PORCENTAJE_DEL_TOTAL'), 'negrilla margenSuperior');
-        $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros campoObligatorio', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));        
+        
+        
+        $porc_total     = HTML::frase($textos->id('PORCENTAJE_DEL_TOTAL'), 'negrilla margenSuperior');
+        $porc_subtotal  = HTML::frase($textos->id('PORCENTAJE_DEL_SUBTOTAL'), 'negrilla margenSuperior');
+        
+        $radio_total    = HTML::radioBoton("datos[tipo_total]", true, "radio_porcentaje", "1");
+        $radio_subtotal = HTML::radioBoton("datos[tipo_total]", false, "radio_porcentaje", "2");
+        
+        $codigo .= HTML::parrafo($radio_total . $porc_total . $radio_subtotal . $porc_subtotal , "margenSuperior", "");
+        
+        $codigo .= HTML::campoTexto('datos[base_total_porcentaje]', 10, 255, '', 'soloNumeros', '', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PORCENTAJE'));        
         $baseMinTotalUvt = str_replace("%1", $sesion_configuracionGlobal->valorUvt, $textos->id('BASE_MIN_TOTAL_PESOS'));
         $codigo .= HTML::parrafo($baseMinTotalUvt, 'negrilla margenSuperior');
         $codigo .= HTML::campoTexto('datos[base_total_pesos]', 20, 255, '', 'soloNumeros margenInferior', 'baseTotalUvt', array(), $textos->id('AYUDA_BASE_MIN_TOTAL_PESOS'));            
@@ -844,7 +853,7 @@ function adicionarCuenta($id, $datos = array()) {
         } else if (!empty($datos['impuesto']) && !$existeImpuesto) {
             $respuesta['mensaje'] = $textos->id('ERROR_NO_EXISTE_IMPUESTO');
             
-        } else if (empty($datos['base_total_pesos']) && empty($datos['base_total_porcentaje'])) {
+        } else if (empty($datos['base_total_pesos']) && empty($datos['base_total_porcentaje']) && $datos['id_medio_pago'] == '0') {
             $respuesta['mensaje'] = $textos->id('ERROR_FALTA_BASE_MININA');
             
         }  else {
